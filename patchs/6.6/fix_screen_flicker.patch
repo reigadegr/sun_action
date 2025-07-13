@@ -1,0 +1,60 @@
+commit cabb08fa2bc6a13d1b14c1af4b3568921543a3f2
+Author: brokestar233 <3765589194@qq.com>
+Date:   Thu Jul 3 03:48:06 2025 +0800
+
+    Revert "drm: Add valid clones check"
+    
+    This reverts commit fe4a7145f048c44319c37f7998ddb2a99e4834b.
+    
+    The new valid clones verification introduced screen flickering artifacts
+    and display instability on multi-monitor configurations with clone modes.
+    
+    Fixes: fe4a7145f048 ("drm: Add valid clones check")
+    Signed-off-by: brokestar233 <3765589194@qq.com>
+
+diff --git a/drivers/gpu/drm/drm_atomic_helper.c b/drivers/gpu/drm/drm_atomic_helper.c
+index 1aa59586c8f8..f3681970887c 100644
+--- a/drivers/gpu/drm/drm_atomic_helper.c
++++ b/drivers/gpu/drm/drm_atomic_helper.c
+@@ -573,30 +573,6 @@ mode_valid(struct drm_atomic_state *state)
+ 	return 0;
+ }
+ 
+-static int drm_atomic_check_valid_clones(struct drm_atomic_state *state,
+-					 struct drm_crtc *crtc)
+-{
+-	struct drm_encoder *drm_enc;
+-	struct drm_crtc_state *crtc_state = drm_atomic_get_new_crtc_state(state,
+-									  crtc);
+-
+-	drm_for_each_encoder_mask(drm_enc, crtc->dev, crtc_state->encoder_mask) {
+-		if (!drm_enc->possible_clones) {
+-			DRM_DEBUG("enc%d possible_clones is 0\n", drm_enc->base.id);
+-			continue;
+-		}
+-
+-		if ((crtc_state->encoder_mask & drm_enc->possible_clones) !=
+-		    crtc_state->encoder_mask) {
+-			DRM_DEBUG("crtc%d failed valid clone check for mask 0x%x\n",
+-				  crtc->base.id, crtc_state->encoder_mask);
+-			return -EINVAL;
+-		}
+-	}
+-
+-	return 0;
+-}
+-
+ /**
+  * drm_atomic_helper_check_modeset - validate state object for modeset changes
+  * @dev: DRM device
+@@ -768,10 +744,6 @@ drm_atomic_helper_check_modeset(struct drm_device *dev,
+ 		ret = drm_atomic_add_affected_planes(state, crtc);
+ 		if (ret != 0)
+ 			return ret;
+-
+-		ret = drm_atomic_check_valid_clones(state, crtc);
+-		if (ret != 0)
+-			return ret;
+ 	}
+ 
+ 	/*

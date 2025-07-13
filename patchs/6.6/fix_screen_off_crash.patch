@@ -1,0 +1,33 @@
+commit 9bdc2b88c31c389b0aa07506dc1153a9cdbc978d
+Author: reigadegr <272268642@qq.com>
+Date:   Fri Jul 11 11:35:43 2025 +0800
+
+    Revert "scsi: ufs: core: Honor runtime/system PM levels if set by host controller drivers"
+    
+    This reverts commit 8df41b7fb46d17c5adbf8c768b483dfcdc5abe87.
+
+diff --git a/drivers/ufs/core/ufshcd.c b/drivers/ufs/core/ufshcd.c
+index f4080f5eb017..c5453cc2fa1e 100644
+--- a/drivers/ufs/core/ufshcd.c
++++ b/drivers/ufs/core/ufshcd.c
+@@ -10644,17 +10644,14 @@ int ufshcd_init(struct ufs_hba *hba, void __iomem *mmio_base, unsigned int irq)
+ 	}
+ 
+ 	/*
+-	 * Set the default power management level for runtime and system PM if
+-	 * not set by the host controller drivers.
++	 * Set the default power management level for runtime and system PM.
+ 	 * Default power saving mode is to keep UFS link in Hibern8 state
+ 	 * and UFS device in sleep state.
+ 	 */
+-	if (!hba->rpm_lvl)
+-		hba->rpm_lvl = ufs_get_desired_pm_lvl_for_dev_link_state(
++	hba->rpm_lvl = ufs_get_desired_pm_lvl_for_dev_link_state(
+ 						UFS_SLEEP_PWR_MODE,
+ 						UIC_LINK_HIBERN8_STATE);
+-	if (!hba->spm_lvl)
+-		hba->spm_lvl = ufs_get_desired_pm_lvl_for_dev_link_state(
++	hba->spm_lvl = ufs_get_desired_pm_lvl_for_dev_link_state(
+ 						UFS_SLEEP_PWR_MODE,
+ 						UIC_LINK_HIBERN8_STATE);
+ 

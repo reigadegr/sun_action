@@ -1,0 +1,234 @@
+name: File Map Workflow
+
+on:
+  workflow_call:
+    inputs:
+      FILE:
+        required: true
+        type: string
+    outputs:
+      CPU:
+        description: "CPU"
+        value: ${{ jobs.map.outputs.CPU }}
+      CPUD:
+        description: "CPUD"
+        value: ${{ jobs.map.outputs.CPUD }}
+      ANDROID_VERSION:
+        description: "Android Version"
+        value: ${{ jobs.map.outputs.ANDROID_VERSION }}
+      KERNEL_VERSION:
+        description: "Kernel Version"
+        value: ${{ jobs.map.outputs.KERNEL_VERSION }}
+
+jobs:
+  map:
+    runs-on: ubuntu-latest
+    outputs:
+      CPU: ${{ steps.set.outputs.CPU }}
+      CPUD: ${{ steps.set.outputs.CPUD }}
+      ANDROID_VERSION: ${{ steps.set.outputs.ANDROID_VERSION }}
+      KERNEL_VERSION: ${{ steps.set.outputs.KERNEL_VERSION }}
+
+    steps:
+      - name: Map FILE to Config
+        id: set
+        run: |
+          FILE="${{ inputs.FILE }}"
+
+          case "$FILE" in
+            oneplus_nord_ce4_v)
+              CPU="sm7550"
+              CPUD="crow"
+              ANDROID_VERSION="android14"
+              KERNEL_VERSION="5.15"
+              ;;
+            oneplus_ace_3v_v)
+              CPU="sm7675"
+              CPUD="pineapple"
+              ANDROID_VERSION="android14"
+              KERNEL_VERSION="6.1"
+              ;;
+            oneplus_nord_4_v)
+              CPU="sm7675"
+              CPUD="pineapple"
+              ANDROID_VERSION="android14"
+              KERNEL_VERSION="6.1"
+              ;;
+            oneplus_10_pro_v)
+              CPU="sm8450"
+              CPUD="waipio"
+              ANDROID_VERSION="android12"
+              KERNEL_VERSION="5.10"
+              ;;
+            oneplus_10_pro_s)
+              CPU="sm8450"
+              CPUD="waipio"
+              ANDROID_VERSION="android12"
+              KERNEL_VERSION="5.10"
+              ;;
+            oneplus_10t_v)
+              CPU="sm8475"
+              CPUD="waipio"
+              ANDROID_VERSION="android12"
+              KERNEL_VERSION="5.10"
+              ;;
+            oneplus_11r_v)
+              CPU="sm8475"
+              CPUD="waipio"
+              ANDROID_VERSION="android12"
+              KERNEL_VERSION="5.10"
+              ;;
+            oneplus_11r_u)
+              CPU="sm8475"
+              CPUD="waipio"
+              ANDROID_VERSION="android12"
+              KERNEL_VERSION="5.10"
+              ;;
+            oneplus_ace2_v)
+              CPU="sm8475"
+              CPUD="waipio"
+              ANDROID_VERSION="android12"
+              KERNEL_VERSION="5.10"
+              ;;
+            oneplus_ace_pro_v)
+              CPU="sm8475"
+              CPUD="waipio"
+              ANDROID_VERSION="android12"
+              KERNEL_VERSION="5.10"
+              ;;
+            oneplus_11_v)
+              CPU="sm8550"
+              CPUD="kalama"
+              ANDROID_VERSION="android13"
+              KERNEL_VERSION="5.15"
+              ;;
+            oneplus_11_u)
+              CPU="sm8550"
+              CPUD="kalama"
+              ANDROID_VERSION="android13"
+              KERNEL_VERSION="5.15"
+              ;;
+            oneplus_11_t)
+              CPU="sm8550"
+              CPUD="kalama"
+              ANDROID_VERSION="android13"
+              KERNEL_VERSION="5.15"
+              ;;
+            oneplus_12r_v)
+              CPU="sm8550"
+              CPUD="kalama"
+              ANDROID_VERSION="android13"
+              KERNEL_VERSION="5.15"
+              ;;
+            oneplus_ace2_pro_v)
+              CPU="sm8550"
+              CPUD="kalama"
+              ANDROID_VERSION="android13"
+              KERNEL_VERSION="5.15"
+              ;;
+            oneplus_ace3_v)
+              CPU="sm8550"
+              CPUD="kalama"
+              ANDROID_VERSION="android13"
+              KERNEL_VERSION="5.15"
+              ;;
+            oneplus_open_v)
+              CPU="sm8550"
+              CPUD="kalama"
+              ANDROID_VERSION="android13"
+              KERNEL_VERSION="5.15"
+              ;;
+            oneplus12_v)
+              CPU="sm8650"
+              CPUD="pineapple"
+              ANDROID_VERSION="android14"
+              KERNEL_VERSION="6.1"
+              ;;
+            oneplus12_u)
+              CPU="sm8650"
+              CPUD="pineapple"
+              ANDROID_VERSION="android14"
+              KERNEL_VERSION="6.1"
+              ;;
+            oneplus_13r)
+              CPU="sm8650"
+              CPUD="pineapple"
+              ANDROID_VERSION="android14"
+              KERNEL_VERSION="6.1"
+              ;;
+            oneplus_ace3_pro_v)
+              CPU="sm8650"
+              CPUD="pineapple"
+              ANDROID_VERSION="android14"
+              KERNEL_VERSION="6.1"
+              ;;
+            oneplus_ace3_pro)
+              CPU="sm8650"
+              CPUD="pineapple"
+              ANDROID_VERSION="android14"
+              KERNEL_VERSION="6.1"
+              ;;
+            oneplus_ace5)
+              CPU="sm8650"
+              CPUD="pineapple"
+              ANDROID_VERSION="android14"
+              KERNEL_VERSION="6.1"
+              ;;
+            oneplus_pad2_v)
+              CPU="sm8650"
+              CPUD="pineapple"
+              ANDROID_VERSION="android14"
+              KERNEL_VERSION="6.1"
+              ;;
+            oneplus_pad_pro_v)
+              CPU="sm8650"
+              CPUD="pineapple"
+              ANDROID_VERSION="android14"
+              KERNEL_VERSION="6.1"
+              ;;
+            oneplus_13)
+              CPU="sm8750"
+              CPUD="sun"
+              ANDROID_VERSION="android15"
+              KERNEL_VERSION="6.6"
+              ;;
+            oneplus_ace5_pro)
+              CPU="sm8750"
+              CPUD="sun"
+              ANDROID_VERSION="android15"
+              KERNEL_VERSION="6.6"
+              ;;
+            oneplus_13t)
+              CPU="sm8750"
+              CPUD="sun"
+              ANDROID_VERSION="android15"
+              KERNEL_VERSION="6.6"
+              ;;
+            oneplus_13s)
+              CPU="sm8750"
+              CPUD="sun"
+              ANDROID_VERSION="android15"
+              KERNEL_VERSION="6.6"
+              ;;
+            oneplus_pad_2_pro)
+              CPU="sm8750"
+              CPUD="sun"
+              ANDROID_VERSION="android15"
+              KERNEL_VERSION="6.6"
+              ;;
+            oneplus_pad_3)
+              CPU="sm8750"
+              CPUD="sun"
+              ANDROID_VERSION="android15"
+              KERNEL_VERSION="6.6"
+              ;;
+            *)
+              echo "Unknown FILE: $FILE"
+              exit 1
+              ;;
+          esac
+
+          echo "CPU=$CPU" >> $GITHUB_OUTPUT
+          echo "CPUD=$CPUD" >> $GITHUB_OUTPUT
+          echo "ANDROID_VERSION=$ANDROID_VERSION" >> $GITHUB_OUTPUT
+          echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_OUTPUT
