@@ -6,11 +6,11 @@ index ea1b4e116389..c61e347e3b31 100644
  	return err;
  }
  
-+static const char *blocked_modules_dev[] = {
++static const char *module_blacklist_dev[] = {
 +    NULL
 +};
 +
-+static const char *blocked_modules_stable[] = {
++static const char *module_blacklist_stable[] = {
 +    "clk_gate_test",
 +    "cpu_hotplug",
 +    "cpucp_fast",
@@ -93,15 +93,15 @@ index ea1b4e116389..c61e347e3b31 100644
  	if (err)
  		goto free_copy;
 +	
-+    for (i = 0; blocked_modules_dev[i] != NULL; i++) {
-+        if (strcmp(info->name, blocked_modules_dev[i]) == 0) {
++    for (i = 0; module_blacklist_dev[i] != NULL; i++) {
++        if (strcmp(info->name, module_blacklist_dev[i]) == 0) {
 +            pr_warn("Module %s is blacklisted\n", info->name);
 +            goto free_copy;
 +        }
 +    }
 +    
-+    for (i = 0; blocked_modules_stable[i] != NULL; i++) {
-+        if (strcmp(info->name, blocked_modules_stable[i]) == 0) {
++    for (i = 0; module_blacklist_stable[i] != NULL; i++) {
++        if (strcmp(info->name, module_blacklist_stable[i]) == 0) {
 +            pr_warn("Module %s is blacklisted\n", info->name);
 +            goto free_copy;
 +        }
