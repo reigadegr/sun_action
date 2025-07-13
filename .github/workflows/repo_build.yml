@@ -387,7 +387,7 @@ jobs:
       - name: Remove OnePlus Kernel Module
         run: |          
           cd kernel_workspace/kernel_platform/common
-          wget https://github.com/reigadegr/Action-Build/raw/main/patchs/6.6/blacklist_module.patch
+          wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/blacklist_module.patch
           if [ -z "$(grep "blocked_modules" kernel/module/main.c)" ]; then
             patch -p1 -F 3 < blacklist_module.patch || true
           fi
@@ -403,7 +403,7 @@ jobs:
             "fix_screen_flicker.patch" \
             "unlock_cpufreq.patch" \
             "fix_usb_network_share.patch"; do
-             wget https://github.com/reigadegr/Action-Build/raw/main/patchs/6.6/$i
+             wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/$i
              patch -p1 -F 3 < $i || true
           done
 
