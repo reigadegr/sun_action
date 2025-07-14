@@ -29,17 +29,17 @@ on:
         type: boolean
         description: "是否启用手动钩子(VFS)？"
         required: true
-        default: true
+        default: false
       KPM:
         type: boolean
         description: "是否启用内核模块(KPM)？"
         required: true
-        default: false
+        default: true
       SUSFS_ENABLE:
         type: boolean
         description: "开启susfs"
         required: true
-        default: false
+        default: true
       SCHED:
         type: boolean
         description: "是否添加风驰驱动？"
