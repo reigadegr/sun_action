@@ -21,6 +21,7 @@ on:
         default: "v2"
         options:
           - "oneplus/sm8750_v_15.0.0_oneplus_13"
+          - "oneplus/sm8750_v_15.0.2_oneplus_13t"
           - "v1"
           - "v2"
           - "gki"
