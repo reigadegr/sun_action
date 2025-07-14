@@ -23,6 +23,7 @@ on:
           - "oneplus/sm8750_v_15.0.0_oneplus_13"
           - "v1"
           - "v2"
+          - "gki"
       VFS:
         type: boolean
         description: "是否启用手动钩子(VFS)？"
