@@ -34,12 +34,12 @@ on:
         type: boolean
         description: "是否启用内核模块(KPM)？"
         required: true
-        default: true
+        default: false
       SUSFS_ENABLE:
         type: boolean
         description: "开启susfs"
         required: true
-        default: true
+        default: false
       SCHED:
         type: boolean
         description: "是否添加风驰驱动？"
