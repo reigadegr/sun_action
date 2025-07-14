@@ -427,8 +427,8 @@ jobs:
           if [ "${{ github.event.inputs.VFS }}" = "true" ]; then
             echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> "$CONFIG_FILE"
             echo "CONFIG_KSU_MANUAL_HOOK=y" >> "$CONFIG_FILE"
-            sed -i '/CONFIG_KPROBES/d' "$CONFIG_FILE"
-            echo "CONFIG_KPROBES=n" >> "$CONFIG_FILE"
+            # sed -i '/CONFIG_KPROBES/d' "$CONFIG_FILE"
+            # echo "CONFIG_KPROBES=n" >> "$CONFIG_FILE"
           else
             echo "CONFIG_KSU_SUSFS_SUS_SU=y" >> "$CONFIG_FILE"
             echo "CONFIG_KPROBES=y" >> "$CONFIG_FILE"
