@@ -390,9 +390,7 @@ jobs:
         run: |          
           cd kernel_workspace/kernel_platform/common
           wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/blacklist_module.patch
-          if [ -z "$(grep "module_blacklist" kernel/module/main.c)" ]; then
-            patch -p1 -F 3 < blacklist_module.patch || true
-          fi
+          patch -p1 -F 3 < blacklist_module.patch || true          
           # Remove check_defconfig
           sed -i 's/check_defconfig//' ./build.config.gki
           echo "移除内核模块完成"
