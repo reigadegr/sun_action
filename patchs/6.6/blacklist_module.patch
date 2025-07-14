@@ -1,8 +1,8 @@
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index ea1b4e116389..c61e347e3b31 100644
+index ea1b4e116389..1c3705954fc6 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
-@@ -2872,6 +2872,77 @@ static int early_mod_check(struct load_info *info, int flags)
+@@ -2872,6 +2872,78 @@ static int early_mod_check(struct load_info *info, int flags)
  	return err;
  }
  
@@ -20,6 +20,7 @@ index ea1b4e116389..c61e347e3b31 100644
 +    "gzvm",
 +    "hung_task_enh",
 +    "iio_test_format",
++    "kernelsu",
 +    "kunit",
 +    "kunit_example_test",
 +    "kunit_test",
@@ -80,7 +81,7 @@ index ea1b4e116389..c61e347e3b31 100644
  /*
   * Allocate and load the module: note that size of section 0 is always
   * zero, and we rely on this for optional sections.
-@@ -2882,6 +2953,7 @@ static int load_module(struct load_info *info, const char __user *uargs,
+@@ -2882,6 +2954,7 @@ static int load_module(struct load_info *info, const char __user *uargs,
  	struct module *mod;
  	bool module_allocated = false;
  	long err = 0;
@@ -88,7 +89,7 @@ index ea1b4e116389..c61e347e3b31 100644
  	char *after_dashes;
  
  	/*
-@@ -2912,6 +2984,20 @@ static int load_module(struct load_info *info, const char __user *uargs,
+@@ -2912,6 +2985,20 @@ static int load_module(struct load_info *info, const char __user *uargs,
  	err = early_mod_check(info, flags);
  	if (err)
  		goto free_copy;
