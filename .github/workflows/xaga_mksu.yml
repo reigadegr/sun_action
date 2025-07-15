@@ -268,7 +268,7 @@ jobs:
           repo sync -c -j$(nproc --all) --no-tags --no-clone-bundle --force-sync
           rm -rf common .repo
 
-          git clone --depth 1 https://github.com/reigadegr/android_kernel_xiaomi_mt6895 -b lineage-22.2 common
+          git clone --depth 1 https://github.com/reigadegr/android_kernel_xiaomi_mt6895 -b v2 common
           cd common; git log; cd  ..; pwd; ls
           cd  ..; pwd; ls
           if [  -e kernel_platform/common/BUILD.bazel ]; then
