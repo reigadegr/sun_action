@@ -52,11 +52,6 @@ on:
         description: "是否添加风驰驱动？"
         required: true
         default: false
-      ZRAM:
-        type: boolean
-        description: "是否添加更多的ZRAM算法？"
-        required: true
-        default: false
 
 jobs:
   get-config:
@@ -67,7 +62,7 @@ jobs:
 
   build:
     needs: get-config
-    name: ${{ github.event.inputs.FAST_BUILD == 'true' && ' [FAST]' || '' }}${{ github.event.inputs.SCHED == 'true' && ' [SCHED]' || '' }}${{ github.event.inputs.ZRAM == 'true' && ' [ZRAM]' || '' }}For ${{ github.event.inputs.FILE }} ${{ github.event.inputs.BUILD_METHOD }} ${{ github.event.inputs.SUFFIX }}
+    name: ${{ github.event.inputs.FAST_BUILD == 'true' && ' [FAST]' || '' }}${{ github.event.inputs.SCHED == 'true' && ' [SCHED]' || '' }}For ${{ github.event.inputs.FILE }} ${{ github.event.inputs.BUILD_METHOD }} ${{ github.event.inputs.SUFFIX }}
     runs-on: ubuntu-latest
     env:
       CPU: ${{ needs.get-config.outputs.CPU }}
@@ -122,7 +117,6 @@ jobs:
           echo "Selected VFS: ${{ github.event.inputs.VFS }}"
           echo "Selected KPM: ${{ github.event.inputs.KPM }}"
           echo "Selected FAST_BUILD: ${{ github.event.inputs.FAST_BUILD }}"       
-          echo "Selected ZRAM: ${{ github.event.inputs.ZRAM }}"
           echo "Selected SCHED: ${{ github.event.inputs.SCHED }}"
 
       - name: Setup TimeZone
@@ -235,7 +229,7 @@ jobs:
           repo sync -c -j$(nproc --all) --no-tags --no-clone-bundle --force-sync
           rm -rf common .repo
 
-          git clone --depth 1 https://github.com/reigadegr/android_kernel_xiaomi_mt6895 -b lineage-22.2 common
+          git clone --depth 1 https://github.com/reigadegr/android_kernel_xiaomi_mt6895 -b v2 common
           cd common; git log; cd  ..; pwd; ls
           cd  ..; pwd; ls
           if [  -e kernel_platform/common/BUILD.bazel ]; then
@@ -372,14 +366,6 @@ jobs:
           cp ../susfs4ksu/kernel_patches/fs/* ./common/fs/
           cp ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
 
-          if [ "${{ github.event.inputs.ZRAM }}" = "true" ]; then
-          echo "正在拉取zram补丁"
-          cp -r ../SukiSU_patch/other/zram/lz4k/include/linux/* ./common/include/linux
-          cp -r ../SukiSU_patch/other/zram/lz4k/lib/* ./common/lib
-          cp -r ../SukiSU_patch/other/zram/lz4k/crypto/* ./common/crypto
-          cp -r ../SukiSU_patch/other/zram/lz4k_oplus ./common/lib/
-          fi
-
           cd ./common
           GKI_V="${{ needs.get-config.outputs.ANDROID_VERSION }}-${{ needs.get-config.outputs.KERNEL_VERSION }}"
           SUBLEVEL=$(grep '^SUBLEVEL *=' Makefile | head -n1 | cut -d= -f2 | tr -d ' ')
@@ -427,19 +413,6 @@ jobs:
             echo "正在打vfs补丁"
             patch -p1 -F 3 < syscall_hooks.patch
             echo "vfs_patch完成"
-
-      # - name: Apply ZRAM
-        # if: ${{ github.event.inputs.ZRAM == 'true' }}
-        # run: |
-          # cd kernel_workspace/kernel_platform/common
-            # cp ../../SukiSU_patch/other/zram/zram_patch/${{ needs.get-config.outputs.KERNEL_VERSION }}/lz4kd.patch ./
-            # echo "正在打lz4kd补丁"
-            # patch -p1 -F 3 < lz4kd.patch || true
-            # echo 'lz4kd_patch完成'
-            # cp ../../SukiSU_patch/other/zram/zram_patch/${{ needs.get-config.outputs.KERNEL_VERSION }}/lz4k_oplus.patch ./
-            # echo "正在打lz4k_oplus补丁"
-            # patch -p1 -F 3 < lz4k_oplus.patch || true
-            # echo 'lz4k_oplus_patch完成'
 
       # 配置信息
       - name: Add Configuration Settings
@@ -536,16 +509,6 @@ jobs:
           echo "CONFIG_TCP_ECN=y" >> "$CONFIG_FILE"
           echo "CONFIG_IPV6_ECN=y" >> "$CONFIG_FILE"
           echo "CONFIG_IP_NF_TARGET_ECN=y" >> "$CONFIG_FILE"
-
-          # ZRAM配置*
-          # if [ "${{ github.event.inputs.ZRAM }}" = "true" ]; then
-            # echo "CONFIG_CRYPTO_LZ4HC=y" >> "$CONFIG_FILE"
-            # echo "CONFIG_CRYPTO_LZ4K=y" >> "$CONFIG_FILE"
-            # echo "CONFIG_CRYPTO_LZ4KD=y" >> "$CONFIG_FILE"
-            # echo "CONFIG_CRYPTO_842=y" >> "$CONFIG_FILE"
-            # echo "CONFIG_CRYPTO_LZ4K_OPLUS=y" >> "$CONFIG_FILE"
-            # echo "CONFIG_ZRAM_WRITEBACK=y" >> "$CONFIG_FILE"
-          # fi
 
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
@@ -703,7 +666,7 @@ jobs:
       - name: Set zip Suffix
         id: suffix
         run: |
-          echo "value=${{ github.event.inputs.VFS == 'true' && '_VFS' || '' }}${{ github.event.inputs.ZRAM == 'true' && '_LZ4KD' || '' }}${{ github.event.inputs.KPM == 'true' && '_KPM' || '' }}${{ github.event.inputs.SCHED== 'true' && '_SCHED' || '' }}" >> $GITHUB_OUTPUT
+          echo "value=${{ github.event.inputs.VFS == 'true' && '_VFS' || '' }}${{ github.event.inputs.KPM == 'true' && '_KPM' || '' }}${{ github.event.inputs.SCHED== 'true' && '_SCHED' || '' }}" >> $GITHUB_OUTPUT
 
       # 从一加源码中获取适用的 Android 版本信息，注意是系统 Android 版本而非你填写的内核 Android 版本，非一加官方源码可能需要修改或删除这一步
       - name: Auto map FILE to Android version by manifest
@@ -737,55 +700,6 @@ jobs:
         with:
           name: AnyKernel3_SukiSUUltra_${{ env.KSUVER }}_${{ steps.file_clean.outputs.value }}${{ steps.suffix.outputs.value }}
           path: ./AnyKernel3/*
-
-      - name: Download and Unzip ZRAM
-        if: ${{ github.event.inputs.ZRAM == 'true' }}
-        run: |
-          set -e
-          sudo apt install -y unzip
-          curl -s https://api.github.com/repos/FurLC/ZRAM-Module/releases/latest | \
-            grep "browser_download_url" | grep "ZRAM-Module-.*\.zip" | cut -d '"' -f 4 | xargs wget -N
-          unzip "$(ls -t ZRAM-Module-*.zip | head -1)" -d ZRAM-Module
-
-          target="./ZRAM-Module/zram/zram.ko"
-          echo "查找 zram.ko 模块文件..."
-
-          # 优先查找常见目录
-          search_paths=(
-            "./kernel_workspace/kernel_platform/out"
-            "./kernel_workspace/device/qcom"
-          )
-
-          zram_path=""
-          for path in "${search_paths[@]}"; do
-            zram_path=$(find "$path" -type f -name "zram.ko" | head -n 1)
-            [ -n "$zram_path" ] && break
-          done
-
-          # 若以上未找到，广泛查找整个 workspace
-          if [ -z "$zram_path" ]; then
-            zram_path=$(find "./kernel_workspace" -type f -name "zram.ko" | head -n 1)
-          fi
-
-          if [ -n "$zram_path" ] && [ -f "$zram_path" ]; then
-            echo " ZRAM module file finally located at: $zram_path "
-            mkdir -p "$(dirname "$target")"
-            if [ "$(realpath "$zram_path")" != "$(realpath "$target")" ]; then
-              cp "$zram_path" "$target"
-            else
-              echo "源文件与目标路径相同，跳过复制"
-            fi
-          else
-            echo "未找到 zram.ko 文件，可能是未支持的内核版本或者未成功构建"
-            exit 1
-          fi
-
-      - name: Upload ZRAM Module
-        if: ${{ github.event.inputs.ZRAM == 'true' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: ZRAM-Module_${{ needs.get-config.outputs.KERNEL_VERSION }}_${{ steps.file_clean.outputs.value }}
-          path: ZRAM-Module/*
 
       - name: Post-build Disk Check
         run: df -h
