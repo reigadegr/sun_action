@@ -228,11 +228,9 @@ jobs:
           cd kernel_platform
           cd common
           git clone https://Winkmoon:${{ secrets.MY_PAT }}@github.com/Winkmoon/ace5_scx_build.git --depth 1
-          if [[ ${{ github.event.inputs.scx_enable }} == "true" ]]; then
-              cp -rf ace5_scx_build/oneplus_scx drivers
-              rm -rf ace5_scx_build
-              sed -i '1iobj-m += oneplus_scx/' drivers/Makefile
-          fi
+          cp -rf ace5_scx_build/oneplus_scx drivers
+          rm -rf ace5_scx_build
+          sed -i '1iobj-m += oneplus_scx/' drivers/Makefile          
 
       # 自定义内核后缀
       - name: Custom Kernel Suffix if set
