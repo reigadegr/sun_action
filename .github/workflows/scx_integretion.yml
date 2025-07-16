@@ -553,6 +553,9 @@ jobs:
           rm -rf ./AnyKernel3/.git
           cp *build.txt ./AnyKernel3 || echo "复制log失败"
           cp config.txt ./AnyKernel3 || echo "复制config失败"
+          for i in $(find  . -name "*.ko"); do
+            cp $i  ./AnyKernel3
+          done
           mkdir -p kernel_workspace/kernel_platform/out/FinalImageFind/
           dir1=""
           dir2=""
