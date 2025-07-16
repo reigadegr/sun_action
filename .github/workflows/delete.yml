@@ -18,6 +18,7 @@ on:
           - xaga_sukisu
           - repo_build
           - gki_debug
+          - scx_build
       count:
         description: '最多清理的运行次数'
         required: false
