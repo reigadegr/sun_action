@@ -228,8 +228,8 @@ jobs:
           cd kernel_platform
           cd common
           git clone https://reigadegr:${{ secrets.MY_PAT }}@github.com/reigadegr/scx_build.git --depth 1
-          cp -rf ace5_scx_build/oneplus_scx kernel
-          rm -rf ace5_scx_build
+          cp -rf scx_build/oneplus_scx kernel
+          rm -rf scx_build
           sed -i '1iobj-m += oneplus_scx/' kernel/Makefile          
 
       # 自定义内核后缀
