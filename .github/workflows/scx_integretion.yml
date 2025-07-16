@@ -18,7 +18,7 @@ on:
         type: choice
         description: "使用的分支"
         required: true
-        default: "v2"
+        default: "oneplus/sm8750_v_15.0.0_oneplus_13"
         options:
           - "oneplus/sm8750_v_15.0.0_oneplus_13"
           - "oneplus/sm8750_v_15.0.2_oneplus_13t"
@@ -34,17 +34,17 @@ on:
         type: boolean
         description: "是否启用内核模块(KPM)？"
         required: true
-        default: true
+        default: false
       SUSFS_ENABLE:
         type: boolean
         description: "开启susfs"
         required: true
-        default: true
+        default: false
       FIX_UPSTREAM:
         type: boolean
         description: "是否修复谷歌上游bug？"
         required: true
-        default: true
+        default: false
 
 jobs:
   get-config:
