@@ -18,7 +18,7 @@ on:
         type: choice
         description: "使用的分支"
         required: true
-        default: "oneplus/sm8750_v_15.0.0_oneplus_13"
+        default: "v1"
         options:
           - "oneplus/sm8750_v_15.0.0_oneplus_13"
           - "oneplus/sm8750_v_15.0.2_oneplus_13t"
@@ -390,14 +390,14 @@ jobs:
             patch -p1 -F 3 < syscall_hooks.patch
             echo "vfs_patch完成"
 
-      - name: Remove OnePlus Kernel Module
-        run: |          
-          cd kernel_workspace/kernel_platform/common
-          wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/blacklist_module.patch
-          patch -p1 -F 3 < blacklist_module.patch || true          
-          # Remove check_defconfig
-          sed -i 's/check_defconfig//' ./build.config.gki
-          echo "移除内核模块完成"
+      # - name: Remove OnePlus Kernel Module
+        # run: |          
+          # cd kernel_workspace/kernel_platform/common
+          # wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/blacklist_module.patch
+          # patch -p1 -F 3 < blacklist_module.patch || true          
+          # # Remove check_defconfig
+          # sed -i 's/check_defconfig//' ./build.config.gki
+          # echo "移除内核模块完成"
 
       - name: Fix upstream bugs
         if: ${{ github.event.inputs.FIX_UPSTREAM == 'true' }}
