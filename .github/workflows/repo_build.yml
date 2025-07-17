@@ -453,8 +453,6 @@ jobs:
               echo "CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y" >> "$CONFIG_FILE"
               echo "CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y" >> "$CONFIG_FILE"
               echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> "$CONFIG_FILE"
-              
-              echo "CONFIG_KSU_SUSFS_SUS_MAPS=y" >> "$CONFIG_FILE"
           fi
           # TMPFS配置*
           echo "CONFIG_TMPFS_XATTR=y" >> "$CONFIG_FILE"
