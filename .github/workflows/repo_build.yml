@@ -18,13 +18,14 @@ on:
         type: choice
         description: "使用的分支"
         required: true
-        default: "gki"
+        default: "gki07"
         options:
           - "oneplus/sm8750_v_15.0.0_oneplus_13"
           - "oneplus/sm8750_v_15.0.2_oneplus_13t"
           - "v1"
           - "v2"
           - "gki"
+          - "gki07"
       VFS:
         type: boolean
         description: "是否启用手动钩子(VFS)？"
