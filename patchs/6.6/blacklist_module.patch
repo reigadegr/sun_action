@@ -1,36 +1,35 @@
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index ea1b4e116389..36ea817f4030 100644
+index ea1b4e116389..f51dd3bd7eb8 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
-@@ -2872,6 +2872,87 @@ static int early_mod_check(struct load_info *info, int flags)
+@@ -2872,6 +2872,86 @@ static int early_mod_check(struct load_info *info, int flags)
  	return err;
  }
  
 +static const char *module_blacklist_dev[] = {
-+    "input_test",
-+    "hid_uclogic_test",
-+    "fat_test",
-+    "dev_addr_lists_test",
-+    "lib_test",
-+    "clk_test",
-+    "time_test",
 +    NULL
 +};
 +
 +static const char *module_blacklist_stable[] = {
 +    "clk_gate_test",
++    "clk_test",
 +    "cpu_hotplug",
 +    "cpucp_fast",
 +    "crypto_lz4p",
++    "dev_addr_lists_test",
 +    "ext4_inode_test",
 +    "f_fs_ipc_log",
++    "fat_test",
 +    "gzvm",
++    "hid_uclogic_test",
 +    "hung_task_enh",
 +    "iio_test_format",
++    "input_test",
 +    "kernelsu",
 +    "kunit",
 +    "kunit_example_test",
 +    "kunit_test",
++    "lib_test",
 +    "oplus_binder_strategy",
 +    "oplus_bsp_dfr_hung_task_enhance",
 +    "oplus_bsp_dfr_reboot_speed",
@@ -80,8 +79,8 @@ index ea1b4e116389..36ea817f4030 100644
 +    "soc_topology_test",
 +    "soc_utils_test",
 +    "thermal_config",
-+    "thermal_pause",
 +    "thermal_pa_adc",
++    "thermal_pause",
 +    "time_test",
 +    "ua_cpu_ioctl",
 +    NULL
@@ -90,7 +89,7 @@ index ea1b4e116389..36ea817f4030 100644
  /*
   * Allocate and load the module: note that size of section 0 is always
   * zero, and we rely on this for optional sections.
-@@ -2882,6 +2963,7 @@ static int load_module(struct load_info *info, const char __user *uargs,
+@@ -2882,6 +2962,7 @@ static int load_module(struct load_info *info, const char __user *uargs,
  	struct module *mod;
  	bool module_allocated = false;
  	long err = 0;
@@ -98,7 +97,7 @@ index ea1b4e116389..36ea817f4030 100644
  	char *after_dashes;
  
  	/*
-@@ -2912,6 +2994,20 @@ static int load_module(struct load_info *info, const char __user *uargs,
+@@ -2912,6 +2993,20 @@ static int load_module(struct load_info *info, const char __user *uargs,
  	err = early_mod_check(info, flags);
  	if (err)
  		goto free_copy;
