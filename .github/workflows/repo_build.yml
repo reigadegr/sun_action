@@ -26,7 +26,7 @@ on:
           - "v2"
           - "gki"
           - "gki07"
-          - "et"
+          - "et2"
       VFS:
         type: boolean
         description: "是否启用手动钩子(VFS)？"
