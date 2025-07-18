@@ -214,6 +214,10 @@ jobs:
           mkdir kernel_workspace && cd kernel_workspace
           mkdir kernel_platform && cd kernel_platform
           repo init --depth 1 -u https://android.googlesource.com/kernel/manifest -b common-${{ needs.get-config.outputs.ANDROID_VERSION }}-${{ needs.get-config.outputs.KERNEL_VERSION }}
+          sed -i '/external\//d' .repo/manifests/default.xml
+          sed -i '/kleaf\//d' .repo/manifests/default.xml
+          sed -i '/jdk11/d' .repo/manifests/default.xml
+          sed -i '/mkbootimg/d' .repo/manifests/default.xml
           repo sync -c -j$(nproc --all) --no-tags --no-clone-bundle --force-sync
           rm -rf common .repo
           git clone --depth 1 https://github.com/reigadegr/android_kernel_common_oneplus_sm8750 -b "${{ github.event.inputs.BRANCH }}" common
