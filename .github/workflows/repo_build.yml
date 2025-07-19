@@ -14,6 +14,11 @@ on:
         description: "自定义内核后缀 (留空则使用随机字符串)"
         required: false
         default: "KONATA"
+      CHA:
+        type: string
+        description: "自定义提交哈希"
+        required: false
+        default: ""
       BRANCH:
         type: choice
         description: "使用的分支"
@@ -213,7 +218,7 @@ jobs:
         run: |
           mkdir kernel_workspace && cd kernel_workspace
           mkdir kernel_platform && cd kernel_platform
-          nohup git clone --depth 1 https://github.com/reigadegr/android_kernel_common_oneplus_sm8750 -b "${{ github.event.inputs.BRANCH }}" common2 >/dev/null 2>&1 &
+          nohup git clone --depth 100 https://github.com/reigadegr/android_kernel_common_oneplus_sm8750 -b "${{ github.event.inputs.BRANCH }}" common2 >/dev/null 2>&1 &
           repo init --depth 1 -u https://android.googlesource.com/kernel/manifest -b common-${{ needs.get-config.outputs.ANDROID_VERSION }}-${{ needs.get-config.outputs.KERNEL_VERSION }}
           sed -i '/external\//d' .repo/manifests/default.xml
           sed -i '/kleaf\//d' .repo/manifests/default.xml
@@ -229,7 +234,11 @@ jobs:
             sleep 1
           done
           mv common2 common
-          cd common; git log; cd  ..
+          cd common
+          if [ ! -z "${{ github.event.inputs.CHA }}" ]; then
+            git reset --hard "${{ github.event.inputs.CHA }}"
+          fi
+          git log; cd  ..
           cd  ..
           # repo init -u https://github.com/OnePlusOSS/kernel_manifest.git -b refs/heads/oneplus/${{ needs.get-config.outputs.CPU }} -m ${{ github.event.inputs.FILE }}.xml --depth=1
           # repo sync -c -j$(nproc --all) --no-tags --no-clone-bundle --force-sync
