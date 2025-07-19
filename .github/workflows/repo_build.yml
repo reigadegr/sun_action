@@ -513,10 +513,7 @@ jobs:
           echo "CONFIG_TCP_ECN=y" >> "$CONFIG_FILE"
           echo "CONFIG_IPV6_ECN=y" >> "$CONFIG_FILE"
           echo "CONFIG_IP_NF_TARGET_ECN=y" >> "$CONFIG_FILE"
-          
-          # 移除模块校验
-          sed -i "/CONFIG_MODVERSIONS/d" "$CONFIG_FILE"
-          echo "CONFIG_MODVERSIONS=n" >> "$CONFIG_FILE"
+
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
 
