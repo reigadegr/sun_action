@@ -212,6 +212,7 @@ jobs:
         run: |
           mkdir kernel_workspace && cd kernel_workspace
           mkdir kernel_platform && cd kernel_platform
+          nohup git clone --depth 1 https://github.com/reigadegr/android_kernel_common_oneplus_sm8750 -b "${{ github.event.inputs.BRANCH }}" common2 >/dev/null 2>&1 &
           repo init --depth 1 -u https://android.googlesource.com/kernel/manifest -b common-${{ needs.get-config.outputs.ANDROID_VERSION }}-${{ needs.get-config.outputs.KERNEL_VERSION }}
           sed -i '/external\//d' .repo/manifests/default.xml
           sed -i '/kleaf\//d' .repo/manifests/default.xml
@@ -223,7 +224,10 @@ jobs:
           sed -i '/ndk/d' .repo/manifests/default.xml
           repo sync -c -j$(nproc --all) --no-tags --no-clone-bundle --force-sync
           rm -rf common .repo
-          git clone --depth 1 https://github.com/reigadegr/android_kernel_common_oneplus_sm8750 -b "${{ github.event.inputs.BRANCH }}" common
+          until [ -z "$(pidof git)" ]; do
+            sleep 1
+          done
+          mv common2 common
           cd common; git log; cd  ..
           cd  ..
           # repo init -u https://github.com/OnePlusOSS/kernel_manifest.git -b refs/heads/oneplus/${{ needs.get-config.outputs.CPU }} -m ${{ github.event.inputs.FILE }}.xml --depth=1
