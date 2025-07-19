@@ -558,13 +558,14 @@ jobs:
           sudo apt install -y libelf-dev ccache lld
           cd kernel_workspace/kernel_platform/common
           # mkdir cust_clang  
-          # wget https://github.com/ZyCromerZ/Clang/releases/download/22.0.0git-20250718-release/Clang-22.0.0git-20250718.tar.gz
-          # mv Clang-22.0.0git-20250718.tar.gz cust_clang/
+          # wget https://github.com/ZyCromerZ/Clang/releases/download/21.0.0git-20250715-release/Clang-21.0.0git-20250715.tar.gz
+          # mv Clang-*.tar.gz cust_clang/
           # cd cust_clang/
-          # tar -zxvf Clang-22.0.0git-20250718.tar.gz
+          # tar -zxvf Clang-*.tar.gz
           # cd  ..
           # export cust_clang="$(realpath ./cust_clang/bin)"
           # export PATH="$cust_clang:$PATH"
+
           export CC="ccache clang" LTO="thin"
           MAKE_ARGS="LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
             RUSTC=../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc \
