@@ -412,6 +412,7 @@ jobs:
         if: ${{ github.event.inputs.FIX_UPSTREAM == 'true' }}
         run: |          
           cd kernel_workspace/kernel_platform/common
+          git add  . && git commit -m "auto commit"
           for i in "fix_screen_off_crash.patch" \
             "fix_screen_flicker.patch" \
             "unlock_cpufreq.patch" \
