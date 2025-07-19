@@ -219,10 +219,10 @@ jobs:
           sed -i '/kleaf\//d' .repo/manifests/default.xml
           sed -i '/jdk11/d' .repo/manifests/default.xml
           sed -i '/mkbootimg/d' .repo/manifests/default.xml
-          sed -i '/linux-glibc/d' .repo/manifests/default.xml
-          sed -i '/clang-tools/d' .repo/manifests/default.xml
-          sed -i '/build-tools/d' .repo/manifests/default.xml
-          sed -i '/ndk/d' .repo/manifests/default.xml
+          # sed -i '/linux-glibc/d' .repo/manifests/default.xml
+          # sed -i '/clang-tools/d' .repo/manifests/default.xml
+          # sed -i '/build-tools/d' .repo/manifests/default.xml
+          # sed -i '/ndk/d' .repo/manifests/default.xml
           repo sync -c -j$(nproc --all) --no-tags --no-clone-bundle --force-sync
           rm -rf common .repo
           until [ -z "$(pidof git)" ]; do
@@ -349,23 +349,6 @@ jobs:
           cd ./common
           GKI_V="${{ needs.get-config.outputs.ANDROID_VERSION }}-${{ needs.get-config.outputs.KERNEL_VERSION }}"
           SUBLEVEL=$(grep '^SUBLEVEL *=' Makefile | head -n1 | cut -d= -f2 | tr -d ' ')
-
-          if [ "$GKI_V" == "android13-5.15" ] && [ "$SUBLEVEL" -lt 123 ]; then
-            echo "修复内核版本5.15.0到5.15.123可能存在的一些遗留问题"
-            curl -Lo fix_5.15.legacy.patch --retry 5 --retry-delay 2 --retry-connrefused https://raw.githubusercontent.com/Numbersf/Action-Build/SukiSU-Ultra/patches/fix_5.15.legacy
-            patch -p1 < fix_5.15.legacy.patch
-            echo "fix_5.15_patch完成"
-          fi
-          KERNEL_VERSION="${{ needs.get-config.outputs.KERNEL_VERSION }}"
-          file="${{ github.event.inputs.FILE }}"
-          TRUSTY_EXISTS="false"
-          if [[ "$KERNEL_VERSION" == "6.6" ]]; then
-            if grep -qr 'common-modules/trusty' "$GITHUB_WORKSPACE/.repo/manifests_fallback/${file}.xml"; then
-              TRUSTY_EXISTS="true"
-            fi
-            echo "trusty_exists=$TRUSTY_EXISTS" >> $GITHUB_OUTPUT
-
-          fi
           if [ "${{ github.event.inputs.SUSFS_ENABLE }}" = "true" ]; then
               echo "正在打susfs补丁"
               patch -p1 < 50_add_susfs_in_gki-${{ needs.get-config.outputs.ANDROID_VERSION }}-${{ needs.get-config.outputs.KERNEL_VERSION }}.patch || true
