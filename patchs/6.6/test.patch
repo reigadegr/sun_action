@@ -1,13 +1,13 @@
 diff --git a/include/linux/sched.h b/include/linux/sched.h
-index b79a2b17f0f6..a15583c39373 100644
+index 33c96a79e26d..1299b4497d87 100644
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
-@@ -502,7 +502,7 @@ struct sched_statistics {
-        u64                             block_max;
-        s64                             sum_block_runtime;
-
--       s64                             exec_max;
-+       u64                             exec_max;
-        u64                             slice_max;
-
-        u64                             nr_migrations_cold;
+@@ -500,7 +500,7 @@ struct sched_statistics {
+ 	u64				block_max;
+ 	s64				sum_block_runtime;
+ 
+-	s64				exec_max;
++	u64				exec_max;
+ 	u64				slice_max;
+ 
+ 	u64				nr_migrations_cold;
