@@ -11,3 +11,16 @@ index 33c96a79e26d..1299b4497d87 100644
  	u64				slice_max;
  
  	u64				nr_migrations_cold;
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 068553109a79..b9d6bf3d7dd3 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -1173,7 +1173,7 @@ static s64 update_curr_se(struct rq *rq, struct sched_entity *curr)
+ 
+ 		stats = __schedstats_from_se(curr);
+ 		__schedstat_set(stats->exec_max,
+-				max(delta_exec, stats->exec_max));
++                max_t(s64, delta_exec, (s64)stats->exec_max));
+ 	}
+ 
+ 	return delta_exec;
