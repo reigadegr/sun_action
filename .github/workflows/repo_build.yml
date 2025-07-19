@@ -409,7 +409,8 @@ jobs:
           for i in "fix_screen_off_crash.patch" \
             "fix_screen_flicker.patch" \
             "unlock_cpufreq.patch" \
-            "fix_usb_network_share.patch"; do
+            "fix_usb_network_share.patch"
+            "test.patch"; do
              wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/$i
              patch -p1 -F 3 < $i && git add  . && git commit -m "auto commit" || git reset --hard
           done
