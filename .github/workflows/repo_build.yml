@@ -219,10 +219,10 @@ jobs:
           sed -i '/kleaf\//d' .repo/manifests/default.xml
           sed -i '/jdk11/d' .repo/manifests/default.xml
           sed -i '/mkbootimg/d' .repo/manifests/default.xml
-          # sed -i '/linux-glibc/d' .repo/manifests/default.xml
-          # sed -i '/clang-tools/d' .repo/manifests/default.xml
+          sed -i '/linux-glibc/d' .repo/manifests/default.xml
+          sed -i '/clang-tools/d' .repo/manifests/default.xml
           # sed -i '/build-tools/d' .repo/manifests/default.xml
-          # sed -i '/ndk/d' .repo/manifests/default.xml
+          sed -i '/ndk/d' .repo/manifests/default.xml
           repo sync -c -j$(nproc --all) --no-tags --no-clone-bundle --force-sync
           rm -rf common .repo
           until [ -z "$(pidof git)" ]; do
