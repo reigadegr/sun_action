@@ -238,8 +238,8 @@ jobs:
           if [ ! -z "${{ github.event.inputs.CHA }}" ]; then
             git reset --hard "${{ github.event.inputs.CHA }}"
           fi
-          git log; cd  ..
-          cd  ..
+          git log | head -n 50
+          cd  ../../          
           # repo init -u https://github.com/OnePlusOSS/kernel_manifest.git -b refs/heads/oneplus/${{ needs.get-config.outputs.CPU }} -m ${{ github.event.inputs.FILE }}.xml --depth=1
           # repo sync -c -j$(nproc --all) --no-tags --no-clone-bundle --force-sync
           if [  -e kernel_platform/common/BUILD.bazel ]; then
