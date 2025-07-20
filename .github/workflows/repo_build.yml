@@ -495,13 +495,6 @@ jobs:
           sed -i "/CONFIG_LTO_CLANG_THIN/d" "$CONFIG_FILE"          
           echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
           echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
-          
-          # 幽灵漏洞
-          echo "CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY=n" >> "$CONFIG_FILE"
-          echo "CONFIG_UNMAP_KERNEL_AT_EL0=n" >> "$CONFIG_FILE"
-          
-          # 堆栈保护关闭
-          # echo "CONFIG_STACKPROTECTOR_PER_TASK=n" >> "$CONFIG_FILE"
 
           # Inline zram
           sed -i '/CONFIG_ZSMALLOC/d' "$CONFIG_FILE"
@@ -515,21 +508,7 @@ jobs:
           # 不用开启，开启后无法开机
           # echo "CONFIG_SCHED_WALT=y" >> "$CONFIG_FILE"
           
-          # cmdline优化性能
-          sed -i '/CONFIG_CMDLINE/d' "$CONFIG_FILE"
-          echo "CONFIG_CMDLINE=\"console=ttynull nokaslr stack_depot_disable=on cgroup_disable=pressure kasan=off kvm-arm.mode=protected bootconfig thp_anon=16K-2M:always mitigations=off kpti=0 hardened_usercopy=off audit=0 norandmaps arm64.nobti arm64.nomte arm64.nopauth\"" >> "$CONFIG_FILE"
-          
-          sed -i '/CONFIG_CMDLINE_FROM_BOOTLOADER/d' "$CONFIG_FILE"
-          echo "CONFIG_CMDLINE_FROM_BOOTLOADER=n" >> "$CONFIG_FILE"
-          
-          sed -i '/CONFIG_CMDLINE_EXTEND/d' "$CONFIG_FILE"
-          echo "CONFIG_CMDLINE_EXTEND=y" >> "$CONFIG_FILE"
-          
-          # 防止单点故障导致系统崩溃
-          sed -i '/CONFIG_PANIC_ON_OOPS/d' "$CONFIG_FILE"
-          sed -i '/CONFIG_PANIC_ON_OOPS_VALUE/d' "$CONFIG_FILE"
-          echo "CONFIG_PANIC_ON_OOPS=n" >> "$CONFIG_FILE"
-          echo "CONFIG_PANIC_ON_OOPS_VALUE=1" >> "$CONFIG_FILE"
+
           
           # 透明大页
           sed -i '/CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS/d' "$CONFIG_FILE"
@@ -631,41 +610,57 @@ jobs:
           sed -i '/CONFIG_KFENCE_STATIC_KEYS/d' "$CONFIG_FILE"
           echo "CONFIG_KFENCE_STATIC_KEYS=y" >> "$CONFIG_FILE"
 
-                    
-          sed -i '/CONFIG_SLAB_FREELIST_RANDOM/d' "$CONFIG_FILE"
-          echo "CONFIG_SLAB_FREELIST_RANDOM=n" >> "$CONFIG_FILE"
+          sed -i '/CONFIG_RODATA_FULL_DEFAULT_ENABLED/d' "$CONFIG_FILE"
+          echo "CONFIG_RODATA_FULL_DEFAULT_ENABLED=y" >> "$CONFIG_FILE"
+
+          # cmdline优化性能
+          sed -i '/CONFIG_CMDLINE/d' "$CONFIG_FILE"
+          echo "CONFIG_CMDLINE=\"console=ttynull nokaslr stack_depot_disable=on cgroup_disable=pressure kasan=off kvm-arm.mode=protected bootconfig thp_anon=16K-2M:always mitigations=off kpti=0 hardened_usercopy=off audit=0 norandmaps arm64.nobti arm64.nomte arm64.nopauth\"" >> "$CONFIG_FILE"
           
+          sed -i '/CONFIG_CMDLINE_FROM_BOOTLOADER/d' "$CONFIG_FILE"
+          echo "CONFIG_CMDLINE_FROM_BOOTLOADER=n" >> "$CONFIG_FILE"
+          
+          sed -i '/CONFIG_CMDLINE_EXTEND/d' "$CONFIG_FILE"
+          echo "CONFIG_CMDLINE_EXTEND=y" >> "$CONFIG_FILE"
+
           sed -i '/CONFIG_TRANSPARENT_HUGEPAGE_MADVISE/d' "$CONFIG_FILE"
           echo "CONFIG_TRANSPARENT_HUGEPAGE_MADVISE=n" >> "$CONFIG_FILE"
           
-          sed -i '/CONFIG_RODATA_FULL_DEFAULT_ENABLED/d' "$CONFIG_FILE"
-          echo "CONFIG_RODATA_FULL_DEFAULT_ENABLED=n" >> "$CONFIG_FILE"
+          # 堆栈保护关闭
+          # echo "CONFIG_STACKPROTECTOR_PER_TASK=n" >> "$CONFIG_FILE"
           
-          sed -i '/CONFIG_MODULE_SIG_PROTECT/d' "$CONFIG_FILE"
-          echo "CONFIG_MODULE_SIG_PROTECT=n" >> "$CONFIG_FILE"
+          # 模块签名校验
+          # sed -i '/CONFIG_MODULE_SIG_PROTECT/d' "$CONFIG_FILE"
+          # echo "CONFIG_MODULE_SIG_PROTECT=n" >> "$CONFIG_FILE"
+          
+          # 幽灵漏洞
+          echo "CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY=n" >> "$CONFIG_FILE"
+          echo "CONFIG_UNMAP_KERNEL_AT_EL0=n" >> "$CONFIG_FILE"
+
+          # 防止单点故障导致系统崩溃
+          sed -i '/CONFIG_PANIC_ON_OOPS/d' "$CONFIG_FILE"
+          sed -i '/CONFIG_PANIC_ON_OOPS_VALUE/d' "$CONFIG_FILE"
+          echo "CONFIG_PANIC_ON_OOPS=n" >> "$CONFIG_FILE"
+          echo "CONFIG_PANIC_ON_OOPS_VALUE=1" >> "$CONFIG_FILE"
+                              
+          sed -i '/CONFIG_SLAB_FREELIST_RANDOM/d' "$CONFIG_FILE"
+          echo "CONFIG_SLAB_FREELIST_RANDOM=n" >> "$CONFIG_FILE"          
+                    
+          sed -i '/CONFIG_SHUFFLE_PAGE_ALLOCATOR/d' "$CONFIG_FILE"
+          echo "CONFIG_SHUFFLE_PAGE_ALLOCATOR=n" >> "$CONFIG_FILE"
+          
+          sed -i '/CONFIG_SLAB_FREELIST_HARDENED/d' "$CONFIG_FILE"
+          echo "CONFIG_SLAB_FREELIST_HARDENED=n" >> "$CONFIG_FILE"
+          
+          sed -i '/CONFIG_RCU_LAZY_DEFAULT_OFF/d' "$CONFIG_FILE"
+          echo "CONFIG_RCU_LAZY_DEFAULT_OFF=n" >> "$CONFIG_FILE"
           
           sed -i '/CONFIG_VIRTIO_PCI_LEGACY/d' "$CONFIG_FILE"
           echo "CONFIG_VIRTIO_PCI_LEGACY=n" >> "$CONFIG_FILE"
           
           sed -i '/CONFIG_HEADERS_INSTALL/d' "$CONFIG_FILE"
           echo "CONFIG_HEADERS_INSTALL=n" >> "$CONFIG_FILE"
-          
-          sed -i '/CONFIG_SLAB_FREELIST_HARDENED/d' "$CONFIG_FILE"
-          echo "CONFIG_SLAB_FREELIST_HARDENED=n" >> "$CONFIG_FILE"
-          
-          sed -i '/CONFIG_SHUFFLE_PAGE_ALLOCATOR/d' "$CONFIG_FILE"
-          echo "CONFIG_SHUFFLE_PAGE_ALLOCATOR=n" >> "$CONFIG_FILE"
-          
-          sed -i '/CONFIG_RCU_LAZY_DEFAULT_OFF/d' "$CONFIG_FILE"
-          echo "CONFIG_RCU_LAZY_DEFAULT_OFF=n" >> "$CONFIG_FILE"
-          
-          sed -i '/CONFIG_TMPFS_XATTR/d' "$CONFIG_FILE"
-            echo "CONFIG_TMPFS_XATTR=n" >> "$CONFIG_FILE"
-            
-            sed -i '/CONFIG_TMPFS_POSIX_ACL/d' "$CONFIG_FILE"
-            echo "CONFIG_TMPFS_POSIX_ACL=n" >> "$CONFIG_FILE"
-
-          
+                              
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
 
