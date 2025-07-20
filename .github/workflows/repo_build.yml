@@ -514,6 +514,9 @@ jobs:
           echo "CONFIG_TCP_ECN=y" >> "$CONFIG_FILE"
           echo "CONFIG_IPV6_ECN=y" >> "$CONFIG_FILE"
           echo "CONFIG_IP_NF_TARGET_ECN=y" >> "$CONFIG_FILE"
+          
+          sed -i '/CONFIG_CMDLINE/d' "$CONFIG_FILE"
+          echo "CONFIG_CMDLINE=\"console=ttynull nokaslr stack_depot_disable=on cgroup_disable=pressure kasan=off kvm-arm.mode=protected bootconfig thp_anon=16K-2M:always mitigations=off kpti=0 hardened_usercopy=off audit=0 norandmaps arm64.nobti arm64.nomte arm64.nopauth\"" >> "$CONFIG_FILE"
 
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
