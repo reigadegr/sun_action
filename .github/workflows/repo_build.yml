@@ -236,7 +236,9 @@ jobs:
           mv common2 common
           cd common
           if [ ! -z "${{ github.event.inputs.CHA }}" ]; then
-            git reset --hard "${{ github.event.inputs.CHA }}"
+            CHA="${{ github.event.inputs.CHA }}"
+            CHA="$(basename "$CHA")"
+            git reset --hard "$CHA"
           fi
           git log | head -n 50
           cd  ../../          
