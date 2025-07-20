@@ -30,7 +30,7 @@ on:
           - "v1"
           - "v2"
           - "gki"
-          - "op"
+          - "gki2"
 
       VFS:
         type: boolean
