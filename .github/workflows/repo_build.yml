@@ -662,6 +662,8 @@ jobs:
           
           sed -i '/CONFIG_HEADERS_INSTALL/d' "$CONFIG_FILE"
           echo "CONFIG_HEADERS_INSTALL=n" >> "$CONFIG_FILE"
+          
+          sed -i 's/TEST=m/TEST=n/g' "$CONFIG_FILE"
                               
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
