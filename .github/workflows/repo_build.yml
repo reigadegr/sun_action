@@ -32,6 +32,7 @@ on:
           - "gki"
           - "gki2"
           - "op"
+          - "6630"
 
       VFS:
         type: boolean
