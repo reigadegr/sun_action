@@ -162,7 +162,8 @@ jobs:
             python3-telethon python-is-python3 zip unzip zstd libzstd-dev pigz \
             libncurses-dev asciidoc dos2unix lz4 fakeroot python3 python3-pip \
             gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi gcc-arm-linux-gnueabihf \
-            libc6-dev-armel-cross libc6-dev-armhf-cross libc6-dev-arm64-cross
+            libc6-dev-armel-cross libc6-dev-armhf-cross libc6-dev-arm64-cross \
+            selinux-policy-dev
           sudo -E apt-get clean
           df -h
 
