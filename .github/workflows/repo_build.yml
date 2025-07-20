@@ -550,14 +550,29 @@ jobs:
           sed -i '/CONFIG_SLAB_MERGE_DEFAULT/d' "$CONFIG_FILE"
           echo "CONFIG_SLAB_MERGE_DEFAULT=y" >> "$CONFIG_FILE"
           
-          sed -i '/CONFIG_SLAB_FREELIST_HARDENED/d' "$CONFIG_FILE"
-          echo "CONFIG_SLAB_FREELIST_HARDENED=n" >> "$CONFIG_FILE"
+          sed -i '/CONFIG_NETFILTER_XT_MATCH_ADDRTYPE/d' "$CONFIG_FILE"
+          echo "CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=y" >> "$CONFIG_FILE"
+          
+          sed -i '/CONFIG_DMABUF_HUGETLB/d' "$CONFIG_FILE"
+          echo "CONFIG_DMABUF_HUGETLB=y" >> "$CONFIG_FILE"
+          
+          sed -i '/CONFIG_ARM64_SME/d' "$CONFIG_FILE"
+          echo "CONFIG_ARM64_SME=y" >> "$CONFIG_FILE"
+          
+          sed -i '/CONFIG_SLAB_FREELIST_RANDOM/d' "$CONFIG_FILE"
+          echo "CONFIG_SLAB_FREELIST_RANDOM=n" >> "$CONFIG_FILE"
           
           sed -i '/CONFIG_TRANSPARENT_HUGEPAGE_MADVISE/d' "$CONFIG_FILE"
           echo "CONFIG_TRANSPARENT_HUGEPAGE_MADVISE=n" >> "$CONFIG_FILE"
           
           sed -i '/CONFIG_RODATA_FULL_DEFAULT_ENABLED/d' "$CONFIG_FILE"
           echo "CONFIG_RODATA_FULL_DEFAULT_ENABLED=n" >> "$CONFIG_FILE"
+          
+          sed -i '/CONFIG_MODULE_SIG_PROTECT/d' "$CONFIG_FILE"
+          echo "CONFIG_MODULE_SIG_PROTECT=n" >> "$CONFIG_FILE"
+          
+          sed -i '/CONFIG_VIRTIO_PCI_LEGACY/d' "$CONFIG_FILE"
+          echo "CONFIG_VIRTIO_PCI_LEGACY=n" >> "$CONFIG_FILE"
           
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
