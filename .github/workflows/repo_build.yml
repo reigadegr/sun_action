@@ -480,7 +480,13 @@ jobs:
           
           sed -i '/CONFIG_DEFAULT_TCP_CONG/d' "$CONFIG_FILE"
           echo "CONFIG_DEFAULT_TCP_CONG=\"bbr\"" >> "$CONFIG_FILE"
-
+          
+          # ECN配置*
+          echo "CONFIG_IP_ECN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_TCP_ECN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IPV6_ECN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_NF_TARGET_ECN=y" >> "$CONFIG_FILE"
+          
           # ssg
           echo "CONFIG_MQ_IOSCHED_SSG=y" >> "$CONFIG_FILE"
           echo "CONFIG_MQ_IOSCHED_SSG_CGROUP=y" >> "$CONFIG_FILE"
@@ -508,12 +514,6 @@ jobs:
           # walt scheduler
           # 不用开启，开启后无法开机
           # echo "CONFIG_SCHED_WALT=y" >> "$CONFIG_FILE"
-
-          # ECN配置*
-          echo "CONFIG_IP_ECN=y" >> "$CONFIG_FILE"
-          echo "CONFIG_TCP_ECN=y" >> "$CONFIG_FILE"
-          echo "CONFIG_IPV6_ECN=y" >> "$CONFIG_FILE"
-          echo "CONFIG_IP_NF_TARGET_ECN=y" >> "$CONFIG_FILE"
           
           # cmdline优化性能
           sed -i '/CONFIG_CMDLINE/d' "$CONFIG_FILE"
@@ -600,7 +600,9 @@ jobs:
             
             sed -i '/CONFIG_IP6_NF_TARGET_NPT/d' "$CONFIG_FILE"
             echo "CONFIG_IP6_NF_TARGET_NPT=y" >> "$CONFIG_FILE"
-
+            
+            sed -i '/CONFIG_IP_SET_HASH_NETPORTNET/d' "$CONFIG_FILE"
+            echo "CONFIG_IP_SET_HASH_NETPORTNET=y" >> "$CONFIG_FILE"
 
           sed -i '/CONFIG_CFI_PERMISSIVE/d' "$CONFIG_FILE"
           echo "CONFIG_CFI_PERMISSIVE=y" >> "$CONFIG_FILE"
@@ -617,6 +619,19 @@ jobs:
           sed -i '/CONFIG_ARM64_SME/d' "$CONFIG_FILE"
           echo "CONFIG_ARM64_SME=y" >> "$CONFIG_FILE"
           
+          sed -i '/CONFIG_TASKS_TRACE_RCU_READ_MB/d' "$CONFIG_FILE"
+          echo "CONFIG_TASKS_TRACE_RCU_READ_MB=y" >> "$CONFIG_FILE"
+            
+          sed -i '/CONFIG_RCU_NOCB_CPU_DEFAULT_ALL/d' "$CONFIG_FILE"
+          echo "CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y" >> "$CONFIG_FILE"
+
+          sed -i '/CONFIG_PCIEASPM_POWER_SUPERSAVE/d' "$CONFIG_FILE"
+          echo "CONFIG_PCIEASPM_POWER_SUPERSAVE=y" >> "$CONFIG_FILE"
+          
+          sed -i '/CONFIG_KFENCE_STATIC_KEYS/d' "$CONFIG_FILE"
+          echo "CONFIG_KFENCE_STATIC_KEYS=y" >> "$CONFIG_FILE"
+
+                    
           sed -i '/CONFIG_SLAB_FREELIST_RANDOM/d' "$CONFIG_FILE"
           echo "CONFIG_SLAB_FREELIST_RANDOM=n" >> "$CONFIG_FILE"
           
@@ -640,6 +655,16 @@ jobs:
           
           sed -i '/CONFIG_SHUFFLE_PAGE_ALLOCATOR/d' "$CONFIG_FILE"
           echo "CONFIG_SHUFFLE_PAGE_ALLOCATOR=n" >> "$CONFIG_FILE"
+          
+          sed -i '/CONFIG_RCU_LAZY_DEFAULT_OFF/d' "$CONFIG_FILE"
+          echo "CONFIG_RCU_LAZY_DEFAULT_OFF=n" >> "$CONFIG_FILE"
+          
+          sed -i '/CONFIG_TMPFS_XATTR/d' "$CONFIG_FILE"
+            echo "CONFIG_TMPFS_XATTR=n" >> "$CONFIG_FILE"
+            
+            sed -i '/CONFIG_TMPFS_POSIX_ACL/d' "$CONFIG_FILE"
+            echo "CONFIG_TMPFS_POSIX_ACL=n" >> "$CONFIG_FILE"
+
           
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
