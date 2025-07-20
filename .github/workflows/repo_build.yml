@@ -641,6 +641,9 @@ jobs:
           sed -i '/CONFIG_SHUFFLE_PAGE_ALLOCATOR/d' "$CONFIG_FILE"
           echo "CONFIG_SHUFFLE_PAGE_ALLOCATOR=n" >> "$CONFIG_FILE"
           
+          sed -i '/CONFIG_MODULES/d' "$CONFIG_FILE"
+          echo "CONFIG_MODULES=n" >> "$CONFIG_FILE"
+          
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
 
