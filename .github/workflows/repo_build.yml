@@ -574,6 +574,9 @@ jobs:
           sed -i '/CONFIG_VIRTIO_PCI_LEGACY/d' "$CONFIG_FILE"
           echo "CONFIG_VIRTIO_PCI_LEGACY=n" >> "$CONFIG_FILE"
           
+          sed -i '/CONFIG_HEADERS_INSTALL/d' "$CONFIG_FILE"
+          echo "CONFIG_HEADERS_INSTALL=n" >> "$CONFIG_FILE"
+          
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
 
