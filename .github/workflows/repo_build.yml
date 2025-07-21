@@ -648,8 +648,8 @@ jobs:
           # echo "CONFIG_STACKPROTECTOR_PER_TASK=n" >> "$CONFIG_FILE"
           
           # 模块签名校验
-          # sed -i '/CONFIG_MODULE_SIG_PROTECT/d' "$CONFIG_FILE"
-          # echo "CONFIG_MODULE_SIG_PROTECT=n" >> "$CONFIG_FILE"
+          sed -i '/CONFIG_MODULE_SIG_PROTECT/d' "$CONFIG_FILE"
+          echo "CONFIG_MODULE_SIG_PROTECT=n" >> "$CONFIG_FILE"
           
           # 幽灵漏洞
           echo "CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY=n" >> "$CONFIG_FILE"
