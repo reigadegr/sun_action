@@ -34,6 +34,11 @@ on:
           - "gki05"
           - "op"
           - "6630"
+      BRANCH_CUST:
+        type: string
+        description: "自定义分支，高优先级"
+        required: false
+        default: ""
       BLACK_LIST:
         type: boolean
         description: "是否危险的屏蔽更多内核模块？"
@@ -227,7 +232,12 @@ jobs:
         run: |
           mkdir kernel_workspace && cd kernel_workspace
           mkdir kernel_platform && cd kernel_platform
-          nohup git clone --depth 100 https://github.com/reigadegr/android_kernel_common_oneplus_sm8750 -b "${{ github.event.inputs.BRANCH }}" common2 >/dev/null 2>&1 &
+          if [ ! -z "${{ github.event.inputs.BRANCH_CUST }}" ]; then
+            nohup git clone --depth 100 https://github.com/reigadegr/android_kernel_common_oneplus_sm8750 -b "${{ github.event.inputs.BRANCH_CUST }}" common2 >/dev/null 2>&1 &
+          else
+            nohup git clone --depth 100 https://github.com/reigadegr/android_kernel_common_oneplus_sm8750 -b "${{ github.event.inputs.BRANCH }}" common2 >/dev/null 2>&1 &
+          fi
+          
           repo init --depth 1 -u https://android.googlesource.com/kernel/manifest -b common-${{ needs.get-config.outputs.ANDROID_VERSION }}-${{ needs.get-config.outputs.KERNEL_VERSION }}
           sed -i '/external\//d' .repo/manifests/default.xml
           sed -i '/kleaf\//d' .repo/manifests/default.xml
