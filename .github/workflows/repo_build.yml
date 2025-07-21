@@ -648,8 +648,8 @@ jobs:
           # echo "CONFIG_STACKPROTECTOR_PER_TASK=n" >> "$CONFIG_FILE"
           
           # 模块签名校验
-          # sed -i '/CONFIG_MODULE_SIG_PROTECT/d' "$CONFIG_FILE"
-          # echo "CONFIG_MODULE_SIG_PROTECT=n" >> "$CONFIG_FILE"
+          sed -i '/CONFIG_MODULE_SIG_PROTECT/d' "$CONFIG_FILE"
+          echo "CONFIG_MODULE_SIG_PROTECT=n" >> "$CONFIG_FILE"
           
           # 幽灵漏洞
           echo "CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY=n" >> "$CONFIG_FILE"
@@ -681,8 +681,7 @@ jobs:
           
           sed -i 's/TEST=m/TEST=n/g' "$CONFIG_FILE"
           sed -i 's/TESTS=m/TESTS=n/g' "$CONFIG_FILE"
-          sed -i 's/KUNIT=m/KUNIT=n/g' "$CONFIG_FILE"
-                              
+          # sed -i 's/KUNIT=m/KUNIT=n/g' "$CONFIG_FILE"
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
 
