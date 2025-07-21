@@ -39,12 +39,11 @@ on:
         description: "自定义分支，高优先级"
         required: false
         default: ""
-      BLACK_LIST:
-        type: boolean
-        description: "是否危险的屏蔽更多内核模块？"
-        required: true
-        default: false
-        
+      # BLACK_LIST:
+        # type: boolean
+        # description: "是否危险的屏蔽更多内核模块？"
+        # required: true
+        # default: false        
       VFS:
         type: boolean
         description: "是否启用手动钩子(VFS)？"
@@ -418,15 +417,15 @@ jobs:
           cd kernel_workspace/kernel_platform/common
           
           git add  . && git commit -m "auto commit"
-          if [ "${{ github.event.inputs.BLACK_LIST }}" = "true" ]; then
-            echo "进行危险的屏蔽"
-            wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/blacklist_module_danger.patch
-            patch -p1 -F 3 < blacklist_module_danger.patch && git add  . && git commit -m "auto commit" || git reset --hard
-          else
+          # if [ "${{ github.event.inputs.BLACK_LIST }}" = "true" ]; then
+            # echo "进行危险的屏蔽"
+            # wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/blacklist_module_danger.patch
+            # patch -p1 -F 3 < blacklist_module_danger.patch && git add  . && git commit -m "auto commit" || git reset --hard
+          # else
             echo "进行安全的屏蔽"
             wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/blacklist_module.patch
             patch -p1 -F 3 < blacklist_module.patch && git add  . && git commit -m "auto commit" || git reset --hard
-          fi
+          # fi
           # Remove check_defconfig
           sed -i 's/check_defconfig//' ./build.config.gki
           echo "移除内核模块完成"
