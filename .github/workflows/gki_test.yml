@@ -464,12 +464,9 @@ jobs:
           if [ "${{ github.event.inputs.VFS }}" = "true" ]; then
             echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> "$CONFIG_FILE"
             echo "CONFIG_KSU_MANUAL_HOOK=y" >> "$CONFIG_FILE"
-            # sed -i '/CONFIG_KPROBES/d' "$CONFIG_FILE"
-            # echo "CONFIG_KPROBES=n" >> "$CONFIG_FILE"
           else
             echo "CONFIG_KSU_SUSFS_SUS_SU=y" >> "$CONFIG_FILE"
             echo "CONFIG_KPROBES=y" >> "$CONFIG_FILE"
-            sed -i '/CONFIG_KSU_MANUAL_HOOK/d' "$CONFIG_FILE"
             echo "CONFIG_KSU_MANUAL_HOOK=n" >> "$CONFIG_FILE"
           fi
 
@@ -492,8 +489,8 @@ jobs:
               echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> "$CONFIG_FILE"
           fi
           # TMPFS配置*
-          echo "CONFIG_TMPFS_XATTR=y" >> "$CONFIG_FILE"
-          echo "CONFIG_TMPFS_POSIX_ACL=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_TMPFS_XATTR=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_TMPFS_POSIX_ACL=y" >> "$CONFIG_FILE"
 
           # BBR配置*
           echo "CONFIG_TCP_CONG_ADVANCED=y" >> "$CONFIG_FILE"
@@ -503,11 +500,7 @@ jobs:
           echo "CONFIG_TCP_CONG_BIC=n" >> "$CONFIG_FILE"
           echo "CONFIG_TCP_CONG_WESTWOOD=n" >> "$CONFIG_FILE"
           echo "CONFIG_TCP_CONG_HTCP=n" >> "$CONFIG_FILE"
-          
-          sed -i '/CONFIG_DEFAULT_CUBIC/d' "$CONFIG_FILE"
           echo "CONFIG_DEFAULT_CUBIC=n" >> "$CONFIG_FILE"
-          
-          sed -i '/CONFIG_DEFAULT_TCP_CONG/d' "$CONFIG_FILE"
           echo "CONFIG_DEFAULT_TCP_CONG=\"bbr\"" >> "$CONFIG_FILE"
           
           # ECN配置*
@@ -520,14 +513,11 @@ jobs:
           echo "CONFIG_MQ_IOSCHED_SSG=y" >> "$CONFIG_FILE"
           echo "CONFIG_MQ_IOSCHED_SSG_CGROUP=y" >> "$CONFIG_FILE"
           
-          # lto thin
-          # sed -i "/CONFIG_LTO_CLANG_THIN/d" "$CONFIG_FILE"          
-          # echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
+          # lto thin          
+          echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
 
-          # Inline zram
-          sed -i '/CONFIG_ZSMALLOC/d' "$CONFIG_FILE"
-          sed -i '/CONFIG_ZRAM/d' "$CONFIG_FILE"
+          # Inline zram                   
           echo "CONFIG_ZSMALLOC=y" >> "$CONFIG_FILE"
           echo "CONFIG_ZRAM=y" >> "$CONFIG_FILE"
           echo "CONFIG_ZRAM_DEF_COMP_ZSTD=y" >> "$CONFIG_FILE"
@@ -538,126 +528,57 @@ jobs:
           # echo "CONFIG_SCHED_WALT=y" >> "$CONFIG_FILE"
                     
           # 透明大页
-          sed -i '/CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS/d' "$CONFIG_FILE"
-          echo "CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS=y" >> "$CONFIG_FILE"
-          
-          sed -i '/CONFIG_TRANSPARENT_HUGEPAGE_MADVISE/d' "$CONFIG_FILE"
+          echo "CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS=y" >> "$CONFIG_FILE"          
           echo "CONFIG_TRANSPARENT_HUGEPAGE_MADVISE=n" >> "$CONFIG_FILE"
-                    
-          sed -i '/CONFIG_BPF_STREAM_PARSER/d' "$CONFIG_FILE"
+
           echo "CONFIG_BPF_STREAM_PARSER=y" >> "$CONFIG_FILE"
           
-          sed -i '/CONFIG_NETFILTER_XT_SET/d' "$CONFIG_FILE"
           echo "CONFIG_NETFILTER_XT_SET=y" >> "$CONFIG_FILE"
           
-          sed -i '/CONFIG_IP_SET/d' "$CONFIG_FILE"
           echo "CONFIG_IP_SET=y" >> "$CONFIG_FILE"
-          
-          sed -i '/CONFIG_IP_SET_BITMAP_IP/d' "$CONFIG_FILE"
           echo "CONFIG_IP_SET_BITMAP_IP=y" >> "$CONFIG_FILE"
-
-          sed -i '/CONFIG_IP_SET_BITMAP_IPMAC/d' "$CONFIG_FILE"
           echo "CONFIG_IP_SET_BITMAP_IPMAC=y" >> "$CONFIG_FILE"
-            
-            sed -i '/CONFIG_IP_SET_BITMAP_PORT/d' "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_BITMAP_PORT=y" >> "$CONFIG_FILE"
-            
-            sed -i '/CONFIG_IP_SET_HASH_IP/d' "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_HASH_IP=y" >> "$CONFIG_FILE"
-            
-            sed -i '/CONFIG_IP_SET_HASH_IPMARK/d' "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_HASH_IPMARK=y" >> "$CONFIG_FILE"
-            
-            sed -i '/CONFIG_IP_SET_HASH_IPPORT/d' "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_HASH_IPPORT=y" >> "$CONFIG_FILE"
-            
-            sed -i '/CONFIG_IP_SET_HASH_IPPORTIP/d' "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_HASH_IPPORTIP=y" >> "$CONFIG_FILE"
-            
-            sed -i '/CONFIG_IP_SET_HASH_IPPORTNET/d' "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_HASH_IPPORTNET=y" >> "$CONFIG_FILE"
-            
-            sed -i '/CONFIG_IP_SET_HASH_IPMAC/d' "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_HASH_IPMAC=y" >> "$CONFIG_FILE"
-            
-            sed -i '/CONFIG_IP_SET_HASH_MAC/d' "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_HASH_MAC=y" >> "$CONFIG_FILE"
-            
-            sed -i '/CONFIG_IP_SET_HASH_NETPORTNET/d' "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_HASH_NETPORTNET=y" >> "$CONFIG_FILE"
-            
-            sed -i '/CONFIG_IP_SET_HASH_NET/d' "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_HASH_NET=y" >> "$CONFIG_FILE"
-            
-            sed -i '/CONFIG_IP_SET_HASH_NETNET/d' "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_HASH_NETNET=y" >> "$CONFIG_FILE"
-            
-            sed -i '/CONFIG_IP_SET_HASH_NETPORT/d' "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_HASH_NETPORT=y" >> "$CONFIG_FILE"
-            
-            sed -i '/CONFIG_IP_SET_HASH_NETIFACE/d' "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_HASH_NETIFACE=y" >> "$CONFIG_FILE"
-            
-            sed -i '/CONFIG_IP_SET_LIST_SET/d' "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_LIST_SET=y" >> "$CONFIG_FILE"
-            
-            sed -i '/CONFIG_IP6_NF_NAT/d' "$CONFIG_FILE"
-            echo "CONFIG_IP6_NF_NAT=y" >> "$CONFIG_FILE"
-            
-            sed -i '/CONFIG_IP6_NF_TARGET_MASQUERADE/d' "$CONFIG_FILE"
-            echo "CONFIG_IP6_NF_TARGET_MASQUERADE=y" >> "$CONFIG_FILE"
-            
-            sed -i '/CONFIG_IP6_NF_TARGET_NPT/d' "$CONFIG_FILE"
-            echo "CONFIG_IP6_NF_TARGET_NPT=y" >> "$CONFIG_FILE"
-            
-            sed -i '/CONFIG_IP_SET_HASH_NETPORTNET/d' "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_HASH_NETPORTNET=y" >> "$CONFIG_FILE"
-
-          sed -i '/CONFIG_CFI_PERMISSIVE/d' "$CONFIG_FILE"
+          echo "CONFIG_IP_SET_BITMAP_PORT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_SET_HASH_IP=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_SET_HASH_IPMARK=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_SET_HASH_IPPORT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_SET_HASH_IPPORTIP=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_SET_HASH_IPPORTNET=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_SET_HASH_IPMAC=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_SET_HASH_MAC=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_SET_HASH_NETPORTNET=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_SET_HASH_NET=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_SET_HASH_NETNET=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_SET_HASH_NETPORT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_SET_HASH_NETIFACE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_SET_LIST_SET=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP6_NF_NAT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP6_NF_TARGET_MASQUERADE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP6_NF_TARGET_NPT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_SET_HASH_NETPORTNET=y" >> "$CONFIG_FILE"
+          
           echo "CONFIG_CFI_PERMISSIVE=y" >> "$CONFIG_FILE"
-          
-          sed -i '/CONFIG_SLAB_MERGE_DEFAULT/d' "$CONFIG_FILE"
           echo "CONFIG_SLAB_MERGE_DEFAULT=y" >> "$CONFIG_FILE"
-          
-          sed -i '/CONFIG_NETFILTER_XT_MATCH_ADDRTYPE/d' "$CONFIG_FILE"
           echo "CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=y" >> "$CONFIG_FILE"
-          
-          sed -i '/CONFIG_DMABUF_HUGETLB/d' "$CONFIG_FILE"
           echo "CONFIG_DMABUF_HUGETLB=y" >> "$CONFIG_FILE"
-          
-          sed -i '/CONFIG_ARM64_SME/d' "$CONFIG_FILE"
           echo "CONFIG_ARM64_SME=y" >> "$CONFIG_FILE"
           
-          sed -i '/CONFIG_TASKS_TRACE_RCU_READ_MB/d' "$CONFIG_FILE"
           echo "CONFIG_TASKS_TRACE_RCU_READ_MB=y" >> "$CONFIG_FILE"
-            
-          sed -i '/CONFIG_RCU_NOCB_CPU_DEFAULT_ALL/d' "$CONFIG_FILE"
           echo "CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y" >> "$CONFIG_FILE"
-
-          sed -i '/CONFIG_PCIEASPM_POWER_SUPERSAVE/d' "$CONFIG_FILE"
           echo "CONFIG_PCIEASPM_POWER_SUPERSAVE=y" >> "$CONFIG_FILE"
-          
-          sed -i '/CONFIG_KFENCE_STATIC_KEYS/d' "$CONFIG_FILE"
           echo "CONFIG_KFENCE_STATIC_KEYS=y" >> "$CONFIG_FILE"
 
-          sed -i '/CONFIG_RODATA_FULL_DEFAULT_ENABLED/d' "$CONFIG_FILE"
           echo "CONFIG_RODATA_FULL_DEFAULT_ENABLED=y" >> "$CONFIG_FILE"
 
           # cmdline优化性能
-          sed -i '/CONFIG_CMDLINE/d' "$CONFIG_FILE"
           echo "CONFIG_CMDLINE=\"console=ttynull nokaslr stack_depot_disable=on cgroup_disable=pressure kasan=off kvm-arm.mode=protected bootconfig thp_anon=16K-2M:always mitigations=off kpti=0 hardened_usercopy=off audit=0 norandmaps arm64.nobti arm64.nomte arm64.nopauth\"" >> "$CONFIG_FILE"
-          
-          sed -i '/CONFIG_CMDLINE_FROM_BOOTLOADER/d' "$CONFIG_FILE"
           echo "CONFIG_CMDLINE_FROM_BOOTLOADER=n" >> "$CONFIG_FILE"
-          
-          sed -i '/CONFIG_CMDLINE_EXTEND/d' "$CONFIG_FILE"
           echo "CONFIG_CMDLINE_EXTEND=y" >> "$CONFIG_FILE"
 
           # 堆栈保护关闭
           # echo "CONFIG_STACKPROTECTOR_PER_TASK=n" >> "$CONFIG_FILE"
           
-          # 模块签名校验
-          sed -i '/CONFIG_MODULE_SIG_PROTECT/d' "$CONFIG_FILE"
+          # 模块签名校验          
           echo "CONFIG_MODULE_SIG_PROTECT=n" >> "$CONFIG_FILE"
           
           # 幽灵漏洞
@@ -665,30 +586,22 @@ jobs:
           echo "CONFIG_UNMAP_KERNEL_AT_EL0=n" >> "$CONFIG_FILE"
 
           # 防止单点故障导致系统崩溃
-          sed -i '/CONFIG_PANIC_ON_OOPS/d' "$CONFIG_FILE"
-          sed -i '/CONFIG_PANIC_ON_OOPS_VALUE/d' "$CONFIG_FILE"
           echo "CONFIG_PANIC_ON_OOPS=n" >> "$CONFIG_FILE"
           echo "CONFIG_PANIC_ON_OOPS_VALUE=0" >> "$CONFIG_FILE"
-                              
-          sed -i '/CONFIG_SLAB_FREELIST_RANDOM/d' "$CONFIG_FILE"
-          echo "CONFIG_SLAB_FREELIST_RANDOM=n" >> "$CONFIG_FILE"          
-                    
-          sed -i '/CONFIG_SHUFFLE_PAGE_ALLOCATOR/d' "$CONFIG_FILE"
-          echo "CONFIG_SHUFFLE_PAGE_ALLOCATOR=n" >> "$CONFIG_FILE"
           
-          sed -i '/CONFIG_SLAB_FREELIST_HARDENED/d' "$CONFIG_FILE"
+          # 关闭部分安全特性
+          echo "CONFIG_SLAB_FREELIST_RANDOM=n" >> "$CONFIG_FILE"
+          echo "CONFIG_SHUFFLE_PAGE_ALLOCATOR=n" >> "$CONFIG_FILE"
           echo "CONFIG_SLAB_FREELIST_HARDENED=n" >> "$CONFIG_FILE"
           
-          sed -i '/CONFIG_RCU_LAZY_DEFAULT_OFF/d' "$CONFIG_FILE"
+          # 优化内存策略
           echo "CONFIG_RCU_LAZY_DEFAULT_OFF=n" >> "$CONFIG_FILE"
           
-          sed -i '/CONFIG_VIRTIO_PCI_LEGACY/d' "$CONFIG_FILE"
+          # 禁止无用功能
           echo "CONFIG_VIRTIO_PCI_LEGACY=n" >> "$CONFIG_FILE"
-          
-          sed -i '/CONFIG_HEADERS_INSTALL/d' "$CONFIG_FILE"
           echo "CONFIG_HEADERS_INSTALL=n" >> "$CONFIG_FILE"
           
-          sed -i 's/TEST=m/TEST=n/g' "$CONFIG_FILE"
+          # sed -i 's/TEST=m/TEST=n/g' "$CONFIG_FILE"
           # sed -i 's/TESTS=m/TESTS=n/g' "$CONFIG_FILE"
           # sed -i 's/KUNIT=m/KUNIT=n/g' "$CONFIG_FILE"
           # 移除构建审查
