@@ -650,7 +650,7 @@ jobs:
           
           # 安装自定义clang
           mkdir cust_clang  
-          wget https://github.com/cctv18/oneplus_sm8650_toolchain/releases/download/LLVM-Clang20-r547379/clang-r547379.zip
+          wget -q https://github.com/cctv18/oneplus_sm8650_toolchain/releases/download/LLVM-Clang20-r547379/clang-r547379.zip
           mv clang-*.zip cust_clang/
           cd cust_clang/
           unzip *zip
