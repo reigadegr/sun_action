@@ -656,9 +656,11 @@ jobs:
           cd  ..
           export cust_clang="$(realpath ./cust_clang/bin)"
           export PATH="$cust_clang:$PATH"
+          echo $PATH
           find  cust_clang  -name "clang*"
           which clang
-          export CC="ccache clang" LTO="thin"
+          export CC="$(realpath ./cust_clang/bin/clang)"
+          export CC="ccache $CC" LTO="thin"
           MAKE_ARGS="LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
             RUSTC=../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc \
             PAHOLE=../../prebuilts/kernel-build-tools/linux-x86/bin/pahole \
