@@ -657,6 +657,7 @@ jobs:
           ls
           cd  ..
           export cust_clang="$(realpath ./cust_clang/bin)"
+          sudo -E chmod -R +x "$cust_clang"
           export PATH="$cust_clang:$PATH"
           echo $PATH
           find  cust_clang  -name "clang*"
