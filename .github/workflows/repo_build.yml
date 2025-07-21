@@ -246,6 +246,8 @@ jobs:
           sed -i '/clang-tools/d' .repo/manifests/default.xml
           # sed -i '/build-tools/d' .repo/manifests/default.xml
           sed -i '/ndk/d' .repo/manifests/default.xml
+          sed -i '/linux-x86/d' .repo/manifests/default.xml
+          sed -i '/common-modules/d' .repo/manifests/default.xml
           repo sync -c -j$(nproc --all) --no-tags --no-clone-bundle --force-sync
           rm -rf common .repo
           until [ -z "$(pidof git)" ]; do
@@ -620,32 +622,32 @@ jobs:
 
       - name: Build Kernel
         run: |
-          KERNEL_VERSION="${{ needs.get-config.outputs.KERNEL_VERSION }}"
+          # KERNEL_VERSION="${{ needs.get-config.outputs.KERNEL_VERSION }}"
 
-          # 判断内核版本并设置对应 clang 路径
-          if [[ "$KERNEL_VERSION" == "6.6" ]]; then
-            CLANG_PATH="clang-r510928"
-            CLANG_DIR="prebuilts"
-          elif [[ "$KERNEL_VERSION" == "6.1" ]]; then
-            CLANG_PATH="clang-r487747c"
-            CLANG_DIR="prebuilts"
-          elif [[ "$KERNEL_VERSION" == "5.15" ]]; then
-            CLANG_PATH="clang-r450784e"
-            CLANG_DIR="prebuilts"
-          elif [[ "$KERNEL_VERSION" == "5.10" ]]; then
-            CLANG_PATH="clang-r416183b"
-            CLANG_DIR="prebuilts-master"
-            USE_LLVM_IAS=true
-          else
-            echo "fallback=true" >> "$GITHUB_OUTPUT"
-            echo "⚠️ 当前内核版本 \"$KERNEL_VERSION\" 没有对应 clang 工具链，回退使用官方构建脚本"
-            exit 0
-          fi
+          # # 判断内核版本并设置对应 clang 路径
+          # if [[ "$KERNEL_VERSION" == "6.6" ]]; then
+            # CLANG_PATH="clang-r510928"
+            # CLANG_DIR="prebuilts"
+          # elif [[ "$KERNEL_VERSION" == "6.1" ]]; then
+            # CLANG_PATH="clang-r487747c"
+            # CLANG_DIR="prebuilts"
+          # elif [[ "$KERNEL_VERSION" == "5.15" ]]; then
+            # CLANG_PATH="clang-r450784e"
+            # CLANG_DIR="prebuilts"
+          # elif [[ "$KERNEL_VERSION" == "5.10" ]]; then
+            # CLANG_PATH="clang-r416183b"
+            # CLANG_DIR="prebuilts-master"
+            # USE_LLVM_IAS=true
+          # else
+            # echo "fallback=true" >> "$GITHUB_OUTPUT"
+            # echo "⚠️ 当前内核版本 \"$KERNEL_VERSION\" 没有对应 clang 工具链，回退使用官方构建脚本"
+            # exit 0
+          # fi
 
           # export PATH="$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/$CLANG_DIR/clang/host/linux-x86/$CLANG_PATH/bin:$PATH"
           export PATH="/usr/lib/ccache:$PATH"
           # 安装依赖工具
-          sudo apt install -y libelf-dev ccache lld
+          sudo apt install -y lld
           cd kernel_workspace/kernel_platform/common
           
           # 安装自定义clang
