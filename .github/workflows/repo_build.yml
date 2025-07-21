@@ -665,7 +665,7 @@ jobs:
           for i in $(find  . -type f -name ".config"); do
              cp $i  ../../../config.txt
           done
-          git log | head -n 50 > ../../../commit.txt
+          git log | head -n 200 > ../../../commit.txt
           # 显示 ccache 统计信息
           ccache -s
 
