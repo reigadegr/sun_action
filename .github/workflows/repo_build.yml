@@ -464,12 +464,9 @@ jobs:
           if [ "${{ github.event.inputs.VFS }}" = "true" ]; then
             echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> "$CONFIG_FILE"
             echo "CONFIG_KSU_MANUAL_HOOK=y" >> "$CONFIG_FILE"
-            # 
-            # echo "CONFIG_KPROBES=n" >> "$CONFIG_FILE"
           else
             echo "CONFIG_KSU_SUSFS_SUS_SU=y" >> "$CONFIG_FILE"
             echo "CONFIG_KPROBES=y" >> "$CONFIG_FILE"
-            
             echo "CONFIG_KSU_MANUAL_HOOK=n" >> "$CONFIG_FILE"
           fi
 
@@ -502,8 +499,8 @@ jobs:
           echo "CONFIG_NET_SCH_FQ=y" >> "$CONFIG_FILE"
           echo "CONFIG_TCP_CONG_BIC=n" >> "$CONFIG_FILE"
           echo "CONFIG_TCP_CONG_WESTWOOD=n" >> "$CONFIG_FILE"
-          echo "CONFIG_TCP_CONG_HTCP=n" >> "$CONFIG_FILE"                    
-          echo "CONFIG_DEFAULT_CUBIC=n" >> "$CONFIG_FILE"                   
+          echo "CONFIG_TCP_CONG_HTCP=n" >> "$CONFIG_FILE"
+          echo "CONFIG_DEFAULT_CUBIC=n" >> "$CONFIG_FILE"
           echo "CONFIG_DEFAULT_TCP_CONG=\"bbr\"" >> "$CONFIG_FILE"
           
           # ECN配置*
@@ -531,77 +528,51 @@ jobs:
           # echo "CONFIG_SCHED_WALT=y" >> "$CONFIG_FILE"
                     
           # 透明大页
-          echo "CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS=y" >> "$CONFIG_FILE"
-          
+          echo "CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS=y" >> "$CONFIG_FILE"          
           echo "CONFIG_TRANSPARENT_HUGEPAGE_MADVISE=n" >> "$CONFIG_FILE"
 
           echo "CONFIG_BPF_STREAM_PARSER=y" >> "$CONFIG_FILE"
           
           echo "CONFIG_NETFILTER_XT_SET=y" >> "$CONFIG_FILE"
           
-          echo "CONFIG_IP_SET=y" >> "$CONFIG_FILE"        
+          echo "CONFIG_IP_SET=y" >> "$CONFIG_FILE"
           echo "CONFIG_IP_SET_BITMAP_IP=y" >> "$CONFIG_FILE"
           echo "CONFIG_IP_SET_BITMAP_IPMAC=y" >> "$CONFIG_FILE"
-            
-            echo "CONFIG_IP_SET_BITMAP_PORT=y" >> "$CONFIG_FILE"
-            
-            echo "CONFIG_IP_SET_HASH_IP=y" >> "$CONFIG_FILE"
-            
-            echo "CONFIG_IP_SET_HASH_IPMARK=y" >> "$CONFIG_FILE"
-            
-            echo "CONFIG_IP_SET_HASH_IPPORT=y" >> "$CONFIG_FILE"
-            
-            echo "CONFIG_IP_SET_HASH_IPPORTIP=y" >> "$CONFIG_FILE"
-            
-            echo "CONFIG_IP_SET_HASH_IPPORTNET=y" >> "$CONFIG_FILE"
-            
-            echo "CONFIG_IP_SET_HASH_IPMAC=y" >> "$CONFIG_FILE"
-            
-            echo "CONFIG_IP_SET_HASH_MAC=y" >> "$CONFIG_FILE"
-            
-            echo "CONFIG_IP_SET_HASH_NETPORTNET=y" >> "$CONFIG_FILE"
-            
-            echo "CONFIG_IP_SET_HASH_NET=y" >> "$CONFIG_FILE"
-            
-            echo "CONFIG_IP_SET_HASH_NETNET=y" >> "$CONFIG_FILE"
-            
-            echo "CONFIG_IP_SET_HASH_NETPORT=y" >> "$CONFIG_FILE"
-            
-            echo "CONFIG_IP_SET_HASH_NETIFACE=y" >> "$CONFIG_FILE"
-            
-            echo "CONFIG_IP_SET_LIST_SET=y" >> "$CONFIG_FILE"
-            
-            echo "CONFIG_IP6_NF_NAT=y" >> "$CONFIG_FILE"
-            
-            echo "CONFIG_IP6_NF_TARGET_MASQUERADE=y" >> "$CONFIG_FILE"
-            
-            echo "CONFIG_IP6_NF_TARGET_NPT=y" >> "$CONFIG_FILE"
-            
-            echo "CONFIG_IP_SET_HASH_NETPORTNET=y" >> "$CONFIG_FILE"
-
+          echo "CONFIG_IP_SET_BITMAP_PORT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_SET_HASH_IP=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_SET_HASH_IPMARK=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_SET_HASH_IPPORT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_SET_HASH_IPPORTIP=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_SET_HASH_IPPORTNET=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_SET_HASH_IPMAC=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_SET_HASH_MAC=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_SET_HASH_NETPORTNET=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_SET_HASH_NET=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_SET_HASH_NETNET=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_SET_HASH_NETPORT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_SET_HASH_NETIFACE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_SET_LIST_SET=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP6_NF_NAT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP6_NF_TARGET_MASQUERADE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP6_NF_TARGET_NPT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_SET_HASH_NETPORTNET=y" >> "$CONFIG_FILE"
+          
           echo "CONFIG_CFI_PERMISSIVE=y" >> "$CONFIG_FILE"
-          
           echo "CONFIG_SLAB_MERGE_DEFAULT=y" >> "$CONFIG_FILE"
-          
           echo "CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=y" >> "$CONFIG_FILE"
-          
           echo "CONFIG_DMABUF_HUGETLB=y" >> "$CONFIG_FILE"
-          
           echo "CONFIG_ARM64_SME=y" >> "$CONFIG_FILE"
           
           echo "CONFIG_TASKS_TRACE_RCU_READ_MB=y" >> "$CONFIG_FILE"
-            
           echo "CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y" >> "$CONFIG_FILE"
-
           echo "CONFIG_PCIEASPM_POWER_SUPERSAVE=y" >> "$CONFIG_FILE"
-
           echo "CONFIG_KFENCE_STATIC_KEYS=y" >> "$CONFIG_FILE"
 
           echo "CONFIG_RODATA_FULL_DEFAULT_ENABLED=y" >> "$CONFIG_FILE"
 
           # cmdline优化性能
           echo "CONFIG_CMDLINE=\"console=ttynull nokaslr stack_depot_disable=on cgroup_disable=pressure kasan=off kvm-arm.mode=protected bootconfig thp_anon=16K-2M:always mitigations=off kpti=0 hardened_usercopy=off audit=0 norandmaps arm64.nobti arm64.nomte arm64.nopauth\"" >> "$CONFIG_FILE"
-          echo "CONFIG_CMDLINE_FROM_BOOTLOADER=n" >> "$CONFIG_FILE"                    
+          echo "CONFIG_CMDLINE_FROM_BOOTLOADER=n" >> "$CONFIG_FILE"
           echo "CONFIG_CMDLINE_EXTEND=y" >> "$CONFIG_FILE"
 
           # 堆栈保护关闭
@@ -617,21 +588,21 @@ jobs:
           # 防止单点故障导致系统崩溃
           echo "CONFIG_PANIC_ON_OOPS=n" >> "$CONFIG_FILE"
           echo "CONFIG_PANIC_ON_OOPS_VALUE=0" >> "$CONFIG_FILE"
-                              
-          echo "CONFIG_SLAB_FREELIST_RANDOM=n" >> "$CONFIG_FILE"                      
           
+          # 关闭部分安全特性
+          echo "CONFIG_SLAB_FREELIST_RANDOM=n" >> "$CONFIG_FILE"
           echo "CONFIG_SHUFFLE_PAGE_ALLOCATOR=n" >> "$CONFIG_FILE"
-                   
-          echo "CONFIG_SLAB_FREELIST_HARDENED=n" >> "$CONFIG_FILE"        
+          echo "CONFIG_SLAB_FREELIST_HARDENED=n" >> "$CONFIG_FILE"
           
+          # 优化内存策略
           echo "CONFIG_RCU_LAZY_DEFAULT_OFF=n" >> "$CONFIG_FILE"
-                    
-          echo "CONFIG_VIRTIO_PCI_LEGACY=n" >> "$CONFIG_FILE"          
           
+          # 禁止无用功能
+          echo "CONFIG_VIRTIO_PCI_LEGACY=n" >> "$CONFIG_FILE"
           echo "CONFIG_HEADERS_INSTALL=n" >> "$CONFIG_FILE"
           
-          sed -i 's/TEST=m/TEST=n/g' "$CONFIG_FILE"
-          sed -i 's/TESTS=m/TESTS=n/g' "$CONFIG_FILE"
+          # sed -i 's/TEST=m/TEST=n/g' "$CONFIG_FILE"
+          # sed -i 's/TESTS=m/TESTS=n/g' "$CONFIG_FILE"
           # sed -i 's/KUNIT=m/KUNIT=n/g' "$CONFIG_FILE"
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
