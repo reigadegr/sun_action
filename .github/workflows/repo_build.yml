@@ -649,16 +649,15 @@ jobs:
           cd kernel_workspace/kernel_platform/common
           
           # 安装自定义clang
-          mkdir cust_clang  
+          mkdir cust_clang; cd cust_clang
           wget -q https://github.com/cctv18/oneplus_sm8650_toolchain/releases/download/LLVM-Clang20-r547379/clang-r547379.zip
-          mv clang-*.zip cust_clang/
-          cd cust_clang/
           unzip clang-*.zip > /dev/null 
           ls
           cd  ..
           export cust_clang="$(realpath ./cust_clang/bin)"
           export PATH="$cust_clang:$PATH"
-
+          find  cust_clang  -name "clang*"
+          which clang
           export CC="ccache clang" LTO="thin"
           MAKE_ARGS="LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
             RUSTC=../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc \
