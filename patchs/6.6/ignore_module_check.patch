@@ -1,0 +1,19 @@
+commit bc69d258672169e00fd11dacfb20fa5efaf4772b
+Author: reigadegr <272268642@qq.com>
+Date:   Wed Jul 16 20:30:34 2025 +0800
+
+    kernel/module/version.c: Force loading of modules that fail symbol version checks
+
+diff --git a/kernel/module/version.c b/kernel/module/version.c
+index 53f43ac5a73e..56a6c6bf1f7b 100644
+--- a/kernel/module/version.c
++++ b/kernel/module/version.c
+@@ -52,7 +52,7 @@ int check_version(const struct load_info *info,
+ 
+ bad_version:
+ 	pr_warn("%s: disagrees about version of symbol %s\n", info->name, symname);
+-	return 0;
++	return 1;
+ }
+ 
+ int check_modstruct_version(const struct load_info *info,
