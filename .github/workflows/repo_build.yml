@@ -667,7 +667,7 @@ jobs:
           ldd "./cust_clang/bin/clang.real"
           ldd "./cust_clang/bin/clang-20"
           export CC="$(realpath ./cust_clang/bin/clang)" LTO="thin"
-          # export CC="ccache $CC" LTO="thin"
+          export CC="ccache $CC" LTO="thin"
           MAKE_ARGS="LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
             RUSTC=../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc \
             PAHOLE=../../prebuilts/kernel-build-tools/linux-x86/bin/pahole \
