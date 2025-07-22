@@ -507,9 +507,10 @@ jobs:
           echo "CONFIG_MQ_IOSCHED_SSG=y" >> "$CONFIG_FILE"
           echo "CONFIG_MQ_IOSCHED_SSG_CGROUP=y" >> "$CONFIG_FILE"
           
-          # lto thin          
+          # lto thin，O2 
           echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
           echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
+          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> "$CONFIG_FILE"
 
           # Inline zram                   
           echo "CONFIG_ZSMALLOC=y" >> "$CONFIG_FILE"
