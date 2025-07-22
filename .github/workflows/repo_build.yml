@@ -655,9 +655,9 @@ jobs:
           echo $PATH
           export CC="$(realpath ./cust_clang/bin/clang)" LTO="thin"
           export CC="ccache $CC" LTO="thin"
+          export PAHOLE="$cust_clang/bin/pahole"
           MAKE_ARGS="LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
-            RUSTC=../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc \
-            PAHOLE=../../prebuilts/kernel-build-tools/linux-x86/bin/pahole \
+            RUSTC=../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc \            
             LD=ld.lld HOSTLD=ld.lld KCFLAGS+=-Wno-error"
           make -j$(nproc --all) O=out $MAKE_ARGS gki_defconfig all | tee  ../../../build.txt  
           for i in $(find  . -type f -name ".config"); do
