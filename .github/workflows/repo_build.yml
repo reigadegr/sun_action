@@ -573,7 +573,7 @@ jobs:
           echo "CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS=y" >> "$CONFIG_FILE"   
           echo "CONFIG_TRANSPARENT_HUGEPAGE_MADVISE=n" >> "$CONFIG_FILE"
 
-          echo "CONFIG_BPF_STREAM_PARSER=n" >> "$CONFIG_FILE"          
+          echo "CONFIG_BPF_STREAM_PARSER=y" >> "$CONFIG_FILE"          
           echo "CONFIG_NETFILTER_XT_SET=y" >> "$CONFIG_FILE"          
           
           echo "CONFIG_CFI_PERMISSIVE=y" >> "$CONFIG_FILE"
@@ -583,7 +583,7 @@ jobs:
           echo "CONFIG_ARM64_SME=y" >> "$CONFIG_FILE"
           
           echo "CONFIG_PCIEASPM_POWER_SUPERSAVE=y" >> "$CONFIG_FILE"
-          echo "CONFIG_KFENCE_STATIC_KEYS=n" >> "$CONFIG_FILE"
+          echo "CONFIG_KFENCE_STATIC_KEYS=y" >> "$CONFIG_FILE"
 
           # 堆栈保护关闭
           # echo "CONFIG_STACKPROTECTOR_PER_TASK=n" >> "$CONFIG_FILE"
