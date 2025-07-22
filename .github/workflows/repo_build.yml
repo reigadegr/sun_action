@@ -530,23 +530,16 @@ jobs:
           # 不用开启，开启后无法开机
           # echo "CONFIG_SCHED_WALT=y" >> "$CONFIG_FILE"
         
-          # # ECN配置*
-          # echo "CONFIG_IP_ECN=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_TCP_ECN=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_IPV6_ECN=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_IP_NF_TARGET_ECN=y" >> "$CONFIG_FILE"
+          # ECN配置*
+          echo "CONFIG_IP_ECN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_TCP_ECN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IPV6_ECN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_NF_TARGET_ECN=y" >> "$CONFIG_FILE"
           
           # # TMPFS配置*
           # echo "CONFIG_TMPFS_XATTR=y" >> "$CONFIG_FILE"
           # echo "CONFIG_TMPFS_POSIX_ACL=y" >> "$CONFIG_FILE"
 
-          # 透明大页
-          # echo "CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS=y" >> "$CONFIG_FILE"          
-          # echo "CONFIG_TRANSPARENT_HUGEPAGE_MADVISE=n" >> "$CONFIG_FILE"
-
-          # echo "CONFIG_BPF_STREAM_PARSER=y" >> "$CONFIG_FILE"          
-          # echo "CONFIG_NETFILTER_XT_SET=y" >> "$CONFIG_FILE"
-          
           # echo "CONFIG_IP_SET=y" >> "$CONFIG_FILE"
           # echo "CONFIG_IP_SET_BITMAP_IP=y" >> "$CONFIG_FILE"
           # echo "CONFIG_IP_SET_BITMAP_IPMAC=y" >> "$CONFIG_FILE"
@@ -567,7 +560,14 @@ jobs:
           # echo "CONFIG_IP6_NF_NAT=y" >> "$CONFIG_FILE"
           # echo "CONFIG_IP6_NF_TARGET_MASQUERADE=y" >> "$CONFIG_FILE"
           # echo "CONFIG_IP6_NF_TARGET_NPT=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_IP_SET_HASH_NETPORTNET=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_IP_SET_HASH_NETPORTNET=y" >> "$CONFIG_FILE"          
+          
+          # 透明大页
+          # echo "CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS=y" >> "$CONFIG_FILE"          
+          # echo "CONFIG_TRANSPARENT_HUGEPAGE_MADVISE=n" >> "$CONFIG_FILE"
+
+          # echo "CONFIG_BPF_STREAM_PARSER=y" >> "$CONFIG_FILE"          
+          # echo "CONFIG_NETFILTER_XT_SET=y" >> "$CONFIG_FILE"          
           
           # echo "CONFIG_CFI_PERMISSIVE=y" >> "$CONFIG_FILE"
           # echo "CONFIG_SLAB_MERGE_DEFAULT=y" >> "$CONFIG_FILE"
@@ -584,33 +584,33 @@ jobs:
           # # 模块签名校验          
           # echo "CONFIG_MODULE_SIG_PROTECT=n" >> "$CONFIG_FILE"
           
-          # 幽灵漏洞
-          echo "CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY=n" >> "$CONFIG_FILE"
-          echo "CONFIG_UNMAP_KERNEL_AT_EL0=n" >> "$CONFIG_FILE"
+          # # 幽灵漏洞
+          # echo "CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY=n" >> "$CONFIG_FILE"
+          # echo "CONFIG_UNMAP_KERNEL_AT_EL0=n" >> "$CONFIG_FILE"
 
-          # 内核静态字段只读(默认开启保护)
-          echo "CONFIG_RODATA_FULL_DEFAULT_ENABLED=y" >> "$CONFIG_FILE"
+          # # 内核静态字段只读(默认开启保护)
+          # echo "CONFIG_RODATA_FULL_DEFAULT_ENABLED=y" >> "$CONFIG_FILE"
                     
-          # 关闭部分安全特性
-          echo "CONFIG_SLAB_FREELIST_RANDOM=n" >> "$CONFIG_FILE"
-          echo "CONFIG_SHUFFLE_PAGE_ALLOCATOR=n" >> "$CONFIG_FILE"
-          echo "CONFIG_SLAB_FREELIST_HARDENED=n" >> "$CONFIG_FILE"
+          # # 关闭部分安全特性
+          # echo "CONFIG_SLAB_FREELIST_RANDOM=n" >> "$CONFIG_FILE"
+          # echo "CONFIG_SHUFFLE_PAGE_ALLOCATOR=n" >> "$CONFIG_FILE"
+          # echo "CONFIG_SLAB_FREELIST_HARDENED=n" >> "$CONFIG_FILE"
           
-          # 优化内存策略
-          echo "CONFIG_RCU_LAZY_DEFAULT_OFF=n" >> "$CONFIG_FILE"
-          echo "CONFIG_TASKS_TRACE_RCU_READ_MB=y" >> "$CONFIG_FILE"
-          echo "CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y" >> "$CONFIG_FILE"
+          # # 优化内存策略
+          # echo "CONFIG_RCU_LAZY_DEFAULT_OFF=n" >> "$CONFIG_FILE"
+          # echo "CONFIG_TASKS_TRACE_RCU_READ_MB=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y" >> "$CONFIG_FILE"
           
-          # 禁止无用功能
-          echo "CONFIG_VIRTIO_PCI_LEGACY=n" >> "$CONFIG_FILE"
-          echo "CONFIG_HEADERS_INSTALL=n" >> "$CONFIG_FILE"
+          # # 禁止无用功能
+          # echo "CONFIG_VIRTIO_PCI_LEGACY=n" >> "$CONFIG_FILE"
+          # echo "CONFIG_HEADERS_INSTALL=n" >> "$CONFIG_FILE"
           
-          # 禁用io调度器
-          echo "CONFIG_MQ_IOSCHED_KYBER=n" >> "$CONFIG_FILE"
+          # # 禁用io调度器
+          # echo "CONFIG_MQ_IOSCHED_KYBER=n" >> "$CONFIG_FILE"
           
-          sed -i 's/TEST=m/TEST=n/g' "$CONFIG_FILE"
-          sed -i 's/TESTS=m/TESTS=n/g' "$CONFIG_FILE"
-          sed -i 's/KUNIT=m/KUNIT=n/g' "$CONFIG_FILE"
+          # sed -i 's/TEST=m/TEST=n/g' "$CONFIG_FILE"
+          # sed -i 's/TESTS=m/TESTS=n/g' "$CONFIG_FILE"
+          # sed -i 's/KUNIT=m/KUNIT=n/g' "$CONFIG_FILE"
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
 
