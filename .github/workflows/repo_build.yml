@@ -573,17 +573,17 @@ jobs:
           echo "CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS=y" >> "$CONFIG_FILE"   
           echo "CONFIG_TRANSPARENT_HUGEPAGE_MADVISE=n" >> "$CONFIG_FILE"
 
-          # echo "CONFIG_BPF_STREAM_PARSER=y" >> "$CONFIG_FILE"          
-          # echo "CONFIG_NETFILTER_XT_SET=y" >> "$CONFIG_FILE"          
+          echo "CONFIG_BPF_STREAM_PARSER=y" >> "$CONFIG_FILE"          
+          echo "CONFIG_NETFILTER_XT_SET=y" >> "$CONFIG_FILE"          
           
-          # echo "CONFIG_CFI_PERMISSIVE=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_SLAB_MERGE_DEFAULT=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=n" >> "$CONFIG_FILE"
-          # echo "CONFIG_DMABUF_HUGETLB=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_ARM64_SME=y" >> "$CONFIG_FILE"
+          echo "CONFIG_CFI_PERMISSIVE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_SLAB_MERGE_DEFAULT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=n" >> "$CONFIG_FILE"
+          echo "CONFIG_DMABUF_HUGETLB=y" >> "$CONFIG_FILE"
+          echo "CONFIG_ARM64_SME=y" >> "$CONFIG_FILE"
           
-          # echo "CONFIG_PCIEASPM_POWER_SUPERSAVE=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_KFENCE_STATIC_KEYS=y" >> "$CONFIG_FILE"
+          echo "CONFIG_PCIEASPM_POWER_SUPERSAVE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_KFENCE_STATIC_KEYS=y" >> "$CONFIG_FILE"
           
           # 模块签名校验          
           echo "CONFIG_MODULE_SIG_PROTECT=n" >> "$CONFIG_FILE"
@@ -609,7 +609,7 @@ jobs:
           echo "CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y" >> "$CONFIG_FILE"
           
           # # 禁用io调度器
-          # echo "CONFIG_MQ_IOSCHED_KYBER=n" >> "$CONFIG_FILE"
+          echo "CONFIG_MQ_IOSCHED_KYBER=n" >> "$CONFIG_FILE"
           
           # 关闭可选功能(放心使用本代码)
           echo "CONFIG_DAMON=n" >> "$CONFIG_FILE"
