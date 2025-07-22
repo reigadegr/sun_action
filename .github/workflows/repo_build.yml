@@ -250,6 +250,7 @@ jobs:
           repo sync -c -j$(nproc --all) --no-tags --no-clone-bundle --force-sync
           rm -rf common .repo
           until [ -z "$(pidof git)" ]; do
+            echo "等一下git"
             sleep 1
           done
           mv common2 common
