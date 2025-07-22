@@ -502,13 +502,6 @@ jobs:
           echo "CONFIG_DEFAULT_CUBIC=n" >> "$CONFIG_FILE"
           echo "CONFIG_DEFAULT_TCP_CONG=\"bbr\"" >> "$CONFIG_FILE"
           
-          # lto thin，O2 
-          # echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_LD_DEAD_CODE_DATA_ELIMINATION=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_AUTOFDO_CLANG=y" >> "$CONFIG_FILE"
-          
           # Inline zram                   
           echo "CONFIG_ZSMALLOC=y" >> "$CONFIG_FILE"
           echo "CONFIG_ZRAM=y" >> "$CONFIG_FILE"
@@ -516,6 +509,12 @@ jobs:
           echo "CONFIG_ZRAM_DEF_COMP=\"zstd\"" >> "$CONFIG_FILE"
           echo "CONFIG_ZRAM_MEMORY_TRACKING=y" >> "$CONFIG_FILE"
           echo "CONFIG_ZRAM_TRACK_ENTRY_ACTIME=y" >> "$CONFIG_FILE"
+          
+          # ECN配置*
+          echo "CONFIG_IP_ECN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_TCP_ECN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IPV6_ECN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_NF_TARGET_ECN=y" >> "$CONFIG_FILE"
 
           # cmdline优化性能
           echo "CONFIG_CMDLINE=\"console=ttynull nokaslr stack_depot_disable=on cgroup_disable=pressure kasan=off kvm-arm.mode=protected bootconfig thp_anon=16K-2M:always mitigations=off kpti=0 hardened_usercopy=off audit=0 norandmaps arm64.nobti arm64.nomte arm64.nopauth\"" >> "$CONFIG_FILE"
@@ -525,22 +524,6 @@ jobs:
           # 防止单点故障导致系统崩溃
           echo "CONFIG_PANIC_ON_OOPS=n" >> "$CONFIG_FILE"
           echo "CONFIG_PANIC_ON_OOPS_VALUE=0" >> "$CONFIG_FILE"
-          
-          # qcom llcc(先不要开启)
-          # echo "CONFIG_QCOM_LLCC=y" >> "$CONFIG_FILE"
-
-          # walt scheduler (不用开启，开启后无法开机)
-          # echo "CONFIG_SCHED_WALT=y" >> "$CONFIG_FILE"
-        
-          # ECN配置*
-          echo "CONFIG_IP_ECN=y" >> "$CONFIG_FILE"
-          echo "CONFIG_TCP_ECN=y" >> "$CONFIG_FILE"
-          echo "CONFIG_IPV6_ECN=y" >> "$CONFIG_FILE"
-          echo "CONFIG_IP_NF_TARGET_ECN=y" >> "$CONFIG_FILE"
-          
-          # # TMPFS配置*
-          # echo "CONFIG_TMPFS_XATTR=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_TMPFS_POSIX_ACL=y" >> "$CONFIG_FILE"
 
           echo "CONFIG_IP_SET=y" >> "$CONFIG_FILE"
           echo "CONFIG_IP_SET_BITMAP_IP=y" >> "$CONFIG_FILE"
@@ -563,6 +546,33 @@ jobs:
           echo "CONFIG_IP6_NF_TARGET_MASQUERADE=y" >> "$CONFIG_FILE"
           echo "CONFIG_IP6_NF_TARGET_NPT=y" >> "$CONFIG_FILE"
           echo "CONFIG_IP_SET_HASH_NETPORTNET=y" >> "$CONFIG_FILE"
+    
+          # 关闭可选功能(放心使用本代码)
+          echo "CONFIG_DAMON=n" >> "$CONFIG_FILE"
+          echo "CONFIG_CRYPTO_SHA1_ARM64_CE=n" >> "$CONFIG_FILE"
+          echo "CONFIG_VIRTIO_PCI_LEGACY=n" >> "$CONFIG_FILE"
+          echo "CONFIG_HEADERS_INSTALL=n" >> "$CONFIG_FILE"
+          echo "CONFIG_UDMABUF=n" >> "$CONFIG_FILE"
+          echo "CONFIG_PCIEASPM_DEFAULT=n" >> "$CONFIG_FILE"
+          
+          # 优化内存策略(放心开启)
+          echo "CONFIG_RCU_LAZY_DEFAULT_OFF=n" >> "$CONFIG_FILE"
+          echo "CONFIG_TASKS_TRACE_RCU_READ_MB=y" >> "$CONFIG_FILE"
+          echo "CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y" >> "$CONFIG_FILE"
+
+          # lto thin，O2 
+          # echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_LD_DEAD_CODE_DATA_ELIMINATION=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_AUTOFDO_CLANG=y" >> "$CONFIG_FILE"
+
+          
+          # # TMPFS配置*
+          # echo "CONFIG_TMPFS_XATTR=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_TMPFS_POSIX_ACL=y" >> "$CONFIG_FILE"
+
+
           
           # 透明大页
           # echo "CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS=y" >> "$CONFIG_FILE"   
@@ -598,21 +608,12 @@ jobs:
           # # 堆栈保护关闭
           # echo "CONFIG_STACKPROTECTOR_PER_TASK=n" >> "$CONFIG_FILE"
           
-          # 优化内存策略(放心开启)
-          echo "CONFIG_RCU_LAZY_DEFAULT_OFF=n" >> "$CONFIG_FILE"
-          echo "CONFIG_TASKS_TRACE_RCU_READ_MB=y" >> "$CONFIG_FILE"
-          echo "CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y" >> "$CONFIG_FILE"
+
           
           # # 禁用io调度器
           echo "CONFIG_MQ_IOSCHED_KYBER=n" >> "$CONFIG_FILE"
           
-          # 关闭可选功能(放心使用本代码)
-          echo "CONFIG_DAMON=n" >> "$CONFIG_FILE"
-          echo "CONFIG_CRYPTO_SHA1_ARM64_CE=n" >> "$CONFIG_FILE"
-          echo "CONFIG_VIRTIO_PCI_LEGACY=n" >> "$CONFIG_FILE"
-          echo "CONFIG_HEADERS_INSTALL=n" >> "$CONFIG_FILE"
-          echo "CONFIG_UDMABUF=n" >> "$CONFIG_FILE"
-          echo "CONFIG_PCIEASPM_DEFAULT=n" >> "$CONFIG_FILE"
+
           
           echo "CONFIG_FAT_KUNIT_TEST=n" >> "$CONFIG_FILE"
           echo "CONFIG_EXT4_KUNIT_TESTS=n" >> "$CONFIG_FILE"          
