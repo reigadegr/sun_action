@@ -640,7 +640,7 @@ jobs:
         run: |
           export PATH="/usr/lib/ccache:$PATH"
           # 安装依赖工具
-          sudo apt install -y lld
+          # sudo apt install -y lld
           cd kernel_workspace/kernel_platform/common
           
           # 安装自定义clang
