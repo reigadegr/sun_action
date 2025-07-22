@@ -519,11 +519,11 @@ jobs:
           # # echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
           # # echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
 
-          # # Inline zram                   
-          # echo "CONFIG_ZSMALLOC=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_ZRAM=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_ZRAM_DEF_COMP_ZSTD=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_ZRAM_DEF_COMP=\"zstd\"" >> "$CONFIG_FILE"
+          # Inline zram                   
+          echo "CONFIG_ZSMALLOC=y" >> "$CONFIG_FILE"
+          echo "CONFIG_ZRAM=y" >> "$CONFIG_FILE"
+          echo "CONFIG_ZRAM_DEF_COMP_ZSTD=y" >> "$CONFIG_FILE"
+          echo "CONFIG_ZRAM_DEF_COMP=\"zstd\"" >> "$CONFIG_FILE"
 
           # # walt scheduler
           # # 不用开启，开启后无法开机
