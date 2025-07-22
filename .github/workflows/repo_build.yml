@@ -39,11 +39,11 @@ on:
         description: "自定义分支，高优先级"
         required: false
         default: ""
-      # BLACK_LIST:
-        # type: boolean
-        # description: "是否危险的屏蔽更多内核模块？"
-        # required: true
-        # default: false        
+      BLACK_LIST:
+        type: boolean
+        description: "是否危险的屏蔽更多内核模块？"
+        required: true
+        default: false        
       VFS:
         type: boolean
         description: "是否启用手动钩子(VFS)？"
@@ -59,11 +59,11 @@ on:
         description: "开启susfs"
         required: true
         default: false
-      SCHED:
-        type: boolean
-        description: "是否添加风驰驱动？"
-        required: true
-        default: false
+      # SCHED:
+        # type: boolean
+        # description: "是否添加风驰驱动？"
+        # required: true
+        # default: false
       FIX_UPSTREAM:
         type: boolean
         description: "是否修复谷歌上游bug？"
@@ -79,7 +79,7 @@ jobs:
 
   build:
     needs: get-config
-    name: ${{ github.event.inputs.SCHED == 'true' && ' [SCHED]' || '' }}For ${{ github.event.inputs.FILE }} ${{ github.event.inputs.SUFFIX }}
+    name: For ${{ github.event.inputs.FILE }} ${{ github.event.inputs.SUFFIX }}
     runs-on: ubuntu-latest
     env:
       CPU: ${{ needs.get-config.outputs.CPU }}
@@ -123,7 +123,6 @@ jobs:
           echo "Selected SUSFS_ENABLE: ${{ github.event.inputs.SUSFS_ENABLE }}"
           echo "Selected VFS: ${{ github.event.inputs.VFS }}"
           echo "Selected KPM: ${{ github.event.inputs.KPM }}"
-          echo "Selected SCHED: ${{ github.event.inputs.SCHED }}"
           echo "Selected FIX_UPSTREAM: ${{ github.event.inputs.FIX_UPSTREAM }}"
 
       - name: Setup TimeZone
@@ -419,15 +418,15 @@ jobs:
           cd kernel_workspace/kernel_platform/common
           
           git add  . && git commit -m "auto commit"
-          # if [ "${{ github.event.inputs.BLACK_LIST }}" = "true" ]; then
-            # echo "进行危险的屏蔽"
-            # wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/blacklist_module_danger.patch
-            # patch -p1 -F 3 < blacklist_module_danger.patch && git add  . && git commit -m "auto commit" || git reset --hard
-          # else
+          if [ "${{ github.event.inputs.BLACK_LIST }}" = "true" ]; then
+            echo "进行危险的屏蔽"
+            wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/blacklist_module_danger.patch
+            patch -p1 -F 3 < blacklist_module_danger.patch && git add  . && git commit -m "auto commit" || git reset --hard
+          else
             echo "进行安全的屏蔽"
             wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/blacklist_module.patch
             patch -p1 -F 3 < blacklist_module.patch && git add  . && git commit -m "auto commit" || git reset --hard
-          # fi
+          fi
           # Remove check_defconfig
           sed -i 's/check_defconfig//' ./build.config.gki
           echo "移除内核模块完成"
@@ -611,14 +610,14 @@ jobs:
           sed -i 's/check_defconfig//' ./common/build.config.gki
 
       # 风驰内核，以 sm8750 为主体，其他 CPU 可能无效或者无法跑出
-      - name: Add sched_ext
-        if: ${{ github.event.inputs.SCHED == 'true' }}
-        run: |
-         cd kernel_workspace/kernel_platform/
-         git clone https://github.com/HanKuCha/sched_ext.git
-         cp -r ./sched_ext/* ./common/kernel/sched
-         rm -rf ./sched_ext/.git
-         cd common/kernel/sched
+      # - name: Add sched_ext
+        # if: ${{ github.event.inputs.SCHED == 'true' }}
+        # run: |
+         # cd kernel_workspace/kernel_platform/
+         # git clone https://github.com/HanKuCha/sched_ext.git
+         # cp -r ./sched_ext/* ./common/kernel/sched
+         # rm -rf ./sched_ext/.git
+         # cd common/kernel/sched
 
       - name: Build Kernel
         run: |
@@ -697,7 +696,7 @@ jobs:
       - name: Set zip Suffix
         id: suffix
         run: |
-          echo "value=${{ github.event.inputs.VFS == 'true' && '_VFS' || '' }}${{ github.event.inputs.KPM == 'true' && '_KPM' || '' }}${{ github.event.inputs.SCHED== 'true' && '_SCHED' || '' }}" >> $GITHUB_OUTPUT
+          echo "value=${{ github.event.inputs.VFS == 'true' && '_VFS' || '' }}${{ github.event.inputs.KPM == 'true' && '_KPM' || '' }}" >> $GITHUB_OUTPUT
 
       # 从一加源码中获取适用的 Android 版本信息，注意是系统 Android 版本而非你填写的内核 Android 版本，非一加官方源码可能需要修改或删除这一步
       - name: Auto map FILE to Android version by manifest
