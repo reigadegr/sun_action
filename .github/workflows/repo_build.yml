@@ -527,16 +527,19 @@ jobs:
           # 防止单点故障导致系统崩溃
           echo "CONFIG_PANIC_ON_OOPS=n" >> "$CONFIG_FILE"
           echo "CONFIG_PANIC_ON_OOPS_VALUE=0" >> "$CONFIG_FILE"
+          
+          # qcom llcc
+          echo "CONFIG_QCOM_LLCC=y" >> "$CONFIG_FILE"
 
           # walt scheduler
           # 不用开启，开启后无法开机
           # echo "CONFIG_SCHED_WALT=y" >> "$CONFIG_FILE"
         
           # ECN配置*
-          echo "CONFIG_IP_ECN=y" >> "$CONFIG_FILE"
-          echo "CONFIG_TCP_ECN=y" >> "$CONFIG_FILE"
-          echo "CONFIG_IPV6_ECN=y" >> "$CONFIG_FILE"
-          echo "CONFIG_IP_NF_TARGET_ECN=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_IP_ECN=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_TCP_ECN=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_IPV6_ECN=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_IP_NF_TARGET_ECN=y" >> "$CONFIG_FILE"
           
           # # TMPFS配置*
           # echo "CONFIG_TMPFS_XATTR=y" >> "$CONFIG_FILE"
