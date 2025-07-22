@@ -622,29 +622,6 @@ jobs:
 
       - name: Build Kernel
         run: |
-          # KERNEL_VERSION="${{ needs.get-config.outputs.KERNEL_VERSION }}"
-
-          # # 判断内核版本并设置对应 clang 路径
-          # if [[ "$KERNEL_VERSION" == "6.6" ]]; then
-            # CLANG_PATH="clang-r510928"
-            # CLANG_DIR="prebuilts"
-          # elif [[ "$KERNEL_VERSION" == "6.1" ]]; then
-            # CLANG_PATH="clang-r487747c"
-            # CLANG_DIR="prebuilts"
-          # elif [[ "$KERNEL_VERSION" == "5.15" ]]; then
-            # CLANG_PATH="clang-r450784e"
-            # CLANG_DIR="prebuilts"
-          # elif [[ "$KERNEL_VERSION" == "5.10" ]]; then
-            # CLANG_PATH="clang-r416183b"
-            # CLANG_DIR="prebuilts-master"
-            # USE_LLVM_IAS=true
-          # else
-            # echo "fallback=true" >> "$GITHUB_OUTPUT"
-            # echo "⚠️ 当前内核版本 \"$KERNEL_VERSION\" 没有对应 clang 工具链，回退使用官方构建脚本"
-            # exit 0
-          # fi
-
-          # export PATH="$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/$CLANG_DIR/clang/host/linux-x86/$CLANG_PATH/bin:$PATH"
           export PATH="/usr/lib/ccache:$PATH"
           # 安装依赖工具
           sudo apt install -y lld
@@ -660,12 +637,6 @@ jobs:
           sudo -E chmod -R +x "$cust_clang"
           export PATH="$cust_clang:$PATH"
           echo $PATH
-          # find  cust_clang  -name "clang*"
-          which clang
-          file "$(which clang)"
-          file "./cust_clang/bin/clang.real"
-          ldd "./cust_clang/bin/clang.real"
-          ldd "./cust_clang/bin/clang-20"
           export CC="$(realpath ./cust_clang/bin/clang)" LTO="thin"
           export CC="ccache $CC" LTO="thin"
           MAKE_ARGS="LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
