@@ -598,15 +598,15 @@ jobs:
           # 内核静态字段只读(默认开启保护)
           echo "CONFIG_RODATA_FULL_DEFAULT_ENABLED=y" >> "$CONFIG_FILE"
                     
-          # 关闭部分安全特性
-          echo "CONFIG_SLAB_FREELIST_RANDOM=n" >> "$CONFIG_FILE"
-          echo "CONFIG_SHUFFLE_PAGE_ALLOCATOR=n" >> "$CONFIG_FILE"
-          echo "CONFIG_SLAB_FREELIST_HARDENED=n" >> "$CONFIG_FILE"
+          # # 关闭部分安全特性
+          # echo "CONFIG_SLAB_FREELIST_RANDOM=n" >> "$CONFIG_FILE"
+          # echo "CONFIG_SHUFFLE_PAGE_ALLOCATOR=n" >> "$CONFIG_FILE"
+          # echo "CONFIG_SLAB_FREELIST_HARDENED=n" >> "$CONFIG_FILE"
           
-          # 优化内存策略
-          echo "CONFIG_RCU_LAZY_DEFAULT_OFF=n" >> "$CONFIG_FILE"
-          echo "CONFIG_TASKS_TRACE_RCU_READ_MB=y" >> "$CONFIG_FILE"
-          echo "CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y" >> "$CONFIG_FILE"
+          # # 优化内存策略
+          # echo "CONFIG_RCU_LAZY_DEFAULT_OFF=n" >> "$CONFIG_FILE"
+          # echo "CONFIG_TASKS_TRACE_RCU_READ_MB=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y" >> "$CONFIG_FILE"
           
           # 禁用io调度器
           echo "CONFIG_MQ_IOSCHED_KYBER=n" >> "$CONFIG_FILE"
