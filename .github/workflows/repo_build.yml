@@ -519,7 +519,8 @@ jobs:
           echo "CONFIG_ZRAM=y" >> "$CONFIG_FILE"
           echo "CONFIG_ZRAM_DEF_COMP_ZSTD=y" >> "$CONFIG_FILE"
           echo "CONFIG_ZRAM_DEF_COMP=\"zstd\"" >> "$CONFIG_FILE"
-
+          echo "CONFIG_ZRAM_MEMORY_TRACKING=y" >> "$CONFIG_FILE"
+          echo "CONFIG_ZRAM_TRACK_ENTRY_ACTIME=y" >> "$CONFIG_FILE"
 
           # cmdline优化性能
           echo "CONFIG_CMDLINE=\"console=ttynull nokaslr stack_depot_disable=on cgroup_disable=pressure kasan=off kvm-arm.mode=protected bootconfig thp_anon=16K-2M:always mitigations=off kpti=0 hardened_usercopy=off audit=0 norandmaps arm64.nobti arm64.nomte arm64.nopauth\"" >> "$CONFIG_FILE"
@@ -572,17 +573,17 @@ jobs:
           echo "CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS=y" >> "$CONFIG_FILE"   
           echo "CONFIG_TRANSPARENT_HUGEPAGE_MADVISE=n" >> "$CONFIG_FILE"
 
-          echo "CONFIG_BPF_STREAM_PARSER=y" >> "$CONFIG_FILE"          
+          echo "CONFIG_BPF_STREAM_PARSER=n" >> "$CONFIG_FILE"          
           echo "CONFIG_NETFILTER_XT_SET=y" >> "$CONFIG_FILE"          
           
           echo "CONFIG_CFI_PERMISSIVE=y" >> "$CONFIG_FILE"
           echo "CONFIG_SLAB_MERGE_DEFAULT=y" >> "$CONFIG_FILE"
-          echo "CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=n" >> "$CONFIG_FILE"
           echo "CONFIG_DMABUF_HUGETLB=y" >> "$CONFIG_FILE"
           echo "CONFIG_ARM64_SME=y" >> "$CONFIG_FILE"
           
           echo "CONFIG_PCIEASPM_POWER_SUPERSAVE=y" >> "$CONFIG_FILE"
-          echo "CONFIG_KFENCE_STATIC_KEYS=y" >> "$CONFIG_FILE"
+          echo "CONFIG_KFENCE_STATIC_KEYS=n" >> "$CONFIG_FILE"
 
           # 堆栈保护关闭
           # echo "CONFIG_STACKPROTECTOR_PER_TASK=n" >> "$CONFIG_FILE"
@@ -623,6 +624,19 @@ jobs:
           # sed -i 's/TEST=m/TEST=n/g' "$CONFIG_FILE"
           # sed -i 's/TESTS=m/TESTS=n/g' "$CONFIG_FILE"
           # sed -i 's/KUNIT=m/KUNIT=n/g' "$CONFIG_FILE"
+          echo "CONFIG_FAT_KUNIT_TEST=n" >> "$CONFIG_FILE"
+          echo "CONFIG_EXT4_KUNIT_TESTS=n" >> "$CONFIG_FILE"          
+          echo "CONFIG_RTC_LIB_KUNIT_TEST=n" >> "$CONFIG_FILE"
+          echo "CONFIG_CLK_KUNIT_TEST=n" >> "$CONFIG_FILE"
+          echo "CONFIG_CLK_GATE_KUNIT_TEST=n" >> "$CONFIG_FILE"
+          echo "CONFIG_IIO_FORMAT_KUNIT_TESTAULT=n" >> "$CONFIG_FILE"
+          
+          echo "CONFIG_INPUT_KUNIT_TEST=n" >> "$CONFIG_FILE"
+          echo "CONFIG_SND_SOC_UTILS_KUNIT_TEST=n" >> "$CONFIG_FILE"
+          echo "CONFIG_SND_SOC_TOPOLOGY_KUNIT_TEST=n" >> "$CONFIG_FILE"
+          echo "CONFIG_HID_KUNIT_TEST=n" >> "$CONFIG_FILE"
+          echo "CONFIG_REGMAP_KUNIT=n" >> "$CONFIG_FILE"
+          echo "CONFIG_TIME_KUNIT_TEST=n" >> "$CONFIG_FILE"
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
 
