@@ -491,9 +491,6 @@ jobs:
               echo "CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y" >> "$CONFIG_FILE"
               echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> "$CONFIG_FILE"
           fi
-          # TMPFS配置*
-          # echo "CONFIG_TMPFS_XATTR=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_TMPFS_POSIX_ACL=y" >> "$CONFIG_FILE"
 
           # BBR配置*
           echo "CONFIG_TCP_CONG_ADVANCED=y" >> "$CONFIG_FILE"
@@ -505,13 +502,7 @@ jobs:
           echo "CONFIG_TCP_CONG_HTCP=n" >> "$CONFIG_FILE"
           echo "CONFIG_DEFAULT_CUBIC=n" >> "$CONFIG_FILE"
           echo "CONFIG_DEFAULT_TCP_CONG=\"bbr\"" >> "$CONFIG_FILE"
-          
-          # ECN配置*
-          echo "CONFIG_IP_ECN=y" >> "$CONFIG_FILE"
-          echo "CONFIG_TCP_ECN=y" >> "$CONFIG_FILE"
-          echo "CONFIG_IPV6_ECN=y" >> "$CONFIG_FILE"
-          echo "CONFIG_IP_NF_TARGET_ECN=y" >> "$CONFIG_FILE"
-          
+                 
           # ssg
           echo "CONFIG_MQ_IOSCHED_SSG=y" >> "$CONFIG_FILE"
           echo "CONFIG_MQ_IOSCHED_SSG_CGROUP=y" >> "$CONFIG_FILE"
@@ -530,11 +521,25 @@ jobs:
           echo "CONFIG_CMDLINE=\"console=ttynull nokaslr stack_depot_disable=on cgroup_disable=pressure kasan=off kvm-arm.mode=protected bootconfig thp_anon=16K-2M:always mitigations=off kpti=0 hardened_usercopy=off audit=0 norandmaps arm64.nobti arm64.nomte arm64.nopauth\"" >> "$CONFIG_FILE"
           echo "CONFIG_CMDLINE_FROM_BOOTLOADER=n" >> "$CONFIG_FILE"
           echo "CONFIG_CMDLINE_EXTEND=y" >> "$CONFIG_FILE"
+          
+          # 防止单点故障导致系统崩溃
+          echo "CONFIG_PANIC_ON_OOPS=n" >> "$CONFIG_FILE"
+          echo "CONFIG_PANIC_ON_OOPS_VALUE=0" >> "$CONFIG_FILE"
 
           # walt scheduler
           # 不用开启，开启后无法开机
           # echo "CONFIG_SCHED_WALT=y" >> "$CONFIG_FILE"
-                    
+        
+          # # ECN配置*
+          # echo "CONFIG_IP_ECN=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_TCP_ECN=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_IPV6_ECN=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_IP_NF_TARGET_ECN=y" >> "$CONFIG_FILE"
+          
+          # # TMPFS配置*
+          # echo "CONFIG_TMPFS_XATTR=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_TMPFS_POSIX_ACL=y" >> "$CONFIG_FILE"
+
           # 透明大页
           # echo "CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS=y" >> "$CONFIG_FILE"          
           # echo "CONFIG_TRANSPARENT_HUGEPAGE_MADVISE=n" >> "$CONFIG_FILE"
@@ -570,45 +575,42 @@ jobs:
           # echo "CONFIG_DMABUF_HUGETLB=y" >> "$CONFIG_FILE"
           # echo "CONFIG_ARM64_SME=y" >> "$CONFIG_FILE"
           
-          # echo "CONFIG_TASKS_TRACE_RCU_READ_MB=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y" >> "$CONFIG_FILE"
           # echo "CONFIG_PCIEASPM_POWER_SUPERSAVE=y" >> "$CONFIG_FILE"
           # echo "CONFIG_KFENCE_STATIC_KEYS=y" >> "$CONFIG_FILE"
 
-          # echo "CONFIG_RODATA_FULL_DEFAULT_ENABLED=y" >> "$CONFIG_FILE"
-
           # # 堆栈保护关闭
-          # # echo "CONFIG_STACKPROTECTOR_PER_TASK=n" >> "$CONFIG_FILE"
+          # echo "CONFIG_STACKPROTECTOR_PER_TASK=n" >> "$CONFIG_FILE"
           
           # # 模块签名校验          
           # echo "CONFIG_MODULE_SIG_PROTECT=n" >> "$CONFIG_FILE"
           
-          # # 幽灵漏洞
-          # echo "CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY=n" >> "$CONFIG_FILE"
-          # echo "CONFIG_UNMAP_KERNEL_AT_EL0=n" >> "$CONFIG_FILE"
+          # 幽灵漏洞
+          echo "CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY=n" >> "$CONFIG_FILE"
+          echo "CONFIG_UNMAP_KERNEL_AT_EL0=n" >> "$CONFIG_FILE"
 
-          # 防止单点故障导致系统崩溃
-          echo "CONFIG_PANIC_ON_OOPS=n" >> "$CONFIG_FILE"
-          echo "CONFIG_PANIC_ON_OOPS_VALUE=0" >> "$CONFIG_FILE"
+          # 内核静态字段只读(默认开启保护)
+          echo "CONFIG_RODATA_FULL_DEFAULT_ENABLED=y" >> "$CONFIG_FILE"
+                    
+          # 关闭部分安全特性
+          echo "CONFIG_SLAB_FREELIST_RANDOM=n" >> "$CONFIG_FILE"
+          echo "CONFIG_SHUFFLE_PAGE_ALLOCATOR=n" >> "$CONFIG_FILE"
+          echo "CONFIG_SLAB_FREELIST_HARDENED=n" >> "$CONFIG_FILE"
           
-          # # 关闭部分安全特性
-          # echo "CONFIG_SLAB_FREELIST_RANDOM=n" >> "$CONFIG_FILE"
-          # echo "CONFIG_SHUFFLE_PAGE_ALLOCATOR=n" >> "$CONFIG_FILE"
-          # echo "CONFIG_SLAB_FREELIST_HARDENED=n" >> "$CONFIG_FILE"
+          # 优化内存策略
+          echo "CONFIG_RCU_LAZY_DEFAULT_OFF=n" >> "$CONFIG_FILE"
+          echo "CONFIG_TASKS_TRACE_RCU_READ_MB=y" >> "$CONFIG_FILE"
+          echo "CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y" >> "$CONFIG_FILE"
           
-          # # 优化内存策略
-          # echo "CONFIG_RCU_LAZY_DEFAULT_OFF=n" >> "$CONFIG_FILE"
+          # 禁止无用功能
+          echo "CONFIG_VIRTIO_PCI_LEGACY=n" >> "$CONFIG_FILE"
+          echo "CONFIG_HEADERS_INSTALL=n" >> "$CONFIG_FILE"
           
-          # # 禁止无用功能
-          # echo "CONFIG_VIRTIO_PCI_LEGACY=n" >> "$CONFIG_FILE"
-          # echo "CONFIG_HEADERS_INSTALL=n" >> "$CONFIG_FILE"
+          # 禁用io调度器
+          echo "CONFIG_MQ_IOSCHED_KYBER=n" >> "$CONFIG_FILE"
           
-          # # 禁用io调度器
-          # echo "CONFIG_MQ_IOSCHED_KYBER=n" >> "$CONFIG_FILE"
-          
-          # sed -i 's/TEST=m/TEST=n/g' "$CONFIG_FILE"
-          # sed -i 's/TESTS=m/TESTS=n/g' "$CONFIG_FILE"
-          # sed -i 's/KUNIT=m/KUNIT=n/g' "$CONFIG_FILE"
+          sed -i 's/TEST=m/TEST=n/g' "$CONFIG_FILE"
+          sed -i 's/TESTS=m/TESTS=n/g' "$CONFIG_FILE"
+          sed -i 's/KUNIT=m/KUNIT=n/g' "$CONFIG_FILE"
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
 
