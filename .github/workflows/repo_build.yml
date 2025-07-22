@@ -584,9 +584,6 @@ jobs:
           
           echo "CONFIG_PCIEASPM_POWER_SUPERSAVE=y" >> "$CONFIG_FILE"
           echo "CONFIG_KFENCE_STATIC_KEYS=y" >> "$CONFIG_FILE"
-
-          # 堆栈保护关闭
-          # echo "CONFIG_STACKPROTECTOR_PER_TASK=n" >> "$CONFIG_FILE"
           
           # 模块签名校验          
           echo "CONFIG_MODULE_SIG_PROTECT=n" >> "$CONFIG_FILE"
@@ -602,6 +599,9 @@ jobs:
           # echo "CONFIG_SLAB_FREELIST_RANDOM=n" >> "$CONFIG_FILE"
           # echo "CONFIG_SHUFFLE_PAGE_ALLOCATOR=n" >> "$CONFIG_FILE"
           # echo "CONFIG_SLAB_FREELIST_HARDENED=n" >> "$CONFIG_FILE"
+          
+          # # 堆栈保护关闭
+          # echo "CONFIG_STACKPROTECTOR_PER_TASK=n" >> "$CONFIG_FILE"
           
           # # 优化内存策略
           # echo "CONFIG_RCU_LAZY_DEFAULT_OFF=n" >> "$CONFIG_FILE"
