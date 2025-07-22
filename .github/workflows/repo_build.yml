@@ -654,17 +654,20 @@ jobs:
           mkdir cust_clang; cd cust_clang
           wget -q https://github.com/cctv18/oneplus_sm8650_toolchain/releases/download/LLVM-Clang20-r547379/clang-r547379.zip
           unzip clang-*.zip > /dev/null 
-          ls
+          ls -al
           cd  ..
           export cust_clang="$(realpath ./cust_clang/bin)"
           sudo -E chmod -R +x "$cust_clang"
           export PATH="$cust_clang:$PATH"
           echo $PATH
-          find  cust_clang  -name "clang*"
+          # find  cust_clang  -name "clang*"
           which clang
           file "$(which clang)"
+          file "./cust_clang/bin/clang.real"
+          ldd "./cust_clang/bin/clang.real"
+          ldd "./cust_clang/bin/clang-20"
           export CC="$(realpath ./cust_clang/bin/clang)" LTO="thin"
-          export CC="ccache $CC" LTO="thin"
+          # export CC="ccache $CC" LTO="thin"
           MAKE_ARGS="LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
             RUSTC=../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc \
             PAHOLE=../../prebuilts/kernel-build-tools/linux-x86/bin/pahole \
