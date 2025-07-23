@@ -573,17 +573,17 @@ jobs:
           # echo "CONFIG_TMPFS_POSIX_ACL=y" >> "$CONFIG_FILE"
           
           # 透明大页
-          # echo "CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS=y" >> "$CONFIG_FILE"   
-          # echo "CONFIG_TRANSPARENT_HUGEPAGE_MADVISE=n" >> "$CONFIG_FILE"
+          echo "CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS=y" >> "$CONFIG_FILE"   
+          echo "CONFIG_TRANSPARENT_HUGEPAGE_MADVISE=n" >> "$CONFIG_FILE"
 
-          # echo "CONFIG_BPF_STREAM_PARSER=y" >> "$CONFIG_FILE"          
-          # echo "CONFIG_NETFILTER_XT_SET=y" >> "$CONFIG_FILE"          
+          echo "CONFIG_BPF_STREAM_PARSER=y" >> "$CONFIG_FILE"          
+          echo "CONFIG_NETFILTER_XT_SET=y" >> "$CONFIG_FILE"          
           
-          # echo "CONFIG_CFI_PERMISSIVE=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_SLAB_MERGE_DEFAULT=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=n" >> "$CONFIG_FILE"
-          # echo "CONFIG_DMABUF_HUGETLB=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_ARM64_SME=y" >> "$CONFIG_FILE"
+          echo "CONFIG_CFI_PERMISSIVE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_SLAB_MERGE_DEFAULT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=n" >> "$CONFIG_FILE"
+          echo "CONFIG_DMABUF_HUGETLB=y" >> "$CONFIG_FILE"
+          echo "CONFIG_ARM64_SME=y" >> "$CONFIG_FILE"
           
           # echo "CONFIG_PCIEASPM_POWER_SUPERSAVE=y" >> "$CONFIG_FILE"
           # echo "CONFIG_KFENCE_STATIC_KEYS=y" >> "$CONFIG_FILE"
