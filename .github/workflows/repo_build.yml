@@ -633,6 +633,9 @@ jobs:
           echo "CONFIG_TIME_KUNIT_TEST=n" >> "$CONFIG_FILE"
           echo "CONFIG_NETDEV_ADDR_LIST_TEST=n" >> "$CONFIG_FILE"
           echo "CONFIG_IIO_FORMAT_KUNIT_TEST=n" >> "$CONFIG_FILE"
+
+          # 修蓝牙问题
+          echo "CONFIG_BT=y" >> "$CONFIG_FILE"
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
 
