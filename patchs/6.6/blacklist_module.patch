@@ -1,8 +1,8 @@
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index ea1b4e116389..e1acb28ef64f 100644
+index ea1b4e116389..9440695e5c3c 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
-@@ -2872,6 +2872,83 @@ static int early_mod_check(struct load_info *info, int flags)
+@@ -2872,6 +2872,85 @@ static int early_mod_check(struct load_info *info, int flags)
  	return err;
  }
  
@@ -18,6 +18,7 @@ index ea1b4e116389..e1acb28ef64f 100644
 +    "fat_test",
 +    "gzvm",
 +    "hid_uclogic_test",
++    "hidp",
 +    "hung_task_enh",
 +    "iio_test_format",
 +    "input_test",
@@ -72,6 +73,7 @@ index ea1b4e116389..e1acb28ef64f 100644
 +    "qcom_cpufreq_thermal",
 +    "qti_thermal_vendor_hooks",
 +    "regmap_kunit",
++    "rfcomm",
 +    "rfkill",
 +    "soc_topology_test",
 +    "soc_utils_test",
@@ -86,7 +88,7 @@ index ea1b4e116389..e1acb28ef64f 100644
  /*
   * Allocate and load the module: note that size of section 0 is always
   * zero, and we rely on this for optional sections.
-@@ -2882,6 +2959,7 @@ static int load_module(struct load_info *info, const char __user *uargs,
+@@ -2882,6 +2961,7 @@ static int load_module(struct load_info *info, const char __user *uargs,
  	struct module *mod;
  	bool module_allocated = false;
  	long err = 0;
@@ -94,7 +96,7 @@ index ea1b4e116389..e1acb28ef64f 100644
  	char *after_dashes;
  
  	/*
-@@ -2913,6 +2991,13 @@ static int load_module(struct load_info *info, const char __user *uargs,
+@@ -2913,6 +2993,13 @@ static int load_module(struct load_info *info, const char __user *uargs,
  	if (err)
  		goto free_copy;
  
