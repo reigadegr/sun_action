@@ -1,16 +1,13 @@
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index ea1b4e116389..ca6e3d6565fb 100644
+index ea1b4e116389..fe389ed355c8 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
 @@ -2872,6 +2872,98 @@ static int early_mod_check(struct load_info *info, int flags)
  	return err;
  }
  
-+static const char *module_blacklist_dev[] = {
-+    NULL
-+};
-+
-+static const char *module_blacklist_stable[] = {
++static const char *kernel_module_blacklist[] = {
++    "bluetooth",
 +    "clk_gate_test",
 +    "clk_test",
 +    "cpu_hotplug",
@@ -23,6 +20,7 @@ index ea1b4e116389..ca6e3d6565fb 100644
 +    "fat_test",
 +    "gzvm",
 +    "hid_uclogic_test",
++    "hidp",
 +    "hung_task_enh",
 +    "iio_test_format",
 +    "input_test",
@@ -85,6 +83,8 @@ index ea1b4e116389..ca6e3d6565fb 100644
 +    "qcom_cpufreq_thermal",
 +    "qti_thermal_vendor_hooks",
 +    "regmap_kunit",
++    "rfcomm",
++    "rfkill",
 +    "sched_penalty",
 +    "sched_walt",
 +    "slc_mpam",
@@ -109,24 +109,17 @@ index ea1b4e116389..ca6e3d6565fb 100644
  	char *after_dashes;
  
  	/*
-@@ -2912,6 +3005,20 @@ static int load_module(struct load_info *info, const char __user *uargs,
- 	err = early_mod_check(info, flags);
+@@ -2913,6 +3006,13 @@ static int load_module(struct load_info *info, const char __user *uargs,
  	if (err)
  		goto free_copy;
-+	
-+    for (i = 0; module_blacklist_dev[i] != NULL; i++) {
-+        if (strcmp(info->name, module_blacklist_dev[i]) == 0) {
-+            pr_warn("Module %s is blacklisted\n", info->name);
-+            goto free_copy;
-+        }
-+    }
-+    
-+    for (i = 0; module_blacklist_stable[i] != NULL; i++) {
-+        if (strcmp(info->name, module_blacklist_stable[i]) == 0) {
-+            pr_warn("Module %s is blacklisted\n", info->name);
-+            goto free_copy;
-+        }
-+    }
  
++    for (i = 0; kernel_module_blacklist[i] != NULL; i++) {
++        if (strcmp(info->name, kernel_module_blacklist[i]) == 0) {
++            pr_warn("Module %s is blacklisted\n", info->name);
++            goto free_copy;
++        }
++    }
++
  	/* Figure out module layout, and allocate all the memory. */
  	mod = layout_and_allocate(info, flags);
+ 	if (IS_ERR(mod)) {
