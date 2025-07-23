@@ -28,7 +28,7 @@ index ea1b4e116389..e90edb1d1679 100644
 +    "kunit_example_test",
 +    "kunit_test",
 +    "lib_test",
-+    // "llcc_qcom",
++    "llcc_qcom",
 +    "oplus_binder_strategy",
 +    "oplus_bsp_dfr_hung_task_enhance",
 +    "oplus_bsp_dfr_reboot_speed",
