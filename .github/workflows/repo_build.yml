@@ -637,6 +637,8 @@ jobs:
           # 修蓝牙问题
           echo "CONFIG_RFKILL=y" >> "$CONFIG_FILE"
           echo "CONFIG_BT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_BT_RFCOMM=y" >> "$CONFIG_FILE"
+          echo "CONFIG_BT_HIDP=y" >> "$CONFIG_FILE"
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
 
