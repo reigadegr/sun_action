@@ -10,7 +10,7 @@ on:
         default: 'repo_build'
         options:
           - gki_test
-          - CAll Build Start UP
+          - repo_build
           - Build TEST
           - Build TEST2
       count:
