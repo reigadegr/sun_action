@@ -561,18 +561,16 @@ jobs:
           echo "CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y" >> "$CONFIG_FILE"
 
           # lto thin，O2 
-          # echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_LD_DEAD_CODE_DATA_ELIMINATION=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_AUTOFDO_CLANG=y" >> "$CONFIG_FILE"
+          echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
+          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_LD_DEAD_CODE_DATA_ELIMINATION=y" >> "$CONFIG_FILE"
+          echo "CONFIG_AUTOFDO_CLANG=y" >> "$CONFIG_FILE"
 
           
           # # TMPFS配置*
           # echo "CONFIG_TMPFS_XATTR=y" >> "$CONFIG_FILE"
           # echo "CONFIG_TMPFS_POSIX_ACL=y" >> "$CONFIG_FILE"
-
-
           
           # 透明大页
           # echo "CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS=y" >> "$CONFIG_FILE"   
@@ -612,8 +610,6 @@ jobs:
           
           # # 禁用io调度器
           echo "CONFIG_MQ_IOSCHED_KYBER=n" >> "$CONFIG_FILE"
-          
-
           
           echo "CONFIG_FAT_KUNIT_TEST=n" >> "$CONFIG_FILE"
           echo "CONFIG_EXT4_KUNIT_TESTS=n" >> "$CONFIG_FILE"          
