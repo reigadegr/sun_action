@@ -535,7 +535,7 @@ jobs:
           echo "CONFIG_QCOM_LLCC=y" >> "$CONFIG_FILE"
 
           # walt scheduler (不用开启，开启后无法开机)
-          # echo "CONFIG_SCHED_WALT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_SCHED_WALT=y" >> "$CONFIG_FILE"
         
           # ECN配置*
           echo "CONFIG_IP_ECN=y" >> "$CONFIG_FILE"
