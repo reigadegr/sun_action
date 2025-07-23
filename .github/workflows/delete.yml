@@ -11,8 +11,8 @@ on:
         options:
           - gki_test
           - repo_build
-          - Build TEST
-          - Build TEST2
+          - xaga_sukisu
+          - xaga_mksu
       count:
         description: '最多访问的运行次数'
         required: false
