@@ -592,8 +592,8 @@ jobs:
           # echo "CONFIG_MODULE_SIG_PROTECT=n" >> "$CONFIG_FILE"
           
           # # 幽灵漏洞
-          # echo "CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY=n" >> "$CONFIG_FILE"
-          # echo "CONFIG_UNMAP_KERNEL_AT_EL0=n" >> "$CONFIG_FILE"
+          echo "CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY=n" >> "$CONFIG_FILE"
+          echo "CONFIG_UNMAP_KERNEL_AT_EL0=n" >> "$CONFIG_FILE"
 
           # # 内核静态字段只读(默认开启保护)
           # echo "CONFIG_RODATA_FULL_DEFAULT_ENABLED=y" >> "$CONFIG_FILE"
