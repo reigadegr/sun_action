@@ -639,9 +639,6 @@ jobs:
           echo "CONFIG_BT=y" >> "$CONFIG_FILE"
           echo "CONFIG_BT_RFCOMM=y" >> "$CONFIG_FILE"
           echo "CONFIG_BT_HIDP=y" >> "$CONFIG_FILE"
-          
-          # llcc_qcom
-          echo "CONFIG_QCOM_LLCC=y" >> "$CONFIG_FILE"
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
 
