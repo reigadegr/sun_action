@@ -27,7 +27,7 @@ index ea1b4e116389..877068c6ad72 100644
 +    "kunit",
 +    "kunit_example_test",
 +    "kunit_test",
-+    "lib_test",   
++    "lib_test",
 +    "oplus_binder_strategy",
 +    "oplus_bsp_dfr_hung_task_enhance",
 +    "oplus_bsp_dfr_reboot_speed",
