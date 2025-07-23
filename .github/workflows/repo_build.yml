@@ -245,7 +245,7 @@ jobs:
           sed -i '/clang-tools/d' .repo/manifests/default.xml
           # sed -i '/build-tools/d' .repo/manifests/default.xml
           sed -i '/ndk/d' .repo/manifests/default.xml
-          sed -i '/linux-x86/d' .repo/manifests/default.xml
+          # sed -i '/linux-x86/d' .repo/manifests/default.xml
           sed -i '/common-modules/d' .repo/manifests/default.xml
           repo sync -c -j$(nproc --all) --no-tags --no-clone-bundle --force-sync
           rm -rf common .repo
@@ -648,24 +648,48 @@ jobs:
 
       - name: Build Kernel
         run: |
+          KERNEL_VERSION="${{ needs.get-config.outputs.KERNEL_VERSION }}"
+
+          # 判断内核版本并设置对应 clang 路径
+          if [[ "$KERNEL_VERSION" == "6.6" ]]; then
+            CLANG_PATH="clang-r510928"
+            CLANG_DIR="prebuilts"
+          elif [[ "$KERNEL_VERSION" == "6.1" ]]; then
+            CLANG_PATH="clang-r487747c"
+            CLANG_DIR="prebuilts"
+          elif [[ "$KERNEL_VERSION" == "5.15" ]]; then
+            CLANG_PATH="clang-r450784e"
+            CLANG_DIR="prebuilts"
+          elif [[ "$KERNEL_VERSION" == "5.10" ]]; then
+            CLANG_PATH="clang-r416183b"
+            CLANG_DIR="prebuilts-master"
+            USE_LLVM_IAS=true
+          else
+            echo "fallback=true" >> "$GITHUB_OUTPUT"
+            echo "⚠️ 当前内核版本 \"$KERNEL_VERSION\" 没有对应 clang 工具链，回退使用官方构建脚本"
+            exit 0
+          fi
+
+          export PATH="$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/$CLANG_DIR/clang/host/linux-x86/$CLANG_PATH/bin:$PATH"
+          
           export PATH="/usr/lib/ccache:$PATH"
           # 安装依赖工具
-          # sudo apt install -y lld
+          sudo apt install -y lld
           cd kernel_workspace/kernel_platform/common
           
           # 安装自定义clang
-          mkdir cust_clang; cd cust_clang
-          wget -q https://github.com/cctv18/oneplus_sm8650_toolchain/releases/download/LLVM-Clang20-r547379/clang-r547379.zip
-          unzip clang-*.zip > /dev/null 
-          ls -al
-          cd  ..
-          export cust_clang="$(realpath ./cust_clang/bin)"
-          sudo -E chmod -R +x "$cust_clang"
-          export PATH="$cust_clang:$PATH"
-          echo $PATH
-          export CC="$(realpath ./cust_clang/bin/clang)" LTO="thin"
-          export CC="ccache $CC" LTO="thin"
-          export PAHOLE="$cust_clang/bin/pahole"
+          # mkdir cust_clang; cd cust_clang
+          # wget -q https://github.com/cctv18/oneplus_sm8650_toolchain/releases/download/LLVM-Clang20-r547379/clang-r547379.zip
+          # unzip clang-*.zip > /dev/null 
+          # ls -al
+          # cd  ..
+          # export cust_clang="$(realpath ./cust_clang/bin)"
+          # sudo -E chmod -R +x "$cust_clang"
+          # export PATH="$cust_clang:$PATH"
+          # echo $PATH
+          # export CC="$(realpath ./cust_clang/bin/clang)" LTO="thin"
+          export CC="ccache clang" LTO="thin"
+          export PAHOLE="../../prebuilts/kernel-build-tools/linux-x86/bin/pahole"
           MAKE_ARGS="LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
             RUSTC=../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc \
             LD=ld.lld HOSTLD=ld.lld KCFLAGS+=-Wno-error"
