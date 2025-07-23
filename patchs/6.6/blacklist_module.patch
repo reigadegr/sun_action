@@ -1,21 +1,17 @@
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index ea1b4e116389..f51dd3bd7eb8 100644
+index ea1b4e116389..c67cb53f73b7 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
-@@ -2872,6 +2872,86 @@ static int early_mod_check(struct load_info *info, int flags)
+@@ -2872,6 +2872,82 @@ static int early_mod_check(struct load_info *info, int flags)
  	return err;
  }
  
-+static const char *module_blacklist_dev[] = {
-+    NULL
-+};
-+
-+static const char *module_blacklist_stable[] = {
++static const char *kernel_module_blacklist[] = {
++    "bluetooth",
 +    "clk_gate_test",
 +    "clk_test",
 +    "cpu_hotplug",
 +    "cpucp_fast",
-+    "crypto_lz4p",
 +    "dev_addr_lists_test",
 +    "ext4_inode_test",
 +    "f_fs_ipc_log",
@@ -89,7 +85,7 @@ index ea1b4e116389..f51dd3bd7eb8 100644
  /*
   * Allocate and load the module: note that size of section 0 is always
   * zero, and we rely on this for optional sections.
-@@ -2882,6 +2962,7 @@ static int load_module(struct load_info *info, const char __user *uargs,
+@@ -2882,6 +2958,7 @@ static int load_module(struct load_info *info, const char __user *uargs,
  	struct module *mod;
  	bool module_allocated = false;
  	long err = 0;
@@ -97,24 +93,17 @@ index ea1b4e116389..f51dd3bd7eb8 100644
  	char *after_dashes;
  
  	/*
-@@ -2912,6 +2993,20 @@ static int load_module(struct load_info *info, const char __user *uargs,
- 	err = early_mod_check(info, flags);
+@@ -2913,6 +2990,13 @@ static int load_module(struct load_info *info, const char __user *uargs,
  	if (err)
  		goto free_copy;
-+	
-+    for (i = 0; module_blacklist_dev[i] != NULL; i++) {
-+        if (strcmp(info->name, module_blacklist_dev[i]) == 0) {
-+            pr_warn("Module %s is blacklisted\n", info->name);
-+            goto free_copy;
-+        }
-+    }
-+    
-+    for (i = 0; module_blacklist_stable[i] != NULL; i++) {
-+        if (strcmp(info->name, module_blacklist_stable[i]) == 0) {
-+            pr_warn("Module %s is blacklisted\n", info->name);
-+            goto free_copy;
-+        }
-+    }
  
++    for (i = 0; kernel_module_blacklist[i] != NULL; i++) {
++        if (strcmp(info->name, kernel_module_blacklist[i]) == 0) {
++            pr_warn("Module %s is blacklisted\n", info->name);
++            goto free_copy;
++        }
++    }
++
  	/* Figure out module layout, and allocate all the memory. */
  	mod = layout_and_allocate(info, flags);
+ 	if (IS_ERR(mod)) {
