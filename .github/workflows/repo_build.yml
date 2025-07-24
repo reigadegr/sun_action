@@ -511,6 +511,7 @@ jobs:
           echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
           echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
           echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3=y" >> "$CONFIG_FILE"
           echo "CONFIG_LD_DEAD_CODE_DATA_ELIMINATION=y" >> "$CONFIG_FILE"
           echo "CONFIG_AUTOFDO_CLANG=y" >> "$CONFIG_FILE"
           
