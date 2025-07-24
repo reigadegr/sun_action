@@ -519,7 +519,7 @@ jobs:
           echo "CONFIG_ZRAM=y" >> "$CONFIG_FILE"
           echo "CONFIG_ZRAM_DEF_COMP_ZSTD=y" >> "$CONFIG_FILE"
           echo "CONFIG_ZRAM_DEF_COMP=\"zstd\"" >> "$CONFIG_FILE"
-          echo "CONFIG_CRYPTO_ZSTDN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_ZRAM_DEDUP=y" >> "$CONFIG_FILE"
           # echo "CONFIG_ZRAM_MEMORY_TRACKING=y" >> "$CONFIG_FILE"
           # echo "CONFIG_ZRAM_TRACK_ENTRY_ACTIME=y" >> "$CONFIG_FILE"
 
