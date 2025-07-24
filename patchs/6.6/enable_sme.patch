@@ -1,0 +1,12 @@
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index d8a41303f9fd..ff0802ea8b9b 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -2171,7 +2171,6 @@ config ARM64_SME
+ 	bool "ARM Scalable Matrix Extension support"
+ 	default y
+ 	depends on ARM64_SVE
+-	depends on BROKEN
+ 	help
+ 	  The Scalable Matrix Extension (SME) is an extension to the AArch64
+ 	  execution state which utilises a substantial subset of the SVE
