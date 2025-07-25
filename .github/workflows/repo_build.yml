@@ -576,13 +576,12 @@ jobs:
           echo "CONFIG_IP_SET_HASH_NETPORTNET=y" >> "$CONFIG_FILE"
           
           echo "CONFIG_NET_EMATCH_IPSET=y" >> "$CONFIG_FILE"
+          echo "CONFIG_BPF_STREAM_PARSER=y" >> "$CONFIG_FILE"          
+          echo "CONFIG_NETFILTER_XT_SET=y" >> "$CONFIG_FILE"     
           
           # 透明大页
           echo "CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS=y" >> "$CONFIG_FILE"   
           echo "CONFIG_TRANSPARENT_HUGEPAGE_MADVISE=n" >> "$CONFIG_FILE"
-
-          echo "CONFIG_BPF_STREAM_PARSER=y" >> "$CONFIG_FILE"          
-          echo "CONFIG_NETFILTER_XT_SET=y" >> "$CONFIG_FILE"          
           
           echo "CONFIG_CFI_PERMISSIVE=y" >> "$CONFIG_FILE"
           echo "CONFIG_SLAB_MERGE_DEFAULT=y" >> "$CONFIG_FILE"
@@ -617,7 +616,6 @@ jobs:
           echo "CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y" >> "$CONFIG_FILE"
           
           echo "CONFIG_UDMABUF=y" >> "$CONFIG_FILE"
-          echo "CONFIG_PCIEASPM_DEFAULT=y" >> "$CONFIG_FILE"     
           # # 禁用io调度器
           echo "CONFIG_MQ_IOSCHED_KYBER=n" >> "$CONFIG_FILE"
           
@@ -627,7 +625,7 @@ jobs:
           echo "CONFIG_VIRTIO_PCI_LEGACY=n" >> "$CONFIG_FILE"
           echo "CONFIG_HEADERS_INSTALL=n" >> "$CONFIG_FILE"
      
-          
+          # 无用kunit
           echo "CONFIG_FAT_KUNIT_TEST=n" >> "$CONFIG_FILE"
           echo "CONFIG_EXT4_KUNIT_TESTS=n" >> "$CONFIG_FILE"          
           echo "CONFIG_RTC_LIB_KUNIT_TEST=n" >> "$CONFIG_FILE"
