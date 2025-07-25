@@ -617,6 +617,12 @@ jobs:
           echo "CONFIG_ANON_MIN_RATIO=35" >> "$CONFIG_FILE"
           echo "CONFIG_CLEAN_LOW_RATIO=5" >> "$CONFIG_FILE"
           echo "CONFIG_CLEAN_MIN_RATIO=10" >> "$CONFIG_FILE"
+          
+          # 华为auth qos
+          echo "CONFIG_AUTHORITY_CTRL=n" >> "$CONFIG_FILE"
+          echo "CONFIG_QOS_CTRL=n" >> "$CONFIG_FILE"
+          echo "CONFIG_QOS_AUTHORITY=n" >> "$CONFIG_FILE"
+          echo "CONFIG_QOS_POLICY_MAX_NR=5" >> "$CONFIG_FILE"
                     
           echo "CONFIG_UDMABUF=y" >> "$CONFIG_FILE"
           # # 禁用io调度器
