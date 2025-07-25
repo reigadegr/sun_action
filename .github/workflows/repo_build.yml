@@ -571,7 +571,6 @@ jobs:
           echo "CONFIG_IP6_NF_TARGET_NPT=y" >> "$CONFIG_FILE"
           echo "CONFIG_IP_SET_HASH_NETPORTNET=y" >> "$CONFIG_FILE"
           
-          echo "CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=y" >> "$CONFIG_FILE"
           echo "CONFIG_NET_EMATCH_IPSET=y" >> "$CONFIG_FILE"
           
           # 透明大页
@@ -583,7 +582,7 @@ jobs:
           
           echo "CONFIG_CFI_PERMISSIVE=y" >> "$CONFIG_FILE"
           echo "CONFIG_SLAB_MERGE_DEFAULT=y" >> "$CONFIG_FILE"
-          echo "CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=y" >> "$CONFIG_FILE"
           echo "CONFIG_DMABUF_HUGETLB=y" >> "$CONFIG_FILE"
           echo "CONFIG_ARM64_SME=y" >> "$CONFIG_FILE"
           
