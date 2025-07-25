@@ -614,7 +614,10 @@ jobs:
           echo "CONFIG_RCU_LAZY_DEFAULT_OFF=n" >> "$CONFIG_FILE"
           echo "CONFIG_TASKS_TRACE_RCU_READ_MB=y" >> "$CONFIG_FILE"
           echo "CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y" >> "$CONFIG_FILE"
-          
+          echo "CONFIG_ANON_MIN_RATIO=85" >> "$CONFIG_FILE"
+          echo "CONFIG_CLEAN_LOW_RATIO=0" >> "$CONFIG_FILE"
+          echo "CONFIG_CLEAN_MIN_RATIO=5" >> "$CONFIG_FILE"
+                    
           echo "CONFIG_UDMABUF=y" >> "$CONFIG_FILE"
           # # 禁用io调度器
           echo "CONFIG_MQ_IOSCHED_KYBER=n" >> "$CONFIG_FILE"
