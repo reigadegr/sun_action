@@ -572,6 +572,7 @@ jobs:
           echo "CONFIG_IP_SET_HASH_NETPORTNET=y" >> "$CONFIG_FILE"
           
           echo "CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_EMATCH_IPSET=y" >> "$CONFIG_FILE"
           
           # 透明大页
           echo "CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS=y" >> "$CONFIG_FILE"   
