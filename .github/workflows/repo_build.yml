@@ -619,9 +619,9 @@ jobs:
           echo "CONFIG_CLEAN_MIN_RATIO=4" >> "$CONFIG_FILE"
           
           # 华为auth qos
-          echo "CONFIG_AUTHORITY_CTRL=n" >> "$CONFIG_FILE"
-          echo "CONFIG_QOS_CTRL=n" >> "$CONFIG_FILE"
-          echo "CONFIG_QOS_AUTHORITY=n" >> "$CONFIG_FILE"
+          echo "CONFIG_AUTHORITY_CTRL=y" >> "$CONFIG_FILE"
+          echo "CONFIG_QOS_CTRL=y" >> "$CONFIG_FILE"
+          echo "CONFIG_QOS_AUTHORITY=y" >> "$CONFIG_FILE"
           echo "CONFIG_QOS_POLICY_MAX_NR=5" >> "$CONFIG_FILE"
                     
           echo "CONFIG_UDMABUF=y" >> "$CONFIG_FILE"
