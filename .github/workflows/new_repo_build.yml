@@ -441,7 +441,8 @@ jobs:
             "fix_screen_flicker.patch" \
             "unlock_cpufreq.patch" \
             "fix_usb_network_share.patch" \
-            "ignore_module_check.patch"; do
+            "ignore_module_check.patch" \
+            "enable_sme.patch"; do
              wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/$i
              patch -p1 -F 3 < $i && git add  . && git commit -m "auto commit" || git reset --hard
              git clean -df
@@ -511,6 +512,7 @@ jobs:
           echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
           echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
           echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3=y" >> "$CONFIG_FILE"
           echo "CONFIG_LD_DEAD_CODE_DATA_ELIMINATION=y" >> "$CONFIG_FILE"
           echo "CONFIG_AUTOFDO_CLANG=y" >> "$CONFIG_FILE"
           
@@ -519,8 +521,9 @@ jobs:
           echo "CONFIG_ZRAM=y" >> "$CONFIG_FILE"
           echo "CONFIG_ZRAM_DEF_COMP_ZSTD=y" >> "$CONFIG_FILE"
           echo "CONFIG_ZRAM_DEF_COMP=\"zstd\"" >> "$CONFIG_FILE"
-          echo "CONFIG_ZRAM_MEMORY_TRACKING=y" >> "$CONFIG_FILE"
-          echo "CONFIG_ZRAM_TRACK_ENTRY_ACTIME=y" >> "$CONFIG_FILE"
+          echo "CONFIG_ZRAM_DEDUP=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_ZRAM_MEMORY_TRACKING=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_ZRAM_TRACK_ENTRY_ACTIME=y" >> "$CONFIG_FILE"
 
           # cmdline优化性能
           echo "CONFIG_CMDLINE=\"console=ttynull nokaslr stack_depot_disable=on cgroup_disable=pressure kasan=off kvm-arm.mode=protected bootconfig thp_anon=16K-2M:always mitigations=off kpti=0 hardened_usercopy=off audit=0 norandmaps arm64.nobti arm64.nomte arm64.nopauth\"" >> "$CONFIG_FILE"
@@ -530,13 +533,16 @@ jobs:
           # 防止单点故障导致系统崩溃
           echo "CONFIG_PANIC_ON_OOPS=n" >> "$CONFIG_FILE"
           echo "CONFIG_PANIC_ON_OOPS_VALUE=0" >> "$CONFIG_FILE"
-          
-          # qcom llcc(先不要开启)
-          echo "CONFIG_QCOM_LLCC=y" >> "$CONFIG_FILE"
-
-          # walt scheduler (不用开启，开启后无法开机)
-          echo "CONFIG_SCHED_WALT=y" >> "$CONFIG_FILE"
-        
+          if [ "${{ github.event.inputs.BLACK_LIST }}" = "true" ]; then
+              # qcom llcc
+              echo "CONFIG_QCOM_LLCC=y" >> "$CONFIG_FILE"
+              # walt scheduler
+              echo "CONFIG_SCHED_WALT=y" >> "$CONFIG_FILE"
+          else
+              echo "CONFIG_QCOM_LLCC=n" >> "$CONFIG_FILE"
+              # walt scheduler
+              echo "CONFIG_SCHED_WALT=n" >> "$CONFIG_FILE"
+          fi
           # ECN配置*
           echo "CONFIG_IP_ECN=y" >> "$CONFIG_FILE"
           echo "CONFIG_TCP_ECN=y" >> "$CONFIG_FILE"
@@ -569,18 +575,17 @@ jobs:
           echo "CONFIG_IP6_NF_TARGET_NPT=y" >> "$CONFIG_FILE"
           echo "CONFIG_IP_SET_HASH_NETPORTNET=y" >> "$CONFIG_FILE"
           
-          echo "CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_EMATCH_IPSET=y" >> "$CONFIG_FILE"
+          echo "CONFIG_BPF_STREAM_PARSER=y" >> "$CONFIG_FILE"          
+          echo "CONFIG_NETFILTER_XT_SET=y" >> "$CONFIG_FILE"     
           
           # 透明大页
           echo "CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS=y" >> "$CONFIG_FILE"   
           echo "CONFIG_TRANSPARENT_HUGEPAGE_MADVISE=n" >> "$CONFIG_FILE"
-
-          echo "CONFIG_BPF_STREAM_PARSER=y" >> "$CONFIG_FILE"          
-          echo "CONFIG_NETFILTER_XT_SET=y" >> "$CONFIG_FILE"          
           
           echo "CONFIG_CFI_PERMISSIVE=y" >> "$CONFIG_FILE"
           echo "CONFIG_SLAB_MERGE_DEFAULT=y" >> "$CONFIG_FILE"
-          echo "CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=y" >> "$CONFIG_FILE"
           echo "CONFIG_DMABUF_HUGETLB=y" >> "$CONFIG_FILE"
           echo "CONFIG_ARM64_SME=y" >> "$CONFIG_FILE"
           
@@ -609,7 +614,17 @@ jobs:
           echo "CONFIG_RCU_LAZY_DEFAULT_OFF=n" >> "$CONFIG_FILE"
           echo "CONFIG_TASKS_TRACE_RCU_READ_MB=y" >> "$CONFIG_FILE"
           echo "CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y" >> "$CONFIG_FILE"
+          echo "CONFIG_ANON_MIN_RATIO=1" >> "$CONFIG_FILE"
+          echo "CONFIG_CLEAN_LOW_RATIO=15" >> "$CONFIG_FILE"
+          echo "CONFIG_CLEAN_MIN_RATIO=4" >> "$CONFIG_FILE"
           
+          # 华为auth qos
+          echo "CONFIG_AUTHORITY_CTRL=y" >> "$CONFIG_FILE"
+          echo "CONFIG_QOS_CTRL=y" >> "$CONFIG_FILE"
+          echo "CONFIG_QOS_AUTHORITY=y" >> "$CONFIG_FILE"
+          echo "CONFIG_QOS_POLICY_MAX_NR=5" >> "$CONFIG_FILE"
+                    
+          echo "CONFIG_UDMABUF=y" >> "$CONFIG_FILE"
           # # 禁用io调度器
           echo "CONFIG_MQ_IOSCHED_KYBER=n" >> "$CONFIG_FILE"
           
@@ -618,9 +633,9 @@ jobs:
           echo "CONFIG_CRYPTO_SHA1_ARM64_CE=n" >> "$CONFIG_FILE"
           echo "CONFIG_VIRTIO_PCI_LEGACY=n" >> "$CONFIG_FILE"
           echo "CONFIG_HEADERS_INSTALL=n" >> "$CONFIG_FILE"
-          echo "CONFIG_UDMABUF=n" >> "$CONFIG_FILE"
-          echo "CONFIG_PCIEASPM_DEFAULT=n" >> "$CONFIG_FILE"          
-          
+          echo "CONFIG_PROC_MEM_ALWAYS_FORCE=n" >> "$CONFIG_FILE"
+     
+          # 无用kunit
           echo "CONFIG_FAT_KUNIT_TEST=n" >> "$CONFIG_FILE"
           echo "CONFIG_EXT4_KUNIT_TESTS=n" >> "$CONFIG_FILE"          
           echo "CONFIG_RTC_LIB_KUNIT_TEST=n" >> "$CONFIG_FILE"
