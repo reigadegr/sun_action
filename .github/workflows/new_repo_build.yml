@@ -639,11 +639,15 @@ jobs:
           echo "CONFIG_NETDEV_ADDR_LIST_TEST=n" >> "$CONFIG_FILE"
           echo "CONFIG_IIO_FORMAT_KUNIT_TEST=n" >> "$CONFIG_FILE"
 
-          # 修蓝牙问题
+          # 修各种abi不兼容
+          # 蓝牙
           echo "CONFIG_RFKILL=y" >> "$CONFIG_FILE"
           echo "CONFIG_BT=y" >> "$CONFIG_FILE"
           echo "CONFIG_BT_RFCOMM=y" >> "$CONFIG_FILE"
           echo "CONFIG_BT_HIDP=y" >> "$CONFIG_FILE"
+          
+          # clk-qcom
+          # echo "CONFIG_COMMON_CLK_QCOM=y" >> "$CONFIG_FILE"
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
 
@@ -657,6 +661,38 @@ jobs:
          # rm -rf ./sched_ext/.git
          # cd common/kernel/sched
 
+      # - name: Build Kernel
+        # run: |
+          # export PATH="/usr/lib/ccache:$PATH"
+          # # 安装依赖工具
+          # # sudo apt install -y lld
+          # cd kernel_workspace/kernel_platform/common
+          
+          # # 安装自定义clang
+          # mkdir cust_clang; cd cust_clang
+          # wget -q https://github.com/cctv18/oneplus_sm8650_toolchain/releases/download/LLVM-Clang20-r547379/clang-r547379.zip
+          # unzip clang-*.zip > /dev/null 
+          # ls -al
+          # cd  ..
+          # export cust_clang="$(realpath ./cust_clang/bin)"
+          # sudo -E chmod -R +x "$cust_clang"
+          # export PATH="$cust_clang:$PATH"
+          # echo $PATH
+          # export CC="$(realpath ./cust_clang/bin/clang)" LTO="thin"
+          # export CC="ccache $CC" LTO="thin"
+          # export PAHOLE="$cust_clang/bin/pahole"
+          # export KBUILD_SYMTYPES=1
+          # MAKE_ARGS="LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
+            # RUSTC=../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc \
+            # LD=ld.lld HOSTLD=ld.lld KCFLAGS+=-Wno-error"
+          # make -j$(nproc --all) O=out $MAKE_ARGS gki_defconfig all | tee  ../../../build.txt  
+          # for i in $(find  . -type f -name ".config"); do
+             # cp $i  ../../../config.txt
+          # done
+          # git log | head -n 200 > ../../../commit.txt
+          # # 显示 ccache 统计信息
+          # ccache -s
+
       - name: Build Kernel
         run: |
           export PATH="/usr/lib/ccache:$PATH"
@@ -666,8 +702,9 @@ jobs:
           
           # 安装自定义clang
           mkdir cust_clang; cd cust_clang
-          wget -q https://github.com/cctv18/oneplus_sm8650_toolchain/releases/download/LLVM-Clang20-r547379/clang-r547379.zip
-          unzip clang-*.zip > /dev/null 
+          # wget -q https://github.com/cctv18/oneplus_sm8650_toolchain/releases/download/LLVM-Clang20-r547379/clang-r547379.zip
+          wget -q https://github.com/ZyCromerZ/Clang/releases/download/19.0.0git-20240723-release/Clang-19.0.0git-20240723.tar.gz
+          tar -zxvf Clang-*.tar.gz > /dev/null
           ls -al
           cd  ..
           export cust_clang="$(realpath ./cust_clang/bin)"
@@ -677,6 +714,7 @@ jobs:
           export CC="$(realpath ./cust_clang/bin/clang)" LTO="thin"
           export CC="ccache $CC" LTO="thin"
           export PAHOLE="$cust_clang/bin/pahole"
+          export KBUILD_SYMTYPES=1
           MAKE_ARGS="LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
             RUSTC=../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc \
             LD=ld.lld HOSTLD=ld.lld KCFLAGS+=-Wno-error"
