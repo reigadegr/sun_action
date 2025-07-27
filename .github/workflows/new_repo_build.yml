@@ -661,7 +661,7 @@ jobs:
          # rm -rf ./sched_ext/.git
          # cd common/kernel/sched
 
-      # - name: Build Kernel
+      # - name: Build Kernel cctv18 clang20
         # run: |
           # export PATH="/usr/lib/ccache:$PATH"
           # # 安装依赖工具
@@ -693,7 +693,41 @@ jobs:
           # # 显示 ccache 统计信息
           # ccache -s
 
-      - name: Build Kernel
+      # - name: Build Kernel ZyC clang19
+        # run: |
+          # export PATH="/usr/lib/ccache:$PATH"
+          # # 安装依赖工具
+          # # sudo apt install -y lld
+          # cd kernel_workspace/kernel_platform/common
+          
+          # # 安装自定义clang
+          # mkdir cust_clang; cd cust_clang
+          # wget -q https://github.com/cctv18/oneplus_sm8650_toolchain/releases/download/LLVM-Clang20-r547379/build-tools.zip
+          # unzip build*.zip >/dev/null
+          # wget -q https://github.com/ZyCromerZ/Clang/releases/download/19.0.0git-20240723-release/Clang-19.0.0git-20240723.tar.gz
+          # tar -zxvf Clang-*.tar.gz > /dev/null
+          # ls -al
+          # cd  ..
+          # export cust_clang="$(realpath ./cust_clang/bin)"
+          # sudo -E chmod -R +x "$cust_clang"
+          # export PATH="$cust_clang:$PATH"
+          # echo $PATH
+          # export CC="$(realpath ./cust_clang/bin/clang)" LTO="thin"
+          # export CC="ccache $CC" LTO="thin"
+          # export PAHOLE="$cust_clang/build-tools/bin/pahole"
+          # export KBUILD_SYMTYPES=1
+          # MAKE_ARGS="LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
+            # RUSTC=../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc \
+            # LD=ld.lld HOSTLD=ld.lld KCFLAGS+=-Wno-error"
+          # make -j$(nproc --all) O=out $MAKE_ARGS gki_defconfig all | tee  ../../../build.txt  
+          # for i in $(find  . -type f -name ".config"); do
+             # cp $i  ../../../config.txt
+          # done
+          # git log | head -n 200 > ../../../commit.txt
+          # # 显示 ccache 统计信息
+          # ccache -s
+
+      - name: Build Kernel ZyC clang21
         run: |
           export PATH="/usr/lib/ccache:$PATH"
           # 安装依赖工具
@@ -704,7 +738,7 @@ jobs:
           mkdir cust_clang; cd cust_clang
           wget -q https://github.com/cctv18/oneplus_sm8650_toolchain/releases/download/LLVM-Clang20-r547379/build-tools.zip
           unzip build*.zip >/dev/null
-          wget -q https://github.com/ZyCromerZ/Clang/releases/download/19.0.0git-20240723-release/Clang-19.0.0git-20240723.tar.gz
+          wget -q https://github.com/ZyCromerZ/Clang/releases/download/21.0.0git-20250715-release/Clang-21.0.0git-20250715.tar.gz
           tar -zxvf Clang-*.tar.gz > /dev/null
           ls -al
           cd  ..
