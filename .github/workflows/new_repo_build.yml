@@ -702,7 +702,8 @@ jobs:
           
           # 安装自定义clang
           mkdir cust_clang; cd cust_clang
-          # wget -q https://github.com/cctv18/oneplus_sm8650_toolchain/releases/download/LLVM-Clang20-r547379/clang-r547379.zip
+          wget -q https://github.com/cctv18/oneplus_sm8650_toolchain/releases/download/LLVM-Clang20-r547379/build-tools.zip
+          unzip build*.zip >/dev/null
           wget -q https://github.com/ZyCromerZ/Clang/releases/download/19.0.0git-20240723-release/Clang-19.0.0git-20240723.tar.gz
           tar -zxvf Clang-*.tar.gz > /dev/null
           ls -al
@@ -713,7 +714,7 @@ jobs:
           echo $PATH
           export CC="$(realpath ./cust_clang/bin/clang)" LTO="thin"
           export CC="ccache $CC" LTO="thin"
-          export PAHOLE="$cust_clang/bin/pahole"
+          export PAHOLE="$cust_clang/build-tools/bin/pahole"
           export KBUILD_SYMTYPES=1
           MAKE_ARGS="LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
             RUSTC=../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc \
