@@ -35,7 +35,7 @@ on:
           - oneplus_pad_2_pro
           - oneplus_pad_3
       KSU_META:
-        type: string
+        type: choice
         description: "分支名(不可留空)/自定义版本标识(留空不修改)"
         required: false
         default: "main/deer"
@@ -43,7 +43,7 @@ on:
           - "susfs-main/deer"
           - "main/deer"
       BUILD_TIME:
-        type: string
+        type: choice
         description: "自定义构建时间 (输入F使用当前时间)"
         required: false
         default: "F"
