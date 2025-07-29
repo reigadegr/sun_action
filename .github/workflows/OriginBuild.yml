@@ -34,11 +34,6 @@ on:
           - oneplus_13s
           - oneplus_pad_2_pro
           - oneplus_pad_3
-      SUSFS_ENABLE:
-        type: boolean
-        description: "是否开启susfs"
-        required: true
-        default: true
       KSU_META:
         type: string
         description: "分支名(不可留空)/自定义版本标识(留空不修改)"
@@ -63,6 +58,11 @@ on:
       FAST_BUILD:
         type: boolean
         description: "是否启用极速构建？"
+        required: true
+        default: true
+      SUSFS_ENABLE:
+        type: boolean
+        description: "是否开启susfs？"
         required: true
         default: true
       VFS:
