@@ -869,8 +869,9 @@ jobs:
           echo $PATH
           export CC="$(realpath ./cust_clang/bin/clang)" LTO="thin"
           export CC="ccache $CC" LTO="thin"
-          export PAHOLE="$cust_clang/build-tools/bin/pahole"
-          export KBUILD_SYMTYPES=1
+          export PAHOLE="$(find ./cust_clang/build-tools -name "pahole")"
+          echo "PAHOLE=$PAHOLE"
+          # export PAHOLE="$cust_clang/build-tools/bin/pahole"
           MAKE_ARGS="LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
             RUSTC=../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc \
             LD=ld.lld HOSTLD=ld.lld KCFLAGS+=-Wno-error"
