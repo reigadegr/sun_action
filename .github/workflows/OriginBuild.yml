@@ -282,7 +282,15 @@ jobs:
             python3 git curl ccache libelf-dev \
             build-essential flex bison libssl-dev \
             libncurses-dev liblz4-tool zlib1g-dev \
-            libxml2-utils rsync unzip linux-modules-extra-"$(uname -r)"
+            libxml2-utils rsync unzip \
+            lsb-release linux-modules-extra-"$(uname -r)" ccache pahole \
+            git automake flex bison build-essential zlib1g-dev make \
+            libelf-dev libssl-dev openssl bc device-tree-compiler gzip \
+            python3-telethon python-is-python3 zip unzip zstd libzstd-dev pigz \
+            libncurses-dev asciidoc dos2unix lz4 fakeroot python3 python3-pip \
+            gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi gcc-arm-linux-gnueabihf \
+            libc6-dev-armel-cross libc6-dev-armhf-cross libc6-dev-arm64-cross \
+            selinux-policy-dev
 
       - name: Optimize Memory Management
         run: |
@@ -869,9 +877,7 @@ jobs:
           echo $PATH
           export CC="$(realpath ./cust_clang/bin/clang)" LTO="thin"
           export CC="ccache $CC" LTO="thin"
-          export PAHOLE="$(find ./cust_clang/build-tools -name "pahole")"
-          echo "PAHOLE=$PAHOLE"
-          # export PAHOLE="$cust_clang/build-tools/bin/pahole"
+          export PAHOLE="$(realpath ./cust_clang/build-tools/bin/pahole)"
           MAKE_ARGS="LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
             RUSTC=../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc \
             LD=ld.lld HOSTLD=ld.lld KCFLAGS+=-Wno-error"
