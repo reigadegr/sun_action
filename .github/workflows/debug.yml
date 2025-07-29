@@ -1,4 +1,4 @@
-name: OriginBuild
+name: DebugBuild
 on:
   workflow_dispatch:
     inputs:
@@ -820,7 +820,83 @@ jobs:
           echo "CONFIG_TIME_KUNIT_TEST=n" >> "$CONFIG_FILE"
           echo "CONFIG_NETDEV_ADDR_LIST_TEST=n" >> "$CONFIG_FILE"
           echo "CONFIG_IIO_FORMAT_KUNIT_TEST=n" >> "$CONFIG_FILE"
-
+          
+          # 进行fdo的准备
+          echo "CONFIG_CORESIGHT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_CORESIGHT_LINKS_AND_SINKS=y" >> "$CONFIG_FILE"
+          echo "CONFIG_CORESIGHT_LINK_AND_SINK_TMC=y" >> "$CONFIG_FILE"
+          echo "CONFIG_CORESIGHT_CATU=y" >> "$CONFIG_FILE"
+          echo "CONFIG_CORESIGHT_SOURCE_ETM4X=y" >> "$CONFIG_FILE"
+          echo "CONFIG_CORESIGHT_SINK_TPIU=y" >> "$CONFIG_FILE"
+          echo "CONFIG_CORESIGHT_SINK_ETBV10=y" >> "$CONFIG_FILE"
+          echo "CONFIG_CORESIGHT_SINK_ETB10=y" >> "$CONFIG_FILE"
+          # 补充选项
+            echo "CONFIG_CORESIGHT_DYNAMIC_REPLICATOR=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_REPLICATOR=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_STM=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_CPU_DEBUG=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_CTI=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_CTI_INTEGRATION_REGS=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_HWEVENT=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_TMC=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_TMC_ETR=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_TMC_ETF=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_FUNNEL=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_DEBUG=y" >> "$CONFIG_FILE"
+            echo "CONFIG_PID_IN_CONTEXTIDR=y" >> "$CONFIG_FILE"
+            # CoreSight 基础框架
+            echo "CONFIG_CORESIGHT=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_LINKS_AND_SINKS=y" >> "$CONFIG_FILE"
+            
+            # ETM 跟踪源
+            echo "CONFIG_CORESIGHT_SOURCE_ETM4X=y" >> "$CONFIG_FILE"
+            
+            # 数据接收器
+            echo "CONFIG_CORESIGHT_SINK_TPIU=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_SINK_ETB10=y" >> "$CONFIG_FILE"  # 修正：ETB10 不是 ETBV10
+            echo "CONFIG_CORESIGHT_SINK_ETMV10=y" >> "$CONFIG_FILE"  # 旧设备兼容
+            
+            # 链路和路由组件
+            echo "CONFIG_CORESIGHT_LINK_AND_SINK_TMC=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_CATU=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_FUNNEL=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_REPLICATOR=y" >> "$CONFIG_FILE"
+            
+            # 动态配置支持
+            echo "CONFIG_CORESIGHT_DYNAMIC_REPLICATOR=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_STATIC_ENABLE_SUITE=y" >> "$CONFIG_FILE"
+            
+            # 交叉触发接口
+            echo "CONFIG_CORESIGHT_CTI=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_CTI_INTEGRATION_REGS=y" >> "$CONFIG_FILE"
+            
+            # 硬件事件支持
+            echo "CONFIG_CORESIGHT_HWEVENT=y" >> "$CONFIG_FILE"
+            
+            # CPU 调试接口
+            echo "CONFIG_CORESIGHT_CPU_DEBUG=y" >> "$CONFIG_FILE"
+            
+            # 其他必要组件
+            echo "CONFIG_CORESIGHT_STM=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_DEBUG=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_QCOM_REPLICATOR=y" >> "$CONFIG_FILE"  # 高通设备专用
+            echo "CONFIG_CORESIGHT_QCOM_ATU=y" >> "$CONFIG_FILE"        # 高通地址转换单元
+            
+            # 必要依赖项
+            echo "CONFIG_DEBUG_FS=y" >> "$CONFIG_FILE"
+            echo "CONFIG_PID_IN_CONTEXTIDR=y" >> "$CONFIG_FILE"  # 进程上下文跟踪
+            echo "CONFIG_ARM64_PTR_AUTH=y" >> "$CONFIG_FILE"     # Armv8.3+ 指针认证
+            echo "CONFIG_ARM64_CNP=y" >> "$CONFIG_FILE"          # 公共页表
+            echo "CONFIG_CORESIGHT_DEBUGFS_MODE=y" >> "$CONFIG_FILE"
+            echo "config_coresight_assert_enable=y" >> "$CONFIG_FILE"
+            echo "config_debug_kernel=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_DEBUGFS_MODE=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_ASSERT_ENABLE=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_QCOM=y" >> "$CONFIG_FILE"
+            echo "CONFIG_DEBUG_KERNEL=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_QCOM=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_QCOM_REPLICATOR=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_QCOM_ATU=y" >> "$CONFIG_FILE"
           # 修各种abi不兼容
           # 蓝牙
           echo "CONFIG_RFKILL=y" >> "$CONFIG_FILE"
