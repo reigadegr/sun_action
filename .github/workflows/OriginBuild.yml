@@ -64,17 +64,17 @@ on:
         type: boolean
         description: "是否开启susfs？"
         required: true
-        default: true
+        default: false
       VFS:
         type: boolean
         description: "是否启用手动钩子(VFS)？"
         required: true
-        default: true
+        default: false
       KPM:
         type: boolean
         description: "是否启用内核模块(KPM)？"
         required: true
-        default: true
+        default: false
       # FIX_UPSTREAM:
         # type: boolean
         # description: "是否修复谷歌上游bug？"
