@@ -232,15 +232,10 @@ jobs:
       - name: Check Disk Space
         run: df -h
 
-
-      - name: Create and Enable 3G Swap
+      - name: Setup TimeZone
         run: |
-          sudo swapoff -a
-          sudo fallocate -l 3G /swapfile
-          sudo chmod 600 /swapfile
-          sudo mkswap /swapfile
-          sudo swapon /swapfile
-          free -h
+          sudo -E rm -rf /etc/localtime
+          sudo -E ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
       - name: Set Cache Environment
         run: |
