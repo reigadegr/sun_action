@@ -885,6 +885,24 @@ jobs:
             # 性能监控支持 (推荐)
             echo "CONFIG_PERF_EVENTS=y" >> "$CONFIG_FILE"
             echo "CONFIG_HW_PERF_EVENTS=y" >> "$CONFIG_FILE"
+            # 确保开启 ETB10 接收器
+            echo "CONFIG_CORESIGHT_SINK_ETBV10=y" >> "$CONFIG_FILE"
+            
+            # 其他可能缺失的关键组件
+            echo "CONFIG_CORESIGHT_REPLICATOR=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_FUNNEL=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_DYNAMIC_REPLICATOR=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_STATIC_ENABLE_SUITE=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_HWEVENT=y" >> "$CONFIG_FILE"
+            
+            # 必要依赖项
+            echo "CONFIG_DEBUG_FS=y" >> "$CONFIG_FILE"  # 必须开启，否则无法访问调试接口
+            echo "CONFIG_PID_IN_CONTEXTIDR=y" >> "$CONFIG_FILE"  # 你已开启，但确保存在
+            
+            # 高通平台专用（如果是高通设备）
+            echo "CONFIG_CORESIGHT_QCOM=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_QCOM_REPLICATOR=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CORESIGHT_QCOM_ATU=y" >> "$CONFIG_FILE"
           # 修各种abi不兼容
           # 蓝牙
           echo "CONFIG_RFKILL=y" >> "$CONFIG_FILE"
