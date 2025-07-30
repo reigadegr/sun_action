@@ -914,7 +914,13 @@ jobs:
               fi
             fi
           done
-
+          
+      - name: Upload Kernel Source1
+        uses: actions/upload-artifact@v4
+        with:
+          name: KernelSource1
+          path: ./kernel_workspace/kernel_platform/common/*
+          
       - name: Build Kernel ZyC clang19
         run: |
           export PATH="/usr/lib/ccache:$PATH"
