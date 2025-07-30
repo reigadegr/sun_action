@@ -14,6 +14,8 @@ on:
           - xaga_sukisu
           - xaga_mksu
           - new_repo_build
+          - DebugBuild
+          - OriginBuild
       count:
         description: '最多访问的运行次数'
         required: false
