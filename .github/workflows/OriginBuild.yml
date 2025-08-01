@@ -42,19 +42,19 @@ on:
         options:
           - "susfs-main/deer"
           - "main/deer"
-      BUILD_TIME:
-        type: choice
-        description: "自定义构建时间 (输入F使用当前时间)"
-        required: false
-        default: "F"
-        options:
-          - "Sun Jun 15 14:56:02 UTC 2025"
-          - "F"
       SUFFIX:
         type: string
         description: "自定义内核后缀 (不输入使用随机字符串)"
         required: false
         default: "KONATA"
+      BRANCH:
+        type: choice
+        description: "使用的分支"
+        required: true
+        default: "ogki7"
+        options:
+          - "ogki7"
+          - "ogki8"
       FAST_BUILD:
         type: boolean
         description: "是否启用极速构建？"
@@ -218,9 +218,6 @@ jobs:
           echo "Selected BUILD_METHOD: ${{ env.BUILD_METHOD }}"
           echo "Selected FILE: ${{ github.event.inputs.FILE }}"
           echo "Custom KSU_META: ${{ github.event.inputs.KSU_META }}"
-          echo "Custom BUILD_TIME: ${{ github.event.inputs.BUILD_TIME }}"
-          echo -n "BUILD_TIME Unicode: "
-          python3 -c "print(''.join(f'U+{ord(c):04X} ' for c in '''${{ github.event.inputs.BUILD_TIME }}'''))"
           echo "Custom SUFFIX: ${{ github.event.inputs.SUFFIX }}"
           echo -n "SUFFIX Unicode: "
           python3 -c "print(''.join(f'U+{ord(c):04X} ' for c in '''${{ github.event.inputs.SUFFIX }}'''))"
@@ -340,7 +337,7 @@ jobs:
           mkdir kernel_workspace && cd kernel_workspace
           mkdir kernel_platform && cd kernel_platform
           # repo init -u https://github.com/OnePlusOSS/kernel_manifest.git -b refs/heads/oneplus/${{ env.CPU }} -m ${{ github.event.inputs.FILE }}.xml --depth=1
-          git clone --depth 1 https://github.com/reigadegr/android_kernel_common_oneplus_sm8750 -b ogki7 common2 >/dev/null 2>&1 &
+          git clone --depth 1 https://github.com/reigadegr/android_kernel_common_oneplus_sm8750 -b "${{ github.event.inputs.BRANCH }}" common2 >/dev/null 2>&1 &
           repo init --depth 1 -u https://android.googlesource.com/kernel/manifest -b common-${{ env.KANDROID_VERSION }}-${{ env.KERNEL_VERSION }}
           
           sed -i '/external\//d' .repo/manifests/default.xml
@@ -830,26 +827,6 @@ jobs:
 
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
-
-      # Custom kernel build time, without adding #1 SMP PREEMPT 自定义内核构建时间，不要加入#1 SMP PREEMPT
-      - name: Custom BUILD_TIME
-        if: ${{ github.event.inputs.BUILD_TIME != '' && !contains('Ff', github.event.inputs.BUILD_TIME) }}
-        shell: bash
-        run: |
-          DATESTR="${{ github.event.inputs.BUILD_TIME }}"
-          echo "KBUILD_BUILD_TIMESTAMP=${DATESTR}" >> "$GITHUB_ENV"
-          echo "KBUILD_BUILD_VERSION=1" >> "$GITHUB_ENV"
-          cd kernel_workspace/kernel_platform/
-          for f in common/scripts/mkcompile_h msm-kernel/scripts/mkcompile_h; do
-            if [ -f "$f" ]; then
-              echo "Patching mkcompile_h with BUILD_TIME=$DATESTR"
-              if grep -q 'UTS_VERSION=' "$f"; then
-                perl -pi -e "s{UTS_VERSION=\"\\\$\\(.*?\\)\"}{UTS_VERSION=\"#1 SMP PREEMPT $DATESTR\"}" "$f"
-              else
-                perl -0777 -pi -e "s{cat <<EOF}{cat <<EOF\n#undef UTS_VERSION\n#define UTS_VERSION \"#1 SMP PREEMPT $DATESTR\" } unless /UTS_VERSION/" "$f"
-              fi
-            fi
-          done
 
       - name: Build Kernel ZyC clang19
         run: |
