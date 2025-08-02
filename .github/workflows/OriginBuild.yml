@@ -51,10 +51,11 @@ on:
         type: choice
         description: "使用的分支"
         required: true
-        default: "ogki7"
+        default: "ogki9"
         options:
           - "ogki7"
           - "ogki8"
+          - "ogki9"
       FAST_BUILD:
         type: boolean
         description: "是否启用极速构建？"
