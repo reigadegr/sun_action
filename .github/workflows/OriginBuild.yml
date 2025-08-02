@@ -261,7 +261,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ env.HOME }}/apt-cache
-          key: ${{ runner.os }}-apt-${{ hashFiles('.github/workflows/Build SukiSU Ultra OnePlus.yml') }}
+          key: ${{ runner.os }}-apt-${{ hashFiles('.github/workflows/OriginBuild.yml') }}
           restore-keys: |
             ${{ runner.os }}-apt-
 
