@@ -45,7 +45,7 @@ on:
         type: string
         description: "自定义内核后缀 (留空则使用随机字符串)"
         required: false
-        default: "opmod"
+        default: "OPMod"
       BUILD_TIME:
         type: string
         description: "自定义构建时间 (留空则使用当前时间)"
