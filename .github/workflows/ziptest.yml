@@ -159,8 +159,7 @@ jobs:
           mkdir -p "$APT_CACHE_DIR/lists/partial"
           sudo apt -o Dir::Cache="$APT_CACHE_DIR" update -qq
           sudo DEBIAN_FRONTEND=noninteractive apt -o Dir::Cache="$APT_CACHE_DIR" install -yq --no-install-recommends \
-            lsb-release ccache pahole \
-            git automake flex bison build-essential zlib1g-dev make \
+            git \
             python3-telethon python-is-python3 zip unzip
           sudo -E apt-get clean
           df -h
