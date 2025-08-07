@@ -764,14 +764,13 @@ jobs:
 
       - name: Upload to telegram
         env:
-          CHAT_ID: ${{ secrets.CHAT_ID }}
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}      
         run: |
           cd AnyKernel3
           zip -9 -rq xaga_mksu.zip .
           wget https://github.com/reigadegr/sun_action/raw/main/tgbot.py
-          python3 "$(realpath ./tgbot.py)" "$(realpath ./xaga_mksu.zip)" && exit 0 || true
           export CHAT_ID="@Aric"
+          python3 "$(realpath ./tgbot.py)" "$(realpath ./xaga_mksu.zip)" && exit 0 || true          
           python3 "$(realpath ./tgbot.py)" "$(realpath ./xaga_mksu.zip)"
 
       - name: Post-build Disk Check
