@@ -762,54 +762,14 @@ jobs:
           name: AnyKernel3_SukiSUUltra_${{ env.KSUVER }}_${{ steps.file_clean.outputs.value }}${{ steps.suffix.outputs.value }}
           path: ./AnyKernel3/*
 
-      - name: Download and Unzip ZRAM
-        if: ${{ github.event.inputs.ZRAM == 'true' }}
+      - name: Upload to telegram
+        env:
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}      
         run: |
-          set -e
-          sudo apt install -y unzip
-          curl -s https://api.github.com/repos/FurLC/ZRAM-Module/releases/latest | \
-            grep "browser_download_url" | grep "ZRAM-Module-.*\.zip" | cut -d '"' -f 4 | xargs wget -N
-          unzip "$(ls -t ZRAM-Module-*.zip | head -1)" -d ZRAM-Module
-
-          target="./ZRAM-Module/zram/zram.ko"
-          echo "查找 zram.ko 模块文件..."
-
-          # 优先查找常见目录
-          search_paths=(
-            "./kernel_workspace/kernel_platform/out"
-            "./kernel_workspace/device/qcom"
-          )
-
-          zram_path=""
-          for path in "${search_paths[@]}"; do
-            zram_path=$(find "$path" -type f -name "zram.ko" | head -n 1)
-            [ -n "$zram_path" ] && break
-          done
-
-          # 若以上未找到，广泛查找整个 workspace
-          if [ -z "$zram_path" ]; then
-            zram_path=$(find "./kernel_workspace" -type f -name "zram.ko" | head -n 1)
-          fi
-
-          if [ -n "$zram_path" ] && [ -f "$zram_path" ]; then
-            echo " ZRAM module file finally located at: $zram_path "
-            mkdir -p "$(dirname "$target")"
-            if [ "$(realpath "$zram_path")" != "$(realpath "$target")" ]; then
-              cp "$zram_path" "$target"
-            else
-              echo "源文件与目标路径相同，跳过复制"
-            fi
-          else
-            echo "未找到 zram.ko 文件，可能是未支持的内核版本或者未成功构建"
-            exit 1
-          fi
-
-      - name: Upload ZRAM Module
-        if: ${{ github.event.inputs.ZRAM == 'true' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: ZRAM-Module_${{ needs.get-config.outputs.KERNEL_VERSION }}_${{ steps.file_clean.outputs.value }}
-          path: ZRAM-Module/*
+          cd AnyKernel3
+          zip -9 -rq xaga_mksu.zip .
+          python3 $GITHUB_WORKSPACE/tgbot.py $GITHUB_WORKSPACE/AnyKernel3/xaga_mksu.zip
 
       - name: Post-build Disk Check
         run: df -h
