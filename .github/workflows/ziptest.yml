@@ -155,14 +155,8 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo rm -f /var/lib/apt/lists/lock /var/lib/dpkg/lock
-          APT_CACHE_DIR="$HOME/apt-cache"
-          mkdir -p "$APT_CACHE_DIR/lists/partial"
-          sudo apt -o Dir::Cache="$APT_CACHE_DIR" update -qq
-          sudo DEBIAN_FRONTEND=noninteractive apt -o Dir::Cache="$APT_CACHE_DIR" install -yq --no-install-recommends \
-            git \
-            python3-telethon python-is-python3 zip unzip
-          sudo -E apt-get clean
-          df -h
+          sudo apt update
+          sudo apt install zip unzip git python3-telethon python-is-python3
 
       - name: Install Repo Tool
         run: |
