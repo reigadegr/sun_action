@@ -704,11 +704,12 @@ jobs:
         run: |
           git clone https://github.com/Numbersf/AnyKernel3 --depth=1
           rm -rf ./AnyKernel3/.git
-          CONFIG_FILE="./common/arch/arm64/configs/gki_defconfig"
+          CONFIG_FILE="kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig"
           cp "$CONFIG_FILE" ./AnyKernel3 || echo "复制gki_defconfig失败"
           cp *build.txt ./AnyKernel3 || echo "复制log失败"
           cp config.txt ./AnyKernel3 || echo "复制config失败"
           cp commit.txt ./AnyKernel3 || echo "复制commit失败"
+          cp kernel_workspace/kernel_platform/common/out/Module.symvers   ./AnyKernel3 || echo "复制符号表失败"
           mkdir -p kernel_workspace/kernel_platform/out/FinalImageFind/
           dir1=""
           dir2=""
