@@ -1,14 +1,14 @@
 diff --git a/Makefile b/Makefile
-index d66c156be1c6..6044ad95e8f5 100644
+index d66c156be1c6..6f6831841d8a 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -2090,6 +2090,10 @@ clang-tidy clang-analyzer:
  	@false
  endif
  
-+ifdef CONFIG_CC_IS_CLANG
 +KBUILD_CFLAGS += -fclang-abi-compat=19
-+endif
++KBUILD_CFLAGS += -fno-addrsig    
++KBUILD_CFLAGS += -fno-unique-section-names
 +
  # Scripts to check various things for consistency
  # ---------------------------------------------------------------------------
