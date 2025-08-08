@@ -174,7 +174,7 @@ jobs:
           CHAT_ID: ${{ secrets.CHAT_ID }}
         run: |
           cd AnyKernel3
-          zip -9 -rq xaga_mksu.zip .
+          zip -9 -rq OPMOD_Kernel_MKSU_$(date +"%Y-%m-%d_%H:%M:%S") .
           wget https://github.com/reigadegr/sun_action/raw/main/tgbot.py        
           python3 "$(realpath ./tgbot.py)" "$(realpath ./xaga_mksu.zip)" && exit 0 || true
 
