@@ -614,7 +614,8 @@ jobs:
             "unlock_cpufreq.patch" \
             "fix_usb_network_share.patch" \
             "ignore_module_check.patch" \
-            "enable_sme.patch"; do
+            "enable_sme.patch" \
+            "fix_crc_check.patch"; do
              wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/$i
              patch -p1 -F 3 < $i && git add  . && git commit -m "auto commit" || git reset --hard
              git clean -df

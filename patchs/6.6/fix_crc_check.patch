@@ -1,0 +1,16 @@
+diff --git a/Makefile b/Makefile
+index d66c156be1c6..ec7fa07ea08f 100644
+--- a/Makefile
++++ b/Makefile
+@@ -2075,6 +2075,12 @@ KBUILD_LDFLAGS  += -mllvm -enable-ml-inliner=release \
+ endif
+ endif
+
++# Clang 21 CRC 兼容补丁
++ifdef CONFIG_CC_IS_CLANG
++KBUILD_CFLAGS += -Xclang -no-struct-path-hash-suffixes \
++                 -Xclang -disable-llvm-verifier
++endif
++
+ # Enable hot cold split optimization
+ KBUILD_CFLAGS   += -mllvm -hot-cold-split=true
