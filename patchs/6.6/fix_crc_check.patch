@@ -1,16 +1,25 @@
 diff --git a/Makefile b/Makefile
-index d66c156be1c6..ec7fa07ea08f 100644
+index d66c156be1c6..6a952b231eb3 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -2075,6 +2075,12 @@ KBUILD_LDFLAGS  += -mllvm -enable-ml-inliner=release \
+@@ -2090,6 +2090,20 @@ clang-tidy clang-analyzer:
+ 	@false
  endif
- endif
-
-+# Clang 21 CRC 兼容补丁
+ 
 +ifdef CONFIG_CC_IS_CLANG
-+KBUILD_CFLAGS += -Xclang -no-struct-path-hash-suffixes \
-+                 -Xclang -disable-llvm-verifier
++# 结构体类型稳定性
++KBUILD_CFLAGS += -fno-unique-section-names \
++                 -fno-eliminate-unused-debug-types
++
++# 符号CRC保护
++KBUILD_CFLAGS += -mllvm -disable-auto-upgrade-debug-info \
++                 -mllvm -generate-type-units
++
++# 优化行为控制
++KBUILD_CFLAGS += -fno-strict-aliasing \
++                 -fno-optimize-sibling-calls
 +endif
 +
- # Enable hot cold split optimization
- KBUILD_CFLAGS   += -mllvm -hot-cold-split=true
+ # Scripts to check various things for consistency
+ # ---------------------------------------------------------------------------
+ 
