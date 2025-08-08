@@ -229,7 +229,7 @@ jobs:
           repo sync -c -j$(nproc --all) --no-tags --no-clone-bundle --force-sync
           rm -rf common .repo
 
-          git clone --depth 1 https://github.com/reigadegr/android_kernel_xiaomi_mt6895 -b v2 common
+          git clone --depth 1 https://github.com/reigadegr/android_kernel_xiaomi_mt6895 -b v3 common
           cd common; git log; cd  ..; pwd; ls
           cd  ..; pwd; ls
           if [  -e kernel_platform/common/BUILD.bazel ]; then
@@ -470,10 +470,7 @@ jobs:
           echo "CONFIG_TCP_CONG_WESTWOOD=n" >> "$CONFIG_FILE"
           echo "CONFIG_TCP_CONG_HTCP=n" >> "$CONFIG_FILE"
           
-          sed -i '/CONFIG_DEFAULT_CUBIC/d' "$CONFIG_FILE"
           echo "CONFIG_DEFAULT_CUBIC=n" >> "$CONFIG_FILE"
-          
-          sed -i '/CONFIG_DEFAULT_TCP_CONG/d' "$CONFIG_FILE"
           echo "CONFIG_DEFAULT_TCP_CONG=\"bbr\"" >> "$CONFIG_FILE"
 
           # ssg
@@ -481,7 +478,6 @@ jobs:
           echo "CONFIG_MQ_IOSCHED_SSG_CGROUP=y" >> "$CONFIG_FILE"
           
           # lto thin
-          sed -i "/CONFIG_LTO_CLANG_THIN/d" "$CONFIG_FILE"          
           echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
           echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
           
@@ -493,16 +489,10 @@ jobs:
           # echo "CONFIG_STACKPROTECTOR_PER_TASK=n" >> "$CONFIG_FILE"
 
           # Inline zram
-          sed -i '/CONFIG_ZSMALLOC/d' "$CONFIG_FILE"
-          sed -i '/CONFIG_ZRAM/d' "$CONFIG_FILE"
           echo "CONFIG_ZSMALLOC=m" >> "$CONFIG_FILE"
           echo "CONFIG_ZRAM=m" >> "$CONFIG_FILE"
           # echo "CONFIG_ZRAM_DEF_COMP_ZSTD=y" >> "$CONFIG_FILE"
           # echo "CONFIG_ZRAM_DEF_COMP=\"zstd\"" >> "$CONFIG_FILE"
-
-          # walt scheduler
-          # 不用开启，开启后无法开机
-          # echo "CONFIG_SCHED_WALT=y" >> "$CONFIG_FILE"
 
           # ECN配置*
           echo "CONFIG_IP_ECN=y" >> "$CONFIG_FILE"
