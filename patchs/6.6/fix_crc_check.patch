@@ -1,5 +1,5 @@
 diff --git a/Makefile b/Makefile
-index d66c156be1c6..aa6a996f4713 100644
+index d66c156be1c6..e7b9aee92fd1 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -2090,6 +2090,17 @@ clang-tidy clang-analyzer:
@@ -9,7 +9,7 @@ index d66c156be1c6..aa6a996f4713 100644
 +ifdef CONFIG_CC_IS_CLANG
 +# 结构体类型稳定性
 +KBUILD_CFLAGS += -fno-unique-section-names
-+
++KBUILD_CFLAGS += -fno-dwarf-directory-asm
 +# 符号CRC保护
 +KBUILD_CFLAGS += -mllvm -disable-auto-upgrade-debug-info -mllvm -generate-type-units
 +
