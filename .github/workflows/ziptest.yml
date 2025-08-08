@@ -174,7 +174,7 @@ jobs:
           CHAT_ID: ${{ secrets.CHAT_ID }}
         run: |
           cd AnyKernel3
-          name=OPMOD_Kernel_MKSU_"$(date +"%Y-%m-%d_%H:%M:%S")".zip
+          name=OPMOD_Kernel_MKSU-"$(date +"%gw%V")""$(date +%u | awk '{printf "%c", 96+$1}')"-"$(date +"%H%M%S")".zip
           zip -9 -rq "$name" .
           wget https://github.com/reigadegr/sun_action/raw/main/tgbot.py        
           python3 "$(realpath ./tgbot.py)" "$(realpath ./"$name")" && exit 0 || true
