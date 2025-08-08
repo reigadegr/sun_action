@@ -177,7 +177,7 @@ jobs:
           cd AnyKernel3
           commit_hash="$(git -C . rev-parse --short=6 HEAD)"
           rm -rf  .git
-          ZIP_NAME=OPMOD_Kernel_MKSU-"$commit_hash"-"$(date +"%H%M%S")".zip
+          ZIP_NAME=OPMod_Kernel_MKSU-"$commit_hash"-"$(date +"%H%M%S")".zip
           zip -9 -rq "$ZIP_NAME" .
           wget https://github.com/reigadegr/sun_action/raw/main/tgbot.py
           MD5_VALUE=$(md5sum "$ZIP_NAME" | cut -d' ' -f1)
