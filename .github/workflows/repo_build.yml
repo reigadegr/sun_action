@@ -663,43 +663,36 @@ jobs:
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
 
-      - name: Build Kernel
+      - name: Build Kernel ZyC clang19
         run: |
-          KERNEL_VERSION="${{ needs.get-config.outputs.KERNEL_VERSION }}"
-
-          # 判断内核版本并设置对应 clang 路径
-          if [[ "$KERNEL_VERSION" == "6.6" ]]; then
-            CLANG_PATH="clang-r510928"
-            CLANG_DIR="prebuilts"
-          elif [[ "$KERNEL_VERSION" == "6.1" ]]; then
-            CLANG_PATH="clang-r487747c"
-            CLANG_DIR="prebuilts"
-          elif [[ "$KERNEL_VERSION" == "5.15" ]]; then
-            CLANG_PATH="clang-r450784e"
-            CLANG_DIR="prebuilts"
-          elif [[ "$KERNEL_VERSION" == "5.10" ]]; then
-            CLANG_PATH="clang-r416183b"
-            CLANG_DIR="prebuilts-master"
-            USE_LLVM_IAS=true
-          else
-            echo "fallback=true" >> "$GITHUB_OUTPUT"
-            echo "⚠️ 当前内核版本 \"$KERNEL_VERSION\" 没有对应 clang 工具链，回退使用官方构建脚本"
-            exit 0
-          fi
-
-          export PATH="$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/$CLANG_DIR/clang/host/linux-x86/$CLANG_PATH/bin:$PATH"
-          
           export PATH="/usr/lib/ccache:$PATH"
           # 安装依赖工具
-          sudo apt install -y lld
+          # sudo apt install -y lld
           cd kernel_workspace/kernel_platform/common
           
-          export CC="ccache clang" LTO="thin"
-          export PAHOLE="../../prebuilts/kernel-build-tools/linux-x86/bin/pahole"
+          # 安装自定义clang
+          mkdir cust_clang; cd cust_clang
+          wget -q https://github.com/cctv18/oneplus_sm8650_toolchain/releases/download/LLVM-Clang20-r547379/build-tools.zip
+          unzip build*.zip >/dev/null
+          wget -q https://github.com/ZyCromerZ/Clang/releases/download/19.0.0git-20240723-release/Clang-19.0.0git-20240723.tar.gz
+          tar -zxvf Clang-*.tar.gz > /dev/null
+          ls -al
+          cd  ..
+          export cust_clang="$(realpath ./cust_clang/bin)"
+          sudo -E chmod -R +x "$cust_clang"
+          export PATH="$cust_clang:$PATH"
+          echo $PATH
+          export CC="$(realpath ./cust_clang/bin/clang)" LTO="thin"
+          export CC="ccache $CC" LTO="thin"
+          export PAHOLE="$(realpath ./cust_clang/build-tools/bin/pahole)"
           MAKE_ARGS="LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
             RUSTC=../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc \
             LD=ld.lld HOSTLD=ld.lld KCFLAGS+=-Wno-error"
-          make -j$(nproc --all) O=out $MAKE_ARGS gki_defconfig all | tee  ../../../build.txt  
+          FDO_FILE="$(realpath ./android/gki/aarch64/afdo/kernel.afdo)"
+          EXTRA_FLAGS="CLANG_AUTOFDO_PROFILE=$FDO_FILE"
+          echo $EXTRA_FLAGS
+          echo "这里显示fdo文件: $(ls $FDO_FILE)"
+          make -j$(nproc --all) O=out $MAKE_ARGS $EXTRA_FLAGS gki_defconfig all 2>&1 | tee  ../../../build.txt
           for i in $(find  . -type f -name ".config"); do
              cp $i  ../../../config.txt
           done
