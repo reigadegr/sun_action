@@ -542,17 +542,9 @@ jobs:
           echo "CONFIG_TCP_ECN=y" >> "$CONFIG_FILE"
           echo "CONFIG_IPV6_ECN=y" >> "$CONFIG_FILE"
           echo "CONFIG_IP_NF_TARGET_ECN=y" >> "$CONFIG_FILE"
-
-          # ZRAM配置*
-          # if [ "${{ github.event.inputs.ZRAM }}" = "true" ]; then
-            # echo "CONFIG_CRYPTO_LZ4HC=y" >> "$CONFIG_FILE"
-            # echo "CONFIG_CRYPTO_LZ4K=y" >> "$CONFIG_FILE"
-            # echo "CONFIG_CRYPTO_LZ4KD=y" >> "$CONFIG_FILE"
-            # echo "CONFIG_CRYPTO_842=y" >> "$CONFIG_FILE"
-            # echo "CONFIG_CRYPTO_LZ4K_OPLUS=y" >> "$CONFIG_FILE"
-            # echo "CONFIG_ZRAM_WRITEBACK=y" >> "$CONFIG_FILE"
-          # fi
-
+          
+          # 修复符号缺失
+          echo "CONFIG_MTK_CPUQOS_V3=y" >> "$CONFIG_FILE"
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
 
