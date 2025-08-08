@@ -482,7 +482,13 @@ jobs:
           
           # 修复符号缺失
           echo "CONFIG_MTK_CPUQOS_V3=y" >> "$CONFIG_FILE"
-
+          
+          # 移除无意义的内容
+          echo "CONFIG_UBSAN=n">> "$CONFIG_FILE"
+          echo "CONFIG_UBSAN_TRAP=n" >> "$CONFIG_FILE"
+          echo "CONFIG_UBSAN_BOUNDS=n" >> "$CONFIG_FILE"
+          echo "CONFIG_IKHEADERS=n" >> "$CONFIG_FILE"
+          
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
 
