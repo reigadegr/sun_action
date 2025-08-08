@@ -177,12 +177,13 @@ jobs:
           cd AnyKernel3
           commit_hash="$(git -C . rev-parse --short=6 HEAD)"
           rm -rf  .git
-          ZIP_NAME=OPMod_Kernel_MKSU-"$commit_hash"-"$(date +"%H%M%S")".zip
+          ZIP_NAME=OPMod_Kernel_Test-"$commit_hash"-"$(date +"%H%M%S")".zip
           zip -9 -rq "$ZIP_NAME" .
           wget https://github.com/reigadegr/sun_action/raw/main/tgbot.py
           MD5_VALUE=$(md5sum "$ZIP_NAME" | cut -d' ' -f1)
           READABLE_TIME=$(date +"%m月%d日 %H:%M")
           export DESCRIPTION=$'🧩 内核构建完成！\n\n🔧 内核版本: '"$KERNEL_VERSION"$'\n⏰ 构建时间: '"$READABLE_TIME"$'\n📦 文件名: '"$ZIP_NAME"$'\n🔒 MD5: '"$MD5_VALUE"
+          export DESCRIPTION+=$'\n ⚠️ CI 构建，未经测试，可能不开机! 请确保您方便救砖后刷入此内核!"
           python3 "$(realpath ./tgbot.py)" "$(realpath ./"$ZIP_NAME")" && exit 0 || true    
  
       - name: Post-build Disk Check
