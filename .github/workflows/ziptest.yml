@@ -175,7 +175,8 @@ jobs:
           KERNEL_VERSION: ${{ needs.get-config.outputs.KERNEL_VERSION }}
         run: |
           cd AnyKernel3
-          ZIP_NAME=OPMOD_Kernel_MKSU-"$(date +"%gw%V")""$(date +%u | awk '{printf "%c", 96+$1}')"-"$(date +"%H%M%S")".zip
+          commit_hash="$(git -C . rev-parse --short=6 HEAD)"
+          ZIP_NAME=OPMOD_Kernel_MKSU-"$commit_hash"-"$(date +"%H%M%S")".zip
           zip -9 -rq "$ZIP_NAME" .
           wget https://github.com/reigadegr/sun_action/raw/main/tgbot.py
           MD5_VALUE=$(md5sum "$ZIP_NAME" | cut -d' ' -f1)
