@@ -176,7 +176,7 @@ jobs:
         run: |
           cd AnyKernel3
           ZIP_NAME=OPMOD_Kernel_MKSU-"$(date +"%gw%V")""$(date +%u | awk '{printf "%c", 96+$1}')"-"$(date +"%H%M%S")".zip
-          zip -9 -rq "$name" .
+          zip -9 -rq "$ZIP_NAME" .
           wget https://github.com/reigadegr/sun_action/raw/main/tgbot.py
           MD5_VALUE=$(md5sum "$ZIP_NAME" | cut -d' ' -f1)
           READABLE_TIME=$(date +"%m月%d日 %H:%M")
