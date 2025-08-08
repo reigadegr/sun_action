@@ -701,5 +701,22 @@ jobs:
           name: AnyKernel3_SukiSUUltra_${{ env.KSUVER }}_${{ steps.file_clean.outputs.value }}${{ steps.suffix.outputs.value }}
           path: ./AnyKernel3/*
 
+      - name: Upload to telegram
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+          KERNEL_VERSION: ${{ needs.get-config.outputs.KERNEL_VERSION }}
+        run: |
+          path="$(realpath kernel_workspace/kernel_platform/common)"
+          commit_hash="$(git -C $path rev-parse --short=6 HEAD)"
+          cd AnyKernel3          
+          ZIP_NAME=OPMOD_Kernel_MKSU-"$commit_hash"-"$(date +"%H%M%S")".zip
+          zip -9 -rq "$ZIP_NAME" .
+          wget https://github.com/reigadegr/sun_action/raw/main/tgbot.py
+          MD5_VALUE=$(md5sum "$ZIP_NAME" | cut -d' ' -f1)
+          READABLE_TIME=$(date +"%m月%d日 %H:%M")
+          export DESCRIPTION=$'🧩 内核构建完成！\n\n🔧 内核版本: '"$KERNEL_VERSION"$'\n⏰ 构建时间: '"$READABLE_TIME"$'\n📦 文件名: '"$ZIP_NAME"$'\n🔒 MD5: '"$MD5_VALUE"
+          python3 "$(realpath ./tgbot.py)" "$(realpath ./"$ZIP_NAME")" && exit 0 || true
+
       - name: Post-build Disk Check
         run: df -h
