@@ -71,16 +71,6 @@ on:
         description: "开启susfs"
         required: true
         default: false
-      SCHED:
-        type: boolean
-        description: "是否添加风驰驱动？"
-        required: true
-        default: false
-      ZRAM:
-        type: boolean
-        description: "是否添加更多的ZRAM算法？"
-        required: true
-        default: false
 
 jobs:
   get-config:
@@ -91,7 +81,7 @@ jobs:
 
   build:
     needs: get-config
-    name: ${{ github.event.inputs.FAST_BUILD == 'true' && ' [FAST]' || '' }}${{ github.event.inputs.SCHED == 'true' && ' [SCHED]' || '' }}${{ github.event.inputs.ZRAM == 'true' && ' [ZRAM]' || '' }}For ${{ github.event.inputs.FILE }} ${{ github.event.inputs.BUILD_METHOD }} ${{ github.event.inputs.SUFFIX }}
+    name: ${{ github.event.inputs.FAST_BUILD == 'true' && ' [FAST]' || '' }}For ${{ github.event.inputs.FILE }} ${{ github.event.inputs.BUILD_METHOD }} ${{ github.event.inputs.SUFFIX }}
     runs-on: ubuntu-latest
     env:
       CPU: ${{ needs.get-config.outputs.CPU }}
@@ -124,10 +114,8 @@ jobs:
           echo "Selected SUSFS_ENABLE: ${{ github.event.inputs.SUSFS_ENABLE }}"
           echo "Selected VFS: ${{ github.event.inputs.VFS }}"
           echo "Selected KPM: ${{ github.event.inputs.KPM }}"
-          echo "Selected FAST_BUILD: ${{ github.event.inputs.FAST_BUILD }}"       
-          echo "Selected ZRAM: ${{ github.event.inputs.ZRAM }}"
-          echo "Selected SCHED: ${{ github.event.inputs.SCHED }}"
-
+          echo "Selected FAST_BUILD: ${{ github.event.inputs.FAST_BUILD }}"
+      
       - name: Setup TimeZone
         run: |
           sudo -E rm -rf /etc/localtime
@@ -382,14 +370,6 @@ jobs:
           cp ../susfs4ksu/kernel_patches/fs/* ./common/fs/
           cp ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
 
-          if [ "${{ github.event.inputs.ZRAM }}" = "true" ]; then
-          echo "正在拉取zram补丁"
-          cp -r ../SukiSU_patch/other/zram/lz4k/include/linux/* ./common/include/linux
-          cp -r ../SukiSU_patch/other/zram/lz4k/lib/* ./common/lib
-          cp -r ../SukiSU_patch/other/zram/lz4k/crypto/* ./common/crypto
-          cp -r ../SukiSU_patch/other/zram/lz4k_oplus ./common/lib/
-          fi
-
           cd ./common
           GKI_V="${{ needs.get-config.outputs.ANDROID_VERSION }}-${{ needs.get-config.outputs.KERNEL_VERSION }}"
           SUBLEVEL=$(grep '^SUBLEVEL *=' Makefile | head -n1 | cut -d= -f2 | tr -d ' ')
@@ -438,19 +418,6 @@ jobs:
             # patch -p1 -F 3 < syscall_hooks.patch
             # echo "vfs_patch完成"
 
-      # - name: Apply ZRAM
-        # if: ${{ github.event.inputs.ZRAM == 'true' }}
-        # run: |
-          # cd kernel_workspace/kernel_platform/common
-            # cp ../../SukiSU_patch/other/zram/zram_patch/${{ needs.get-config.outputs.KERNEL_VERSION }}/lz4kd.patch ./
-            # echo "正在打lz4kd补丁"
-            # patch -p1 -F 3 < lz4kd.patch || true
-            # echo 'lz4kd_patch完成'
-            # cp ../../SukiSU_patch/other/zram/zram_patch/${{ needs.get-config.outputs.KERNEL_VERSION }}/lz4k_oplus.patch ./
-            # echo "正在打lz4k_oplus补丁"
-            # patch -p1 -F 3 < lz4k_oplus.patch || true
-            # echo 'lz4k_oplus_patch完成'
-
       # 配置信息
       - name: Add Configuration Settings
         run: |
@@ -458,8 +425,8 @@ jobs:
           CONFIG_FILE=./common/arch/arm64/configs/gki_defconfig
           KERNEL_VERSION="${{ needs.get-config.outputs.KERNEL_VERSION }}"
 
-          # SukiSU Ultra配置
-          # echo "CONFIG_KSU=y" >> "$CONFIG_FILE"
+          # Ksu配置
+          echo "CONFIG_KSU=y" >> "$CONFIG_FILE"
           # if [ "${{ github.event.inputs.KPM }}" = 'true' ]; then
             # echo "CONFIG_KPM=y" >> "$CONFIG_FILE"
             # echo "开启kpm"
@@ -526,16 +493,10 @@ jobs:
           # echo "CONFIG_STACKPROTECTOR_PER_TASK=n" >> "$CONFIG_FILE"
 
           # Inline zram
-          sed -i '/CONFIG_ZSMALLOC/d' "$CONFIG_FILE"
-          sed -i '/CONFIG_ZRAM/d' "$CONFIG_FILE"
           echo "CONFIG_ZSMALLOC=n" >> "$CONFIG_FILE"
           echo "CONFIG_ZRAM=n" >> "$CONFIG_FILE"
           # echo "CONFIG_ZRAM_DEF_COMP_ZSTD=y" >> "$CONFIG_FILE"
           # echo "CONFIG_ZRAM_DEF_COMP=\"zstd\"" >> "$CONFIG_FILE"
-
-          # walt scheduler
-          # 不用开启，开启后无法开机
-          # echo "CONFIG_SCHED_WALT=y" >> "$CONFIG_FILE"
 
           # ECN配置*
           echo "CONFIG_IP_ECN=y" >> "$CONFIG_FILE"
@@ -677,7 +638,7 @@ jobs:
       - name: Set zip Suffix
         id: suffix
         run: |
-          echo "value=${{ github.event.inputs.VFS == 'true' && '_VFS' || '' }}${{ github.event.inputs.ZRAM == 'true' && '_LZ4KD' || '' }}${{ github.event.inputs.KPM == 'true' && '_KPM' || '' }}${{ github.event.inputs.SCHED== 'true' && '_SCHED' || '' }}" >> $GITHUB_OUTPUT
+          echo "value=${{ github.event.inputs.VFS == 'true' && '_VFS' || '' }}${{ github.event.inputs.KPM == 'true' && '_KPM' || '' }}" >> $GITHUB_OUTPUT
 
       # 从一加源码中获取适用的 Android 版本信息，注意是系统 Android 版本而非你填写的内核 Android 版本，非一加官方源码可能需要修改或删除这一步
       - name: Auto map FILE to Android version by manifest
