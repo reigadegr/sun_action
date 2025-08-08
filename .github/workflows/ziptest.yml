@@ -172,12 +172,16 @@ jobs:
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
+          KERNEL_VERSION: ${{ needs.get-config.outputs.KERNEL_VERSION }}
         run: |
           cd AnyKernel3
-          name=OPMOD_Kernel_MKSU-"$(date +"%gw%V")""$(date +%u | awk '{printf "%c", 96+$1}')"-"$(date +"%H%M%S")".zip
+          ZIP_NAME=OPMOD_Kernel_MKSU-"$(date +"%gw%V")""$(date +%u | awk '{printf "%c", 96+$1}')"-"$(date +"%H%M%S")".zip
           zip -9 -rq "$name" .
-          wget https://github.com/reigadegr/sun_action/raw/main/tgbot.py        
-          python3 "$(realpath ./tgbot.py)" "$(realpath ./"$name")" && exit 0 || true
-
+          wget https://github.com/reigadegr/sun_action/raw/main/tgbot.py
+          MD5_VALUE=$(md5sum "$ZIP_NAME" | cut -d' ' -f1)
+          READABLE_TIME=$(date +"%m月%d日 %H:%M")
+          export DESCRIPTION=$'🧩 内核构建报告\n\n🔧 内核版本: '"$KERNEL_VERSION"$'\n⏰ 构建时间: '"$READABLE_TIME"$'\n📦 文件名: '"$ZIP_NAME"$'\n🔒 MD5: '"$MD5_VALUE"
+          python3 "$(realpath ./tgbot.py)" "$(realpath ./"$ZIP_NAME")" && exit 0 || true    
+ 
       - name: Post-build Disk Check
         run: df -h
