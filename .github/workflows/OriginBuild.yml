@@ -876,7 +876,7 @@ jobs:
 
       - name: Make AnyKernel3
         run: |
-          git clone https://github.com/Numbersf/AnyKernel3 --depth=1
+          git clone https://github.com/reigadegr/AnyKernel3 --depth=1
           rm -rf ./AnyKernel3/.git
           CONFIG_FILE="./common/arch/arm64/configs/gki_defconfig"
           cp "$CONFIG_FILE" ./AnyKernel3 || echo "复制gki_defconfig失败"

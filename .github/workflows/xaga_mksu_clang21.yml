@@ -583,7 +583,7 @@ jobs:
 
       - name: Make AnyKernel3
         run: |
-          git clone https://github.com/Numbersf/AnyKernel3 --depth=1
+          git clone https://github.com/reigadegr/AnyKernel3 --depth=1
           rm -rf ./AnyKernel3/.git
           cp *build.txt ./AnyKernel3 || echo "复制log失败"
           cp config.txt ./AnyKernel3 || echo "复制config失败"
