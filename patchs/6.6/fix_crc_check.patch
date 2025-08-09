@@ -6,7 +6,7 @@ index d66c156be1c6..40f30653c49b 100644
  KBUILD_CFLAGS	+= -mllvm -polly-opt-fusion=max
  endif
  
-+KBUILD_CFLAGS += -fclang-abi-compat=19
++KBUILD_CFLAGS += -fclang-abi-compat=18.0.0
 +KBUILD_CFLAGS += -fno-addrsig
 +KBUILD_CFLAGS += -fno-unique-section-names
 +KBUILD_CFLAGS += -mllvm -disable-peephole
