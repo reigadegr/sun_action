@@ -866,7 +866,8 @@ jobs:
           EXTRA_FLAGS="CLANG_AUTOFDO_PROFILE=$FDO_FILE"
           echo $EXTRA_FLAGS
           echo "这里显示fdo文件: $(ls $FDO_FILE)"
-          make -j$(nproc --all) O=out $MAKE_ARGS $EXTRA_FLAGS gki_defconfig all 2>&1 | tee  ../../../build.txt
+          wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/Module.symvers
+          make -j$(nproc --all) O=out $MAKE_ARGS $EXTRA_FLAGS KBUILD_EXTRA_SYMBOLS="$(realpath ./Module.symvers)" gki_defconfig all 2>&1 | tee  ../../../build.txt
           for i in $(find  . -type f -name ".config"); do
              cp $i  ../../../config.txt
           done

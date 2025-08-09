@@ -1,15 +1,47 @@
-diff --git a/Makefile b/Makefile
-index d66c156be1c6..6f6831841d8a 100644
---- a/Makefile
-+++ b/Makefile
-@@ -2090,6 +2090,10 @@ clang-tidy clang-analyzer:
- 	@false
- endif
- 
-+KBUILD_CFLAGS += -fclang-abi-compat=19
-+KBUILD_CFLAGS += -fno-addrsig    
-+KBUILD_CFLAGS += -fno-unique-section-names
-+
- # Scripts to check various things for consistency
- # ---------------------------------------------------------------------------
- 
+commit c6d87704e6efd258d33fadbca4f2d93745a9da08
+Author: Christophe Leroy <christophe.leroy@csgroup.eu>
+Date:   Fri Jul 12 07:51:58 2024 +0200
+
+    UPSTREAM: vmlinux.lds.h: catch .bss..L* sections into BSS")
+    
+    Commit 9a427556fb8e ("vmlinux.lds.h: catch compound literals into
+    data and BSS") added catches for .data..L* and .rodata..L* but missed
+    .bss..L*
+    
+    Since commit 5431fdd2c181 ("ptrace: Convert ptrace_attach() to use
+    lock guards") the following appears at build:
+    
+      LD      .tmp_vmlinux.kallsyms1
+    powerpc64-linux-ld: warning: orphan section `.bss..Lubsan_data33' from `kernel/ptrace.o' being placed in section `.bss..Lubsan_data33'
+      NM      .tmp_vmlinux.kallsyms1.syms
+      KSYMS   .tmp_vmlinux.kallsyms1.S
+      AS      .tmp_vmlinux.kallsyms1.S
+      LD      .tmp_vmlinux.kallsyms2
+    powerpc64-linux-ld: warning: orphan section `.bss..Lubsan_data33' from `kernel/ptrace.o' being placed in section `.bss..Lubsan_data33'
+      NM      .tmp_vmlinux.kallsyms2.syms
+      KSYMS   .tmp_vmlinux.kallsyms2.S
+      AS      .tmp_vmlinux.kallsyms2.S
+      LD      vmlinux
+    powerpc64-linux-ld: warning: orphan section `.bss..Lubsan_data33' from `kernel/ptrace.o' being placed in section `.bss..Lubsan_data33'
+    
+    Lets add .bss..L* to BSS_MAIN macro to catch those sections into BSS.
+    
+    Fixes: 9a427556fb8e ("vmlinux.lds.h: catch compound literals into data and BSS")
+    Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+    Reported-by: kernel test robot <lkp@intel.com>
+    Closes: https://lore.kernel.org/oe-kbuild-all/202404031349.nmKhyuUG-lkp@intel.com/
+    Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+
+diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
+index 8face63d873b..93d5fe37edc9 100644
+--- a/include/asm-generic/vmlinux.lds.h
++++ b/include/asm-generic/vmlinux.lds.h
+@@ -101,7 +101,7 @@
+ #define DATA_MAIN .data .data.[0-9a-zA-Z_]* .data..L* .data..compoundliteral*
+ #define SDATA_MAIN .sdata .sdata.[0-9a-zA-Z_]*
+ #define RODATA_MAIN .rodata .rodata.[0-9a-zA-Z_]* .rodata..L*
+-#define BSS_MAIN .bss .bss.[0-9a-zA-Z_]* .bss..compoundliteral*
++#define BSS_MAIN .bss .bss.[0-9a-zA-Z_]* .bss..L* .bss..compoundliteral*
+ #define SBSS_MAIN .sbss .sbss.[0-9a-zA-Z_]*
+ #else
+ #define TEXT_MAIN .text
