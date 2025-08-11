@@ -367,10 +367,12 @@ jobs:
             sleep 1
           done
           mv common2 common
-          hash="$(basename ${{ github.event.inputs.HASH }})"
-          cd common; git reset --hard "$hash"
+          if [ ! -z "${{ github.event.inputs.HASH }}" ]; then
+              hash="$(basename ${{ github.event.inputs.HASH }})"
+              cd common; git reset --hard "$hash"
+              cd  ..
+          fi
           # git cherry-pick 2afa01e1442fab040e5babeab3db2437b94bd818^..5d11212f3927ada2cf08e1d738f0ef7cccf91443
-          cd  ..
           cd  ..
           if [ -e kernel_platform/common/BUILD.bazel ]; then
             sed -i '/^[[:space:]]*"protected_exports_list"[[:space:]]*:[[:space:]]*"android\/abi_gki_protected_exports_aarch64",$/d' kernel_platform/common/BUILD.bazel
