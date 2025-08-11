@@ -1,4 +1,4 @@
-name: OriginBuild_clang21
+name: DebugBuild_clang21
 on:
   workflow_dispatch:
     inputs:
