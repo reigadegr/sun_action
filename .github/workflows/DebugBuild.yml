@@ -56,7 +56,7 @@ on:
         type: choice
         description: "使用的分支"
         required: true
-        default: "ogki12"
+        default: "ogki13"
         options:
           - "ogki7"
           - "ogki8"
@@ -64,6 +64,7 @@ on:
           - "ogki10"
           - "ogki11"
           - "ogki12"
+          - "ogki13"
       FAST_BUILD:
         type: boolean
         description: "是否启用极速构建？"
