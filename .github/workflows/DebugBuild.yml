@@ -50,13 +50,13 @@ on:
       HASH:
         type: string
         description: "自定义提交哈希"
-        required: true
+        required: false
         default: ""
       BRANCH:
         type: choice
         description: "使用的分支"
         required: true
-        default: "ogki10"
+        default: "ogki12"
         options:
           - "ogki7"
           - "ogki8"
@@ -78,7 +78,7 @@ on:
         type: boolean
         description: "是否启用手动钩子(VFS)？"
         required: true
-        default: false
+        default: true
       KPM:
         type: boolean
         description: "是否启用内核模块(KPM)？"
@@ -93,7 +93,7 @@ on:
         type: boolean
         description: "是否全链路屏蔽一加内核模块？"
         required: true
-        default: true
+        default: false
 
 jobs:
   build:
