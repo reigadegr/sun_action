@@ -367,7 +367,7 @@ jobs:
             sleep 1
           done
           mv common2 common
-          hash="$(basename ${{ github.event.inputs.BRANCH }})"
+          hash="$(basename ${{ github.event.inputs.HASH }})"
           cd common; git reset --hard "$hash"
           git cherry-pick 38981ac18ccfcaa95e79b412a1d042d37232e2fb^..d1036fce36f48ff31ad08d2e72ae2a38a2bdfa93
           cd  ..
