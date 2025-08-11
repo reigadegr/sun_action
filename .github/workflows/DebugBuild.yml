@@ -56,7 +56,7 @@ on:
         type: choice
         description: "使用的分支"
         required: true
-        default: "ogki11"
+        default: "ogki10"
         options:
           - "ogki7"
           - "ogki8"
@@ -369,7 +369,7 @@ jobs:
           mv common2 common
           hash="$(basename ${{ github.event.inputs.HASH }})"
           cd common; git reset --hard "$hash"
-          git cherry-pick 38981ac18ccfcaa95e79b412a1d042d37232e2fb^..d1036fce36f48ff31ad08d2e72ae2a38a2bdfa93
+          git cherry-pick 2afa01e1442fab040e5babeab3db2437b94bd818^..5d11212f3927ada2cf08e1d738f0ef7cccf91443
           cd  ..
           cd  ..
           if [ -e kernel_platform/common/BUILD.bazel ]; then
