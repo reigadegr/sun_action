@@ -231,8 +231,8 @@ jobs:
           mkdir kernel_platform && cd kernel_platform
           # repo init -u https://github.com/OnePlusOSS/kernel_manifest.git -b refs/heads/oneplus/${{ needs.get-config.outputs.CPU }} -m ${{ github.event.inputs.FILE }}.xml --depth=1
           # repo sync -c -j$(nproc --all) --no-tags --no-clone-bundle --force-sync
-          git clone --depth 1 https://github.com/reigadegr/android_kernel_xiaomi_mt6895 -b v3 common
-
+          # git clone --depth 1 https://github.com/reigadegr/android_kernel_xiaomi_mt6895 -b v3 common
+          git clone --depth 1 https://reigadegr:${MY_PAT}@github.com/reigadegr/lineage_xaga -b v3 common
           cd common; git log; cd  ..; pwd; ls       
           
           cd  ..; pwd; ls
