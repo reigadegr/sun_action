@@ -216,8 +216,7 @@ jobs:
             sleep 1
           done
 
-          cd common2; git log; cd  ..; pwd; ls
-          mv common2 common
+          cd common; git log; cd  ..; pwd; ls
           
           cd  ..; pwd; ls
           if [  -e kernel_platform/common/BUILD.bazel ]; then
