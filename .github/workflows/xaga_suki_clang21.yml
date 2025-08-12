@@ -205,6 +205,7 @@ jobs:
           # repo init -u https://github.com/OnePlusOSS/kernel_manifest.git -b refs/heads/oneplus/${{ needs.get-config.outputs.CPU }} -m ${{ github.event.inputs.FILE }}.xml --depth=1
           # repo sync -c -j$(nproc --all) --no-tags --no-clone-bundle --force-sync
           # git clone --depth 1 https://github.com/reigadegr/android_kernel_xiaomi_mt6895 -b v3 common2 &
+          export MY_PAT="${{ secrets.MY_PAT }}"
           git clone --depth 1 https://reigadegr:${MY_PAT}@github.com/reigadegr/lineage_xaga -b v3 common
           # repo init --depth 1 -u https://android.googlesource.com/kernel/manifest -b common-android12-5.10
           # repo sync -c -j$(nproc --all) --no-tags --no-clone-bundle --force-sync
