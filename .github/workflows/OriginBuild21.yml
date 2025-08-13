@@ -38,10 +38,10 @@ on:
         type: choice
         description: "分支名(不可留空)/自定义版本标识(留空不修改)"
         required: false
-        default: "main/deer"
+        default: "main/OPMod"
         options:
-          - "susfs-main/deer"
-          - "main/deer"
+          - "susfs-main/OPMod"
+          - "main/OPMod"
       SUFFIX:
         type: string
         description: "自定义内核后缀 (不输入使用随机字符串)"
