@@ -51,8 +51,9 @@ on:
         type: choice
         description: "使用的分支"
         required: true
-        default: "ogki11"
+        default: "gki04"
         options:
+          - "gki04"
           - "ogki7"
           - "ogki8"
           - "ogki9"
