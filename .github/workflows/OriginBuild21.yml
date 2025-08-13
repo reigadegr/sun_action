@@ -801,12 +801,16 @@ jobs:
           # # 禁用io调度器
           echo "CONFIG_MQ_IOSCHED_KYBER=n" >> "$CONFIG_FILE"
           
-          # 关闭可选功能(放心使用本代码)
+          # 控制可选功能(放心使用本代码)
           echo "CONFIG_DAMON=n" >> "$CONFIG_FILE"
-          echo "CONFIG_CRYPTO_SHA1_ARM64_CE=n" >> "$CONFIG_FILE"
-          echo "CONFIG_VIRTIO_PCI_LEGACY=n" >> "$CONFIG_FILE"
+          echo "CONFIG_CRYPTO_SHA1_ARM64_CE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_VIRTIO_PCI_LEGACY=y" >> "$CONFIG_FILE"
+          echo "CONFIG_WQ_POWER_EFFICIENT_DEFAULT=y" >> "$CONFIG_FILE"
           echo "CONFIG_HEADERS_INSTALL=n" >> "$CONFIG_FILE"
           echo "CONFIG_PROC_MEM_ALWAYS_FORCE=n" >> "$CONFIG_FILE"
+          
+          echo "CONFIG_DTPM=n" >> "$CONFIG_FILE"
+          echo "CONFIG_IDLE_INJECT=n" >> "$CONFIG_FILE"
      
           # 无用kunit
           echo "CONFIG_FAT_KUNIT_TEST=n" >> "$CONFIG_FILE"
