@@ -32,11 +32,15 @@ on:
         description: "是否启用极速构建？"
         required: true
         default: true
-      VFS:
-        type: boolean
-        description: "是否启用手动钩子(VFS)？"
+      HOOK:
+        type: choice
+        description: "钩子选择"
         required: true
-        default: true
+        default: tracepoint
+        options:
+          - kprobe
+          - manual
+          - tracepoint
       KPM:
         type: boolean
         description: "是否启用内核模块(KPM)？"
@@ -93,7 +97,7 @@ jobs:
           echo "Custom SUFFIX: ${{ github.event.inputs.SUFFIX }}"
           echo "Custom BUILD_TIME: ${{ github.event.inputs.BUILD_TIME }}"
           echo "Selected SUSFS_ENABLE: ${{ github.event.inputs.SUSFS_ENABLE }}"
-          echo "Selected VFS: ${{ github.event.inputs.VFS }}"
+          echo "Selected HOOK: ${{ github.event.inputs.HOOK }}"
           echo "Selected KPM: ${{ github.event.inputs.KPM }}"
           echo "Selected FAST_BUILD: ${{ github.event.inputs.FAST_BUILD }}"       
           echo "Selected SCHED: ${{ github.event.inputs.SCHED }}"
@@ -386,14 +390,20 @@ jobs:
           patch -p1 -F 3 < 69_hide_stuff.patch
           echo "隐藏应用_patch完成"
 
-      - name: Apply VFS
-        if: ${{ github.event.inputs.VFS == 'true' }}
+      - name: Apply HOOK
         run: |
           cd kernel_workspace/kernel_platform/common
+          if [ "${{ github.event.inputs.HOOK }}" = "kprobe" ]; then
+            echo "调用 kprobe 钩子"
+          elif [ "${{ github.event.inputs.HOOK }}" = "manual" ]; then
             cp ../../SukiSU_patch/hooks/syscall_hooks.patch ./
-            echo "正在打vfs补丁"
+            echo "调用 manual 钩子"
             patch -p1 -F 3 < syscall_hooks.patch
-            echo "vfs_patch完成"
+          elif [ "${{ github.event.inputs.HOOK }}" = "tracepoint" ]; then
+            cp ../../SukiSU_patch/hooks/tracepoint_hooks.patch ./
+            echo "调用 tracepoint 钩子"
+            patch -p1 -F 3 < tracepoint_hooks.patch
+          fi
 
       # 配置信息
       - name: Add Configuration Settings
@@ -411,13 +421,18 @@ jobs:
             echo "CONFIG_KPM=n" >> "$CONFIG_FILE"
             echo "关闭kpm"
           fi
-          # VFS配置
-          if [ "${{ github.event.inputs.VFS }}" = "true" ]; then
-            echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> "$CONFIG_FILE"
-            echo "CONFIG_KSU_MANUAL_HOOK=y" >> "$CONFIG_FILE"
-          else
+
+          # HOOK配置
+          if [ "${{ github.event.inputs.HOOK }}" = "kprobe" ]; then
             echo "CONFIG_KSU_SUSFS_SUS_SU=y" >> "$CONFIG_FILE"
             echo "CONFIG_KPROBES=y" >> "$CONFIG_FILE"
+            echo "CONFIG_KSU_KPROBES_HOOK=y" >> "$CONFIG_FILE"
+          elif [ "${{ github.event.inputs.HOOK }}" = "manual" ]; then
+            echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> "$CONFIG_FILE"
+            echo "CONFIG_KSU_MANUAL_HOOK=y" >> "$CONFIG_FILE"
+          elif [ "${{ github.event.inputs.HOOK }}" = "tracepoint" ]; then
+            echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> "$CONFIG_FILE"
+            echo "CONFIG_KSU_TRACEPOINT_HOOK=y" >> "$CONFIG_FILE" 
           fi
 
           # SUSFS配置
