@@ -830,10 +830,10 @@ jobs:
 
           # 修各种abi不兼容
           # 蓝牙
-          echo "CONFIG_RFKILL=y" >> "$CONFIG_FILE"
-          echo "CONFIG_BT=y" >> "$CONFIG_FILE"
-          echo "CONFIG_BT_RFCOMM=y" >> "$CONFIG_FILE"
-          echo "CONFIG_BT_HIDP=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_RFKILL=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_BT=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_BT_RFCOMM=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_BT_HIDP=y" >> "$CONFIG_FILE"
           
           # 移除无意义的内容
           # echo "CONFIG_UBSAN=n">> "$CONFIG_FILE"
