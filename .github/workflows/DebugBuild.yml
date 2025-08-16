@@ -53,13 +53,13 @@ on:
         required: false
         default: ""
       BRANCH:
-        type: choice
+        type: string
         description: "使用的分支"
         required: true
-        default: "ogki13"
+        default: "gki06"
         options:
-          - "ogki7"
-          - "ogki8"
+          - "gki05"
+          - "gki06"
           - "ogki9"
           - "ogki10"
           - "ogki11"
