@@ -400,7 +400,7 @@ jobs:
             echo "调用 manual 钩子"
             patch -p1 -F 3 < syscall_hooks.patch
           elif [ "${{ github.event.inputs.HOOK }}" = "tracepoint" ]; then
-            cp ../../SukiSU_patch/hooks/tracepoint_hooks.patch ./ || wget https://github.com/liqidecg/SukiSU_patch/raw/main/hooks/sukisu_tracepoint_hooks.patch
+            cp ../../SukiSU_patch/hooks/tracepoint_hooks.patch ./ || wget https://github.com/reigadegr/sun_action/raw/main/patchs/5.10/xaga_los_sukisu_trace_hook.patch
             echo "调用 tracepoint 钩子"
             patch -p1 -F 3 < sukisu_tracepoint_hooks.patch
           fi
