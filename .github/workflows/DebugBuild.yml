@@ -85,11 +85,6 @@ on:
         description: "是否启用内核模块(KPM)？"
         required: true
         default: false
-      # FIX_UPSTREAM:
-        # type: boolean
-        # description: "是否修复谷歌上游bug？"
-        # required: true
-        # default: true
       BLACK_LIST:
         type: boolean
         description: "是否全链路屏蔽一加内核模块？"
@@ -512,7 +507,7 @@ jobs:
           if [[ -z "$CUSTOM_TAG" || "$CUSTOM_TAG" == "$BRANCH_NAME" ]]; then
             VERSION_FULL="v$KSU_API_VERSION-$GIT_HASH@$BRANCH_NAME"
           else
-            VERSION_FULL="v$KSU_API_VERSION-$CUSTOM_TAG@$BRANCH_NAME[$GIT_HASH]"
+            VERSION_FULL="v$KSU_API_VERSION-$CUSTOM_TAG@$BRANCH_NAME"
           fi
 
           sed -i '/define get_ksu_version_full/,/endef/d' kernel/Makefile
@@ -702,9 +697,9 @@ jobs:
           # lto thin，O2 
           # echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
           # echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
-          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=n" >> "$CONFIG_FILE"
           echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3=n" >> "$CONFIG_FILE"
-          echo "CONFIG_LLVM_POLLY=y" >> "$CONFIG_FILE"
+          echo "CONFIG_LLVM_POLLY=n" >> "$CONFIG_FILE"
           echo "CONFIG_LD_DEAD_CODE_DATA_ELIMINATION=y" >> "$CONFIG_FILE"
           # echo "CONFIG_AUTOFDO_CLANG=y" >> "$CONFIG_FILE"
           
