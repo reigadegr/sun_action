@@ -51,11 +51,11 @@ on:
         type: choice
         description: "使用的分支"
         required: true
-        default: "gki04"
+        default: "gki05"
         options:
           - "gki04"
-          - "ogki7"
-          - "ogki8"
+          - "gki05"
+          - "gki06"
           - "ogki9"
           - "ogki10"
           - "ogki11"
@@ -70,11 +70,15 @@ on:
         description: "是否开启susfs？"
         required: true
         default: false
-      VFS:
-        type: boolean
-        description: "是否启用手动钩子(VFS)？"
+      HOOK:
+        type: choice
+        description: "钩子选择"
         required: true
-        default: false
+        default: tracepoint
+        options:
+          - kprobe
+          - manual
+          - tracepoint
       KPM:
         type: boolean
         description: "是否启用内核模块(KPM)？"
@@ -227,7 +231,7 @@ jobs:
           echo -n "SUFFIX Unicode: "
           python3 -c "print(''.join(f'U+{ord(c):04X} ' for c in '''${{ github.event.inputs.SUFFIX }}'''))"
           echo "Selected SUSFS_ENABLE: ${{ github.event.inputs.SUSFS_ENABLE }}"
-          echo "Selected VFS: ${{ github.event.inputs.VFS }}"
+          echo "Selected HOOK: ${{ github.event.inputs.HOOK }}"
           echo "Selected KPM: ${{ github.event.inputs.KPM }}"
           echo "Selected FAST_BUILD: ${{ github.event.inputs.FAST_BUILD }}"
 
@@ -581,14 +585,21 @@ jobs:
           patch -p1 -F 3 < hmbird_patch.patch
           echo "OGKI转换GKI_patch完成"
 
-      - name: Apply VFS
-        if: ${{ github.event.inputs.VFS == 'true' }}
+     - name: Apply HOOK
         run: |
           cd kernel_workspace/kernel_platform/common
-          cp ../../SukiSU_patch/hooks/syscall_hooks.patch ./
-          echo "正在打vfs补丁"
-          patch -p1 -F 3 < syscall_hooks.patch
-          echo "vfs_patch完成"
+          if [ "${{ github.event.inputs.HOOK }}" = "kprobe" ]; then
+            echo "调用 kprobe 钩子"
+          elif [ "${{ github.event.inputs.HOOK }}" = "manual" ]; then
+            cp ../../SukiSU_patch/hooks/syscall_hooks.patch ./
+            echo "调用 manual 钩子"
+            patch -p1 -F 3 < syscall_hooks.patch
+          elif [ "${{ github.event.inputs.HOOK }}" = "tracepoint" ]; then
+            url="https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/sukisu_tracepoint_hook.patch"
+            cp ../../SukiSU_patch/hooks/tracepoint_hooks.patch ./ || wget "$url"
+            echo "调用 tracepoint 钩子"
+            patch -p1 -F 3 < "$(basename $url)" || patch -p1 -F 3 < tracepoint_hooks.patch
+          fi
 
       - name: Remove OnePlus Kernel Module
         run: |          
@@ -639,13 +650,17 @@ jobs:
             echo "CONFIG_KPM=y" >> "$CONFIG_FILE"
           fi
 
-          # VFS配置
-          if [ "${{ github.event.inputs.VFS }}" = "true" ]; then
-            echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> "$CONFIG_FILE"
-            echo "CONFIG_KSU_MANUAL_HOOK=y" >> "$CONFIG_FILE"
-          else
+          # HOOK配置
+          if [ "${{ github.event.inputs.HOOK }}" = "kprobe" ]; then
             echo "CONFIG_KSU_SUSFS_SUS_SU=y" >> "$CONFIG_FILE"
             echo "CONFIG_KPROBES=y" >> "$CONFIG_FILE"
+            echo "CONFIG_KSU_KPROBES_HOOK=y" >> "$CONFIG_FILE"
+          elif [ "${{ github.event.inputs.HOOK }}" = "manual" ]; then
+            echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> "$CONFIG_FILE"
+            echo "CONFIG_KSU_MANUAL_HOOK=y" >> "$CONFIG_FILE"
+          elif [ "${{ github.event.inputs.HOOK }}" = "tracepoint" ]; then
+            echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> "$CONFIG_FILE"
+            echo "CONFIG_KSU_TRACEPOINT_HOOK=y" >> "$CONFIG_FILE" 
           fi
 
           # SUSFS配置
@@ -942,7 +957,7 @@ jobs:
       - name: Set zip Suffix
         id: suffix
         run: |
-          echo "value=${{ github.event.inputs.VFS == 'true' && '_VFS' || '' }}${{ github.event.inputs.KPM == 'true' && '_KPM' || '' }}" >> $GITHUB_OUTPUT
+          echo "value=${{ github.event.inputs.VFS }}${{ github.event.inputs.KPM == 'true' && '_KPM' || '' }}" >> $GITHUB_OUTPUT
 
       - name: Upload AnyKernel3
         uses: actions/upload-artifact@v4
