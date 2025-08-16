@@ -500,7 +500,7 @@ jobs:
           if [[ -z "$CUSTOM_TAG" || "$CUSTOM_TAG" == "$BRANCH_NAME" ]]; then
             VERSION_FULL="v$KSU_API_VERSION-$GIT_HASH@$BRANCH_NAME"
           else
-            VERSION_FULL="v$KSU_API_VERSION-$CUSTOM_TAG@$BRANCH_NAME[$GIT_HASH]"
+            VERSION_FULL="v$KSU_API_VERSION-$CUSTOM_TAG@$BRANCH_NAME"
           fi
 
           sed -i '/define get_ksu_version_full/,/endef/d' kernel/Makefile
