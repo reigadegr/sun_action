@@ -15,7 +15,9 @@ on:
           - xaga_mksu
           - new_repo_build
           - DebugBuild
+          - DebugBuild_clang21
           - OriginBuild
+          - OriginBuild_clang21
       count:
         description: '最多访问的运行次数'
         required: false
