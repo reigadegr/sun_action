@@ -828,6 +828,7 @@ jobs:
               echo "CONFIG_BT=y" >> "$CONFIG_FILE"
               echo "CONFIG_BT_RFCOMM=y" >> "$CONFIG_FILE"
               echo "CONFIG_BT_HIDP=y" >> "$CONFIG_FILE"
+              echo "CONFIG_TLS=y" >> "$CONFIG_FILE"
           fi
           
           # 移除无意义的内容
