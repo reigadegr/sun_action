@@ -65,6 +65,17 @@ on:
           - "ogki11"
           - "ogki12"
           - "ogki13"
+      BLACK_LIST:
+        type: string
+        description: "如何去屏蔽一加内核模块？"
+        required: true
+        default: "humming_bird_blacklist.patch"
+        options:
+          - "blacklist_module.patch"
+          - "blacklist_module_danger.patch"
+          - "humming_bird_blacklist.patch"
+          - "haruhi_blacklist.patch"
+          - "non"
       FAST_BUILD:
         type: boolean
         description: "是否启用极速构建？"
@@ -85,17 +96,6 @@ on:
         description: "是否启用内核模块(KPM)？"
         required: true
         default: false
-      BLACK_LIST:
-        type: string
-        description: "使用哪份配置去屏蔽一加内核模块？"
-        required: true
-        default: "humming_bird_blacklist.patch"
-        options:
-          - "blacklist_module.patch"
-          - "blacklist_module_danger.patch"
-          - "humming_bird_blacklist.patch"
-          - "haruhi_blacklist.patch"
-          - "non"
 
 jobs:
   build:
