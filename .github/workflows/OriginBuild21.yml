@@ -72,6 +72,7 @@ on:
           - "blacklist_module_danger.patch"
           - "humming_bird_blacklist.patch"
           - "haruhi_blacklist.patch"
+          - "scx_enable.patch"
           - "non"
       FAST_BUILD:
         type: boolean
@@ -844,7 +845,7 @@ jobs:
           # 修各种abi不兼容
           # 蓝牙
           patch_profile="${{ github.event.inputs.BLACK_LIST }}"
-          if [ "$patch_profile" = "blacklist_module_danger.patch" ] || [ "$patch_profile" = "blacklist_module.patch" ]; then
+          if [ "$patch_profile" = "blacklist_module_danger.patch" ] || [ "$patch_profile" = "blacklist_module.patch" ] || [ "$patch_profile" = "scx_enable.patch" ] ; then
               echo "CONFIG_RFKILL=y" >> "$CONFIG_FILE"
               echo "CONFIG_BT=y" >> "$CONFIG_FILE"
               echo "CONFIG_BT_RFCOMM=y" >> "$CONFIG_FILE"

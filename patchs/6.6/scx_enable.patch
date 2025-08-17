@@ -1,8 +1,8 @@
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index ea1b4e116389..933e7fe3e89c 100644
+index ea1b4e116389..38ff9d4ce36c 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
-@@ -2872,6 +2872,89 @@ static int early_mod_check(struct load_info *info, int flags)
+@@ -2872,6 +2872,86 @@ static int early_mod_check(struct load_info *info, int flags)
  	return err;
  }
  
@@ -28,7 +28,6 @@ index ea1b4e116389..933e7fe3e89c 100644
 +    "kunit_example_test",
 +    "kunit_test",
 +    "lib_test",
-+    "oplus_binder_strategy",
 +    "oplus_bsp_dfr_hung_task_enhance",
 +    "oplus_bsp_dfr_reboot_speed",
 +    "oplus_bsp_dfr_ubt",
@@ -41,7 +40,6 @@ index ea1b4e116389..933e7fe3e89c 100644
 +    "oplus_bsp_memleak_detect",
 +    "oplus_bsp_pcppages_opt",
 +    "oplus_bsp_proactive_compact",
-+    "oplus_bsp_sched_ext",
 +    "oplus_bsp_schedinfo",
 +    "oplus_bsp_sigkill_diagnosis",
 +    "oplus_bsp_storage_io_metrics",
@@ -54,7 +52,6 @@ index ea1b4e116389..933e7fe3e89c 100644
 +    "oplus_connectivity_routerboost",
 +    "oplus_freqqos_monitor",
 +    "oplus_lock_torture",
-+    "oplus_locking_strategy",
 +    "oplus_network_app_monitor",
 +    "oplus_network_dns_hook",
 +    "oplus_network_game_first",
@@ -92,7 +89,7 @@ index ea1b4e116389..933e7fe3e89c 100644
  /*
   * Allocate and load the module: note that size of section 0 is always
   * zero, and we rely on this for optional sections.
-@@ -2882,6 +2965,7 @@ static int load_module(struct load_info *info, const char __user *uargs,
+@@ -2882,6 +2962,7 @@ static int load_module(struct load_info *info, const char __user *uargs,
  	struct module *mod;
  	bool module_allocated = false;
  	long err = 0;
@@ -100,7 +97,7 @@ index ea1b4e116389..933e7fe3e89c 100644
  	char *after_dashes;
  
  	/*
-@@ -2913,6 +2997,13 @@ static int load_module(struct load_info *info, const char __user *uargs,
+@@ -2913,6 +2994,13 @@ static int load_module(struct load_info *info, const char __user *uargs,
  	if (err)
  		goto free_copy;
  
