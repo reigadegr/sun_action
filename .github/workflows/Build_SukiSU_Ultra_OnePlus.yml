@@ -358,5 +358,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: msm_source
-          path: kernel_platform/msm-kernel/*
+          path: kernel_workspace/kernel_platform/msm-kernel/*
           retention-days: 1
