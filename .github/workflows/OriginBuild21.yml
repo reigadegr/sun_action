@@ -51,11 +51,13 @@ on:
         type: choice
         description: "使用的分支"
         required: true
-        default: "gki05"
+        default: "gki07"
         options:
           - "gki04"
           - "gki05"
           - "gki06"
+          - "gki07"
+          - "gki08"
           - "ogki9"
           - "ogki10"
           - "ogki11"
