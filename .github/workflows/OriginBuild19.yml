@@ -611,7 +611,7 @@ jobs:
           cd kernel_workspace/kernel_platform/common       
           git add  . && git commit -m "auto commit"
           patch_profile="${{ github.event.inputs.BLACK_LIST }}"
-          wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/"$patch_profile" || true
+          wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/blacklist_module_profile/"$patch_profile" || true
           patch -p1 -F 3 < "./$patch_profile" && git add  . && git commit -m "auto commit" || git reset --hard
           # Remove check_defconfig
           sed -i 's/check_defconfig//' ./build.config.gki
