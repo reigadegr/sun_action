@@ -840,10 +840,13 @@ jobs:
 
           # 修各种abi不兼容
           # 蓝牙
-          echo "CONFIG_RFKILL=y" >> "$CONFIG_FILE"
-          echo "CONFIG_BT=y" >> "$CONFIG_FILE"
-          echo "CONFIG_BT_RFCOMM=y" >> "$CONFIG_FILE"
-          echo "CONFIG_BT_HIDP=y" >> "$CONFIG_FILE"
+          patch_profile="${{ github.event.inputs.BLACK_LIST }}"
+          if [ "$patch_profile" = "blacklist_module_danger.patch" ] || [ "$patch_profile" = "blacklist_module.patch" ]; then
+              echo "CONFIG_RFKILL=y" >> "$CONFIG_FILE"
+              echo "CONFIG_BT=y" >> "$CONFIG_FILE"
+              echo "CONFIG_BT_RFCOMM=y" >> "$CONFIG_FILE"
+              echo "CONFIG_BT_HIDP=y" >> "$CONFIG_FILE"
+          fi
           
           # 移除无意义的内容
           echo "CONFIG_UBSAN=n">> "$CONFIG_FILE"
