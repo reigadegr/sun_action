@@ -727,7 +727,8 @@ jobs:
           # 防止单点故障导致系统崩溃
           echo "CONFIG_PANIC_ON_OOPS=n" >> "$CONFIG_FILE"
           echo "CONFIG_PANIC_ON_OOPS_VALUE=0" >> "$CONFIG_FILE"
-          if [ "${{ github.event.inputs.BLACK_LIST }}" = "true" ]; then
+          blacklist="${{ github.event.inputs.BLACK_LIST }}"
+          if [ "$blacklist" = "blacklist_module_danger.patch" ] || [ "$blacklist" = "haruhi_blacklist.patch" ]; then
               # qcom llcc
               echo "CONFIG_QCOM_LLCC=y" >> "$CONFIG_FILE"
               # walt scheduler
