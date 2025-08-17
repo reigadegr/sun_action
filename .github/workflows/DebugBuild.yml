@@ -86,10 +86,16 @@ on:
         required: true
         default: false
       BLACK_LIST:
-        type: boolean
-        description: "是否全链路屏蔽一加内核模块？"
+        type: string
+        description: "使用哪份配置去屏蔽一加内核模块？"
         required: true
-        default: false
+        default: "humming_bird_blacklist.patch"
+        options:
+          - "blacklist_module.patch"
+          - "blacklist_module_danger.patch"
+          - "humming_bird_blacklist.patch"
+          - "haruhi_blacklist.patch"
+          - "non"
 
 jobs:
   build:
@@ -596,23 +602,16 @@ jobs:
           patch -p1 -F 3 < syscall_hooks.patch
           echo "vfs_patch完成"
 
-      # - name: Remove OnePlus Kernel Module
-        # run: |          
-          # cd kernel_workspace/kernel_platform/common
-          
-          # git add  . && git commit -m "auto commit"
-          # if [ "${{ github.event.inputs.BLACK_LIST }}" = "true" ]; then
-            # echo "进行危险的屏蔽"
-            # wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/blacklist_module_danger.patch
-            # patch -p1 -F 3 < blacklist_module_danger.patch && git add  . && git commit -m "auto commit" || git reset --hard
-          # else
-            # echo "进行安全的屏蔽"
-            # wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/blacklist_module.patch
-            # patch -p1 -F 3 < blacklist_module.patch && git add  . && git commit -m "auto commit" || git reset --hard
-          # fi
-          # # Remove check_defconfig
-          # sed -i 's/check_defconfig//' ./build.config.gki
-          # echo "移除内核模块完成"
+      - name: Remove OnePlus Kernel Module
+        run: |          
+          cd kernel_workspace/kernel_platform/common       
+          git add  . && git commit -m "auto commit"
+          patch_profile="${{ github.event.inputs.BLACK_LIST }}"
+          wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/"$patch_profile" || true
+          patch -p1 -F 3 < "./$patch_profile" && git add  . && git commit -m "auto commit" || git reset --hard
+          # Remove check_defconfig
+          sed -i 's/check_defconfig//' ./build.config.gki
+          echo "移除内核模块完成"
 
       - name: Fix upstream bugs
         # if: ${{ github.event.inputs.FIX_UPSTREAM == 'true' }}
