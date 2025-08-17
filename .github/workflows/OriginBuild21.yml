@@ -51,7 +51,7 @@ on:
         type: choice
         description: "使用的分支"
         required: true
-        default: "gki07"
+        default: "gki08"
         options:
           - "gki04"
           - "gki05"
@@ -66,7 +66,7 @@ on:
         type: choice
         description: "如何去屏蔽一加内核模块？"
         required: true
-        default: "humming_bird_blacklist.patch"
+        default: "blacklist_module_danger.patch"
         options:
           - "blacklist_module.patch"
           - "blacklist_module_danger.patch"
