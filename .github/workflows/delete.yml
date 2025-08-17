@@ -11,8 +11,8 @@ on:
         options:
           - gki_test
           - repo_build
-          - xaga_sukisu
-          - xaga_mksu
+          - xaga_suki_clang21
+          - xaga_mksu_clang21
           - new_repo_build
           - DebugBuild
           - DebugBuild_clang21
