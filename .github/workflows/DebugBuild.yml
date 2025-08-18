@@ -51,7 +51,7 @@ on:
         type: choice
         description: "使用的分支"
         required: true
-        default: "gki08"
+        default: "gki06"
         options:
           - "gki04"
           - "gki05"
