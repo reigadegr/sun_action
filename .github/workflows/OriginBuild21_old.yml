@@ -87,7 +87,6 @@ on:
           - "haruhi_blacklist.patch"
           - "scx_enable.patch"
           - "non"
-        default: true
 
 jobs:
   build:
@@ -589,7 +588,7 @@ jobs:
           echo "vfs_patch完成"
 
       - name: Remove OnePlus Kernel Module
-        run: |          
+        run: | 
           cd kernel_workspace/kernel_platform/common       
           git add  . && git commit -m "auto commit"
           patch_profile="${{ github.event.inputs.BLACK_LIST }}"
