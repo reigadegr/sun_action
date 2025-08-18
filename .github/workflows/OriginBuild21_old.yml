@@ -679,12 +679,12 @@ jobs:
           echo "CONFIG_IP_NF_TARGET_ECN=y" >> "$CONFIG_FILE"
           
           # lto thin，O2 
-          echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
-          echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
-          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
+          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=n" >> "$CONFIG_FILE"
           echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3=n" >> "$CONFIG_FILE"
-          echo "CONFIG_LLVM_POLLY=y" >> "$CONFIG_FILE"
-          echo "CONFIG_LD_DEAD_CODE_DATA_ELIMINATION=y" >> "$CONFIG_FILE"
+          echo "CONFIG_LLVM_POLLY=n" >> "$CONFIG_FILE"
+          echo "CONFIG_LD_DEAD_CODE_DATA_ELIMINATION=n" >> "$CONFIG_FILE"
           echo "CONFIG_AUTOFDO_CLANG=y" >> "$CONFIG_FILE"
           
           # Inline zram                   
