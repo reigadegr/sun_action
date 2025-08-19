@@ -585,11 +585,16 @@ jobs:
         if: ${{ env.KERNEL_VERSION == '6.6' }}
         run: |
           cd kernel_workspace/kernel_platform/common
-          sed -i '1iobj-y += hmbird_patch.o' drivers/Makefile
-          wget https://github.com/Numbersf/Action-Build/raw/SukiSU-Ultra/patches/hmbird_patch.patch
-          echo "正在打OGKI转换GKI补丁"
-          patch -p1 -F 3 < hmbird_patch.patch
-          echo "OGKI转换GKI_patch完成"
+          blacklist="${{ github.event.inputs.BLACK_LIST }}"
+          if [ "$blacklist" != "blacklist_module_danger.patch" ] && [ "$blacklist" != "haruhi_blacklist.patch" ]; then
+              sed -i '1iobj-y += hmbird_patch.o' drivers/Makefile
+              wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/hmbird_patch.patch
+              echo "正在打OGKI转换GKI补丁"
+              patch -p1 -F 3 < hmbird_patch.patch
+              echo "OGKI转换GKI_patch完成"
+          else
+              echo "使用$blacklist不需要打补丁"
+          fi
 
       - name: Apply HOOK
         run: |
