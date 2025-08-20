@@ -335,7 +335,7 @@ jobs:
           mkdir kernel_workspace && cd kernel_workspace
           mkdir kernel_platform && cd kernel_platform
           # repo init -u https://github.com/OnePlusOSS/kernel_manifest.git -b refs/heads/oneplus/${{ env.CPU }} -m ${{ github.event.inputs.FILE }}.xml --depth=1
-          git clone --depth 1 https://github.com/reigadegr/android_kernel_common_oneplus_sm8750 -b "${{ github.event.inputs.BRANCH }}" common2 >/dev/null 2>&1 &
+          git clone --depth 1 https://github.com/reigadegr/android_kernel_common_oneplus_sm8750 -b "${{ github.event.inputs.BRANCH }}" common2 &
           repo init --depth 1 -u https://android.googlesource.com/kernel/manifest -b common-${{ env.KANDROID_VERSION }}-${{ env.KERNEL_VERSION }}
           
           sed -i '/external\//d' .repo/manifests/default.xml
