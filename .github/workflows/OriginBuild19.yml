@@ -373,6 +373,7 @@ jobs:
           cd kernel_workspace
           SUFFIX="${{ github.event.inputs.SUFFIX }}"
           KANDROID_VERSION="${{ env.KANDROID_VERSION }}"
+          FAST_BUILD="${{ github.event.inputs.FAST_BUILD }}"
 
           for path in \
             kernel_platform/common/scripts/setlocalversion \
@@ -392,11 +393,9 @@ jobs:
               sed -i "s|echo \"\${KERNELVERSION}.*scm_version}\"|echo \"\${KERNELVERSION}-${KANDROID_VERSION}-${SUFFIX}\"|" "$path"
 
             elif grep -q 'echo "\$res"' "$path"; then
-              echo "Detected OLD setlocalversion format"              
-                echo "快速构建 enabled: using static res"
-                sed -i "s/^res=.*/res=\"-${KANDROID_VERSION}-${SUFFIX}\"/" "$path"              
-                tac "$path" | sed "0,/echo \"\\\$res\"/s//res=\\\$(echo \\\$res | cut -d- -f1-2)-${SUFFIX}; echo \"\\\$res\";/" | tac > "$path.tmp" && mv "$path.tmp" "$path"
-              fi
+              echo "Detected OLD setlocalversion format"
+              echo "快速构建 enabled: using static res"
+              sed -i "s/^res=.*/res=\"-${KANDROID_VERSION}-${SUFFIX}\"/" "$path"
             else
               echo "Unknown format, appending echo manually"
               echo "echo \"\$res-${SUFFIX}\"" >> "$path"
