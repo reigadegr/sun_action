@@ -381,7 +381,7 @@ jobs:
             msm-kernel/ \
             external/dtc/; do
             
-            cd "$work_space"/"$path"
+            cd "$work_space"/"$path" || continue
             path="$path"scripts/setlocalversion
             [ -f "$path" ] || continue
 
