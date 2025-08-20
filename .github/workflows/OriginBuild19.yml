@@ -48,21 +48,10 @@ on:
         required: false
         default: "KONATA"
       BRANCH:
-        type: choice
+        type: string
         description: "使用的分支"
         required: true
-        default: "gki09"
-        options:
-          - "gki04"
-          - "gki05"
-          - "gki06"
-          - "gki07"
-          - "gki08"
-          - "gki09"
-          - "ogki9"
-          - "ogki10"
-          - "ogki11"
-          - "ogki12"
+        default: "gki10"
       BLACK_LIST:
         type: choice
         description: "如何去屏蔽一加内核模块？"
