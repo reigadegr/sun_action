@@ -46,7 +46,7 @@ on:
         type: string
         description: "自定义内核后缀 (不输入使用随机字符串)"
         required: false
-        default: "KONATA"
+        default: "KONATA-Debug"
       BRANCH:
         type: string
         description: "使用的分支"
@@ -56,7 +56,7 @@ on:
         type: choice
         description: "如何去屏蔽一加内核模块？"
         required: true
-        default: "blacklist_module_danger.patch"
+        default: "non"
         options:
           - "blacklist_module.patch"
           - "blacklist_module_danger.patch"
@@ -73,7 +73,7 @@ on:
         type: choice
         description: "钩子选择"
         required: true
-        default: tracepoint
+        default: manual
         options:
           - kprobe
           - manual
