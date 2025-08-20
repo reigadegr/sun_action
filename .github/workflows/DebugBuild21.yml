@@ -370,16 +370,19 @@ jobs:
       - name: Custom Kernel Suffix if set
         if: ${{ github.event.inputs.SUFFIX != '' }}
         run: |
-          cd kernel_workspace
+          cd kernel_workspace/kernel_platform
           SUFFIX="${{ github.event.inputs.SUFFIX }}"
           KANDROID_VERSION="${{ env.KANDROID_VERSION }}"
           FAST_BUILD="${{ github.event.inputs.FAST_BUILD }}"
-
+          
+          work_space=$(pwd)
           for path in \
-            kernel_platform/common/scripts/setlocalversion \
-            kernel_platform/msm-kernel/scripts/setlocalversion \
-            kernel_platform/external/dtc/scripts/setlocalversion; do
-
+            common/ \
+            msm-kernel/ \
+            external/dtc/; do
+            
+            cd "$work_space"/"$path"
+            path="$path"scripts/setlocalversion
             [ -f "$path" ] || continue
 
             echo "Modifying: $path"
@@ -390,7 +393,11 @@ jobs:
 
             if grep -q 'KERNELVERSION.*scm_version' "$path"; then
               echo "Detected NEW setlocalversion format"
-              sed -i "s|echo \"\${KERNELVERSION}.*scm_version}\"|echo \"\${KERNELVERSION}-${KANDROID_VERSION}-${SUFFIX}\"|" "$path"
+              wget https://github.com/reigadegr/sun_action/blob/main/utils/gen_dev_name.sh
+              sh gen_dev_name.sh "${SUFFIX}"
+              full="${KERNELVERSION}-${KANDROID_VERSION}-${SUFFIX}"
+              full="$(cat tmp)"
+              sed -i "s|echo \"\${KERNELVERSION}.*scm_version}\"|echo \"\${full}\"|" "$path"
 
             elif grep -q 'echo "\$res"' "$path"; then
               echo "Detected OLD setlocalversion format"
