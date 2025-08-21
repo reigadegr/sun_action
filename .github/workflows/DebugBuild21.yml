@@ -373,14 +373,17 @@ jobs:
           cd kernel_workspace/kernel_platform
           SUFFIX="${{ github.event.inputs.SUFFIX }}"
           KANDROID_VERSION="${{ env.KANDROID_VERSION }}"
-          
+          echo "1"
           [ -d common ] && cd common
-          path=scripts/setlocalversion                       
+          path=scripts/setlocalversion
           echo "Modifying: $path"
           ls $path
+          echo "2" 
           # Remove -dirty
           sed -i 's/ -dirty//g' "$path"
-          sed -i '$i res=$(echo "$res" | sed '\''s/-dirty//g'\'')' "$path"          
+          echo "3"
+          sed -i '$i res=$(echo "$res" | sed '\''s/-dirty//g'\'')' "$path"
+          echo "4"
           if grep -q 'KERNELVERSION.*scm_version' "$path"; then
               echo "Detected NEW setlocalversion format"
               wget https://github.com/reigadegr/sun_action/raw/main/utils/gen_dev_name.sh

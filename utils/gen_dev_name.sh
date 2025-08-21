@@ -66,4 +66,4 @@ WEEK="$(date +"%gw%V")"
 DAY=$(date +%u | awk '{printf "%c", 96+$1}')
 
 get_kernel_version
-echo -n $FULL_VERSION >tmp
+echo $FULL_VERSION >tmp
