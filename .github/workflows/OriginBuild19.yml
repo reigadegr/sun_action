@@ -372,35 +372,40 @@ jobs:
         run: |
           cd kernel_workspace/kernel_platform
           SUFFIX="${{ github.event.inputs.SUFFIX }}"
-          KANDROID_VERSION="${{ env.KANDROID_VERSION }}"
+          KANDROID_VERSION="${{ env.KANDROID_VERSION }}"          
           
-          [ -d common ] && cd common
-          path=scripts/setlocalversion                       
-          echo "Modifying: $path"
-          ls $path
-          # Remove -dirty
-          sed -i 's/ -dirty//g' "$path"
-          sed -i '$i res=$(echo "$res" | sed '\''s/-dirty//g'\'')' "$path"          
-          if grep -q 'KERNELVERSION.*scm_version' "$path"; then
+          work_space=$(pwd)
+          for path in common; do
+            
+            cd "$path"
+            path="$(realpath scripts/setlocalversion)"
+
+            echo "Modifying: $path"
+
+            # Remove -dirty
+            sed -i 's/ -dirty//g' "$path"
+            sed -i '$i res=$(echo "$res" | sed '\''s/-dirty//g'\'')' "$path"
+
+            if grep -q 'KERNELVERSION.*scm_version' "$path"; then
               echo "Detected NEW setlocalversion format"
               wget https://github.com/reigadegr/sun_action/raw/main/utils/gen_dev_name.sh
               sh gen_dev_name.sh "${SUFFIX}"
+              full="${KERNELVERSION}-${KANDROID_VERSION}-${SUFFIX}"
               full="$(cat tmp)"
-              echo $full
-              echo "tmp $(cat tmp)
-              git add  .; git commit -m "auto commit" || echo "不用提交"
+              git add  .; git commit -m "auto commit" || echo "无需提交"
               sed -i "s|echo \"\${KERNELVERSION}.*scm_version}\"|echo \"${full}\"|" "$path"
               git diff
-            # elif grep -q 'echo "\$res"' "$path"; then
-              # echo "Detected OLD setlocalversion format"
-              # echo "快速构建 enabled: using static res"
-              # sed -i "s/^res=.*/res=\"-${KANDROID_VERSION}-${SUFFIX}\"/" "$path"
-            # else
-              # echo "Unknown format, appending echo manually"
-              # echo "echo \"\$res-${SUFFIX}\"" >> "$path"
-          fi
-          chmod +x "$path"
-          git add  .; git commit -m "auto commit" || echo "不用提交"
+            elif grep -q 'echo "\$res"' "$path"; then
+              echo "Detected OLD setlocalversion format"
+              echo "快速构建 enabled: using static res"
+              sed -i "s/^res=.*/res=\"-${KANDROID_VERSION}-${SUFFIX}\"/" "$path"
+            else
+              echo "Unknown format, appending echo manually"
+              echo "echo \"\$res-${SUFFIX}\"" >> "$path"
+            fi
+
+            chmod +x "$path"
+          done
           # git add -A
           # git commit -m "Custom suffix & removed -dirty"
 
