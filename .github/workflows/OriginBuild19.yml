@@ -381,11 +381,11 @@ jobs:
             msm-kernel/ \
             external/dtc/; do
             
-            cd "$work_space"/"$path" || continue
+            cd "$work_space"/"$path" >/dev/null || continue
             path="$path"scripts/setlocalversion
-            [ -f "$path" ] || continue
-
+            echo $path
             echo "Modifying: $path"
+            [ -f "$path" ] || continue
 
             # Remove -dirty
             sed -i 's/ -dirty//g' "$path"
