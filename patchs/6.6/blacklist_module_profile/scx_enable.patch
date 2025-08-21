@@ -1,8 +1,8 @@
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index ea1b4e116389..01a1687bdc6a 100644
+index ea1b4e116389..38ff9d4ce36c 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
-@@ -2872,6 +2872,87 @@ static int early_mod_check(struct load_info *info, int flags)
+@@ -2872,6 +2872,86 @@ static int early_mod_check(struct load_info *info, int flags)
  	return err;
  }
  
@@ -82,7 +82,6 @@ index ea1b4e116389..01a1687bdc6a 100644
 +    "thermal_config",
 +    "thermal_pause",
 +    "time_test",
-+    "tls",
 +    "ua_cpu_ioctl",
 +    NULL
 +};
@@ -90,7 +89,7 @@ index ea1b4e116389..01a1687bdc6a 100644
  /*
   * Allocate and load the module: note that size of section 0 is always
   * zero, and we rely on this for optional sections.
-@@ -2882,6 +2963,7 @@ static int load_module(struct load_info *info, const char __user *uargs,
+@@ -2882,6 +2962,7 @@ static int load_module(struct load_info *info, const char __user *uargs,
  	struct module *mod;
  	bool module_allocated = false;
  	long err = 0;
@@ -98,7 +97,7 @@ index ea1b4e116389..01a1687bdc6a 100644
  	char *after_dashes;
  
  	/*
-@@ -2913,6 +2995,13 @@ static int load_module(struct load_info *info, const char __user *uargs,
+@@ -2913,6 +2994,13 @@ static int load_module(struct load_info *info, const char __user *uargs,
  	if (err)
  		goto free_copy;
  
