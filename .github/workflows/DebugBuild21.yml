@@ -386,13 +386,20 @@ jobs:
           echo "4"
           if grep -q 'KERNELVERSION.*scm_version' "$path"; then
               echo "Detected NEW setlocalversion format"
+              echo "5"
               wget https://github.com/reigadegr/sun_action/raw/main/utils/gen_dev_name.sh
               sh gen_dev_name.sh "${SUFFIX}"
+              echo "6"
               full="$(cat tmp)"
+              echo "7"
               echo $full
+              echo "7.5"
               echo "tmp $(cat tmp)
+              echo "8"
               git add  .; git commit -m "auto commit" || echo "不用提交"
+              echo "9"
               sed -i "s|echo \"\${KERNELVERSION}.*scm_version}\"|echo \"${full}\"|" "$path"
+              echo "10"
               git diff
             # elif grep -q 'echo "\$res"' "$path"; then
               # echo "Detected OLD setlocalversion format"
