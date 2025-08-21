@@ -377,9 +377,9 @@ jobs:
           
           work_space=$(pwd)
           for path in \
-            common/ \
-            msm-kernel/ \
-            external/dtc/; do
+            common \
+            msm-kernel \
+            external/dtc; do
             
             cd "$work_space"/"$path" >/dev/null || continue
             path="$path"scripts/setlocalversion
