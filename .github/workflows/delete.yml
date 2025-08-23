@@ -9,15 +9,12 @@ on:
         required: true
         default: 'repo_build'
         options:
-          - gki_test
-          - repo_build
           - xaga_suki_clang21
           - xaga_mksu_clang21
-          - new_repo_build
-          - DebugBuild
           - DebugBuild_clang21
-          - OriginBuild
           - OriginBuild_clang21
+          - OriginBuild_clang19
+          - Upload
       count:
         description: '最多访问的运行次数'
         required: false

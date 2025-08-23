@@ -1,4 +1,4 @@
-name: OriginBuild
+name: Upload
 on:
   workflow_dispatch:
     inputs:
@@ -38,61 +38,56 @@ on:
         type: choice
         description: "分支名(不可留空)/自定义版本标识(留空不修改)"
         required: false
-        default: "main/deer"
+        default: "main/OPMod"
         options:
-          - "susfs-main/deer"
-          - "main/deer"
+          - "susfs-main/OPMod"
+          - "main/OPMod"
       SUFFIX:
         type: string
         description: "自定义内核后缀 (不输入使用随机字符串)"
         required: false
         default: "KONATA"
       BRANCH:
-        type: choice
+        type: string
         description: "使用的分支"
         required: true
-        default: "ogki11"
-        options:
-          - "ogki7"
-          - "ogki8"
-          - "ogki9"
-          - "ogki10"
-          - "ogki11"
-          - "ogki12"
-      FAST_BUILD:
-        type: boolean
-        description: "是否启用极速构建？"
+        default: "gki15"
+      BLACK_LIST:
+        type: choice
+        description: "如何去屏蔽一加内核模块？"
         required: true
-        default: true
+        default: "blacklist_module_danger.patch"
+        options:
+          - "blacklist_module.patch"
+          - "blacklist_module_danger.patch"
+          - "humming_bird_blacklist.patch"
+          - "haruhi_blacklist.patch"
+          - "scx_enable.patch"
+          - "non"
       SUSFS_ENABLE:
         type: boolean
         description: "是否开启susfs？"
         required: true
         default: false
-      VFS:
-        type: boolean
-        description: "是否启用手动钩子(VFS)？"
+      HOOK:
+        type: choice
+        description: "钩子选择"
         required: true
-        default: false
+        default: manual
+        options:
+          - kprobe
+          - manual
+          - tracepoint
       KPM:
         type: boolean
         description: "是否启用内核模块(KPM)？"
         required: true
         default: false
-      # FIX_UPSTREAM:
-        # type: boolean
-        # description: "是否修复谷歌上游bug？"
-        # required: true
-        # default: true
-      BLACK_LIST:
-        type: boolean
-        description: "是否全链路屏蔽一加内核模块？"
-        required: true
-        default: true
+
 
 jobs:
   build:
-    name: ${{ github.event.inputs.FAST_BUILD == 'true' && ' [FAST]' || '' }}${{ github.event.inputs.KPM == 'true' && ' [KPM]' || '' }}For ${{ github.event.inputs.FILE }} ${{ github.event.inputs.SUFFIX }}
+    name: ${{ github.event.inputs.KPM == 'true' && ' [KPM]' || '' }}For ${{ github.event.inputs.FILE }} ${{ github.event.inputs.SUFFIX }}
     runs-on: ubuntu-latest
     env:
       CCACHE_COMPILERCHECK: "%compiler% -dumpmachine; %compiler% -dumpversion"
@@ -226,9 +221,8 @@ jobs:
           echo -n "SUFFIX Unicode: "
           python3 -c "print(''.join(f'U+{ord(c):04X} ' for c in '''${{ github.event.inputs.SUFFIX }}'''))"
           echo "Selected SUSFS_ENABLE: ${{ github.event.inputs.SUSFS_ENABLE }}"
-          echo "Selected VFS: ${{ github.event.inputs.VFS }}"
+          echo "Selected HOOK: ${{ github.event.inputs.HOOK }}"
           echo "Selected KPM: ${{ github.event.inputs.KPM }}"
-          echo "Selected FAST_BUILD: ${{ github.event.inputs.FAST_BUILD }}"
 
       - name: Check Disk Space
         run: df -h
@@ -238,35 +232,10 @@ jobs:
           sudo -E rm -rf /etc/localtime
           sudo -E ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
-      - name: Set Cache Environment
-        run: |
-          echo "CCACHE_DIR=$HOME/.ccache_${{ github.event.inputs.FILE }}" >> $GITHUB_ENV
-          mkdir -p "$HOME/.ccache_${{ github.event.inputs.FILE }}"
-          echo "set: $HOME/.ccache_${{ github.event.inputs.FILE }}"
-
       - name: Configure Git
         run: |
           git config --global user.name "Numbersf"
           git config --global user.email "263623064@qq.com"
-
-      - name: Configure APTC
-        run: |
-          APT_CACHE_DIR="$HOME/apt-cache"
-          mkdir -p "$APT_CACHE_DIR"/{archives,lists/partial}
-          echo "Dir::Cache \"$APT_CACHE_DIR\";" | sudo tee /etc/apt/apt.conf.d/90user-cache
-          echo "Dir::Cache::archives \"$APT_CACHE_DIR/archives\";" | sudo tee -a /etc/apt/apt.conf.d/90user-cache
-          echo "Dir::State::lists \"$APT_CACHE_DIR/lists\";" | sudo tee -a /etc/apt/apt.conf.d/90user-cache
-          echo "Acquire::Check-Valid-Until \"false\";" | sudo tee -a /etc/apt/apt.conf.d/90user-cache
-          echo "Acquire::Languages \"none\";" | sudo tee -a /etc/apt/apt.conf.d/90user-cache
-          sudo chown -R $USER:$USER "$APT_CACHE_DIR"
-
-      - name: Set APT Cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.HOME }}/apt-cache
-          key: ${{ runner.os }}-apt-${{ hashFiles('.github/workflows/OriginBuild.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-apt-
 
       - name: Install Dependencies
         run: |
@@ -279,7 +248,7 @@ jobs:
             build-essential flex bison libssl-dev \
             libncurses-dev liblz4-tool zlib1g-dev \
             libxml2-utils rsync unzip \
-            lsb-release linux-modules-extra-"$(uname -r)" ccache pahole \
+            lsb-release ccache pahole \
             git automake flex bison build-essential zlib1g-dev make \
             libelf-dev libssl-dev openssl bc device-tree-compiler gzip \
             python3-telethon python-is-python3 zip unzip zstd libzstd-dev pigz \
@@ -287,48 +256,6 @@ jobs:
             gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi gcc-arm-linux-gnueabihf \
             libc6-dev-armel-cross libc6-dev-armhf-cross libc6-dev-arm64-cross \
             selinux-policy-dev
-
-      - name: Optimize Memory Management
-        run: |
-          sudo -E sysctl vm.swappiness=1
-          sudo -E sysctl vm.min_free_kbytes=32768
-          sudo -E sysctl vm.watermark_scale_factor=100
-          sudo -E sysctl vm.watermark_boost_factor=15000
-          sudo -E sysctl vm.overcommit_memory=1
-          sudo -E sysctl vm.page-cluster=0
-          sudo -E modprobe zram
-          echo "0" | sudo -E tee /sys/class/block/zram0/mem_limit
-          echo "zstd" | sudo -E tee /sys/class/block/zram0/comp_algorithm
-          echo "$(awk 'NR==1{print $2*1000}' </proc/meminfo)" | sudo -E tee /sys/class/block/zram0/disksize
-          sudo -E mkswap /dev/zram0
-          sudo -E swapon -p 100 /dev/zram0
-          echo "Y" | sudo -E tee /sys/kernel/mm/lru_gen/enabled
-          echo "1000" | sudo -E tee /sys/kernel/mm/lru_gen/min_ttl_ms
-          echo "1" | sudo -E tee /sys/kernel/mm/swap/vma_ra_enabled
-        
-      - name: Restore Ccache
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.CCACHE_DIR }}
-          key: ccache-${{ runner.os }}-${{ github.ref_name }}-${{ github.event.inputs.FILE }}-${{ env.BUILD_METHOD }}-${{ github.event.inputs.FAST_BUILD == 'true' && 'alpha' || 'beta' }}-15
-
-      - name: Initialize Ccache
-        run: |
-          INIT_FLAG="${{ env.CCACHE_DIR }}/.ccache_initialized"
-          if command -v ccache >/dev/null 2>&1; then
-            if [ ! -f "$INIT_FLAG" ]; then
-              echo "初始化 ccache (${{ env.CCACHE_DIR }})..."
-              mkdir -p "${{ env.CCACHE_DIR }}"
-              ccache -M ${{ env.CCACHE_MAXSIZE }}
-              touch "$INIT_FLAG"
-              echo "✅ ccache 初始化完成"
-            else
-              echo "✅ ccache 已初始化，跳过"
-            fi
-          else
-            echo "❌ 未安装 ccache，跳过"
-          fi
-          ccache -s
 
       - name: Install Repo Tool
         run: |
@@ -341,7 +268,7 @@ jobs:
           mkdir kernel_workspace && cd kernel_workspace
           mkdir kernel_platform && cd kernel_platform
           # repo init -u https://github.com/OnePlusOSS/kernel_manifest.git -b refs/heads/oneplus/${{ env.CPU }} -m ${{ github.event.inputs.FILE }}.xml --depth=1
-          git clone --depth 1 https://github.com/reigadegr/android_kernel_common_oneplus_sm8750 -b "${{ github.event.inputs.BRANCH }}" common2 >/dev/null 2>&1 &
+          git clone --depth 1 https://github.com/reigadegr/android_kernel_common_oneplus_sm8750 -b "${{ github.event.inputs.BRANCH }}" common2 &
           repo init --depth 1 -u https://android.googlesource.com/kernel/manifest -b common-${{ env.KANDROID_VERSION }}-${{ env.KERNEL_VERSION }}
           
           sed -i '/external\//d' .repo/manifests/default.xml
@@ -376,17 +303,15 @@ jobs:
       - name: Custom Kernel Suffix if set
         if: ${{ github.event.inputs.SUFFIX != '' }}
         run: |
-          cd kernel_workspace
+          cd kernel_workspace/kernel_platform
           SUFFIX="${{ github.event.inputs.SUFFIX }}"
-          KANDROID_VERSION="${{ env.KANDROID_VERSION }}"
-          FAST_BUILD="${{ github.event.inputs.FAST_BUILD }}"
-
-          for path in \
-            kernel_platform/common/scripts/setlocalversion \
-            kernel_platform/msm-kernel/scripts/setlocalversion \
-            kernel_platform/external/dtc/scripts/setlocalversion; do
-
-            [ -f "$path" ] || continue
+          KANDROID_VERSION="${{ env.KANDROID_VERSION }}"          
+          
+          work_space=$(pwd)
+          for path in common; do
+            
+            cd "$path"
+            path="$(realpath scripts/setlocalversion)"
 
             echo "Modifying: $path"
 
@@ -396,21 +321,17 @@ jobs:
 
             if grep -q 'KERNELVERSION.*scm_version' "$path"; then
               echo "Detected NEW setlocalversion format"
-              sed -i "s|echo \"\${KERNELVERSION}.*scm_version}\"|echo \"\${KERNELVERSION}-${KANDROID_VERSION}-${SUFFIX}\"|" "$path"
-
+              wget https://github.com/reigadegr/sun_action/raw/main/utils/gen_dev_name.sh
+              sh gen_dev_name.sh "${SUFFIX}"
+              full="${KERNELVERSION}-${KANDROID_VERSION}-${SUFFIX}"
+              full="$(cat tmp)"
+              git add  .; git commit -m "auto commit" || echo "无需提交"
+              sed -i "s|echo \"\${KERNELVERSION}.*scm_version}\"|echo \"${full}\"|" "$path"
+              git diff
             elif grep -q 'echo "\$res"' "$path"; then
               echo "Detected OLD setlocalversion format"
-              if [ "$FAST_BUILD" = "true" ]; then
-                echo "FAST_BUILD enabled: using static res"
-                sed -i "s/^res=.*/res=\"-${KANDROID_VERSION}-${SUFFIX}\"/" "$path"
-              else
-                echo "Standard build: injecting suffix via cut/echo"
-                if [[ -f ./kernel_platform/build_with_bazel.py ]]; then
-                  echo "使用官方脚本编译且当使用 build_with_bazel 时，可能受特殊符号数量限制，编译失败请修改"
-                  echo "When using the official script and building with build_with_bazel, the build may fail due to a limit on the number of special characters. Please modify the configuration if that happens."
-                fi
-                tac "$path" | sed "0,/echo \"\\\$res\"/s//res=\\\$(echo \\\$res | cut -d- -f1-2)-${SUFFIX}; echo \"\\\$res\";/" | tac > "$path.tmp" && mv "$path.tmp" "$path"
-              fi
+              echo "快速构建 enabled: using static res"
+              sed -i "s/^res=.*/res=\"-${KANDROID_VERSION}-${SUFFIX}\"/" "$path"
             else
               echo "Unknown format, appending echo manually"
               echo "echo \"\$res-${SUFFIX}\"" >> "$path"
@@ -418,7 +339,6 @@ jobs:
 
             chmod +x "$path"
           done
-
           # git add -A
           # git commit -m "Custom suffix & removed -dirty"
 
@@ -427,8 +347,7 @@ jobs:
         if: ${{ github.event.inputs.SUFFIX == '' }}
         run: |
           cd kernel_workspace
-          KANDROID_VERSION="${{ env.KANDROID_VERSION }}"
-          FAST_BUILD="${{ github.event.inputs.FAST_BUILD }}"
+          KANDROID_VERSION="${{ env.KANDROID_VERSION }}"          
 
           # 生成随机数字和随机hash
           RANDOM_DIGIT=$(od -An -N1 -tu1 < /dev/urandom | tr -d '[:space:]' | awk '{print $1 % 11}')
@@ -454,13 +373,8 @@ jobs:
 
             elif grep -q 'echo "\$res"' "$path"; then
               echo "Detected OLD setlocalversion format"
-              if [ "$FAST_BUILD" = "true" ]; then
-                echo "FAST_BUILD enabled: using static res with random suffix"
+                echo "快速构建 enabled: using static res with random suffix"
                 sed -i "s/^res=.*/res=\"-${KANDROID_VERSION}-${RANDOM_SUFFIX}\"/" "$path"
-              else
-                echo "Standard build: injecting random suffix via cut/echo"
-                tac "$path" | sed "0,/echo \"\\\$res\"/s//res=\\\$(echo \\\$res | cut -d- -f1-2)-${RANDOM_SUFFIX}; echo \"\\\$res\";/" | tac > "$path.tmp" && mv "$path.tmp" "$path"
-              fi
             else
               echo "Unknown format, appending echo manually"
               echo "echo \"\$res-${RANDOM_SUFFIX}\"" >> "$path"
@@ -500,7 +414,7 @@ jobs:
           if [[ -z "$CUSTOM_TAG" || "$CUSTOM_TAG" == "$BRANCH_NAME" ]]; then
             VERSION_FULL="v$KSU_API_VERSION-$GIT_HASH@$BRANCH_NAME"
           else
-            VERSION_FULL="v$KSU_API_VERSION-$CUSTOM_TAG@$BRANCH_NAME[$GIT_HASH]"
+            VERSION_FULL="v$KSU_API_VERSION-$CUSTOM_TAG@$BRANCH_NAME"
           fi
 
           sed -i '/define get_ksu_version_full/,/endef/d' kernel/Makefile
@@ -574,35 +488,40 @@ jobs:
         if: ${{ env.KERNEL_VERSION == '6.6' }}
         run: |
           cd kernel_workspace/kernel_platform/common
-          sed -i '1iobj-y += hmbird_patch.o' drivers/Makefile
-          wget https://github.com/Numbersf/Action-Build/raw/SukiSU-Ultra/patches/hmbird_patch.patch
-          echo "正在打OGKI转换GKI补丁"
-          patch -p1 -F 3 < hmbird_patch.patch
-          echo "OGKI转换GKI_patch完成"
+          blacklist="${{ github.event.inputs.BLACK_LIST }}"
+          if [ "$blacklist" != "blacklist_module_danger.patch" ] && [ "$blacklist" != "haruhi_blacklist.patch" ]; then
+              sed -i '1iobj-y += hmbird_patch.o' drivers/Makefile
+              wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/hmbird_patch.patch
+              echo "正在打OGKI转换GKI补丁"
+              patch -p1 -F 3 < hmbird_patch.patch
+              echo "OGKI转换GKI_patch完成"
+          else
+              echo "使用$blacklist不需要打补丁"
+          fi
 
-      - name: Apply VFS
-        if: ${{ github.event.inputs.VFS == 'true' }}
+      - name: Apply HOOK
         run: |
           cd kernel_workspace/kernel_platform/common
-          cp ../../SukiSU_patch/hooks/syscall_hooks.patch ./
-          echo "正在打vfs补丁"
-          patch -p1 -F 3 < syscall_hooks.patch
-          echo "vfs_patch完成"
+          if [ "${{ github.event.inputs.HOOK }}" = "kprobe" ]; then
+            echo "调用 kprobe 钩子"
+          elif [ "${{ github.event.inputs.HOOK }}" = "manual" ]; then
+            cp ../../SukiSU_patch/hooks/syscall_hooks.patch ./
+            echo "调用 manual 钩子"
+            patch -p1 -F 3 < syscall_hooks.patch
+          elif [ "${{ github.event.inputs.HOOK }}" = "tracepoint" ]; then
+            url="https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/sukisu_tracepoint_hook.patch"
+            cp ../../SukiSU_patch/hooks/tracepoint_hooks.patch ./ || wget "$url"
+            echo "调用 tracepoint 钩子"
+            patch -p1 -F 3 < "$(basename $url)" || patch -p1 -F 3 < tracepoint_hooks.patch
+          fi
 
       - name: Remove OnePlus Kernel Module
         run: |          
-          cd kernel_workspace/kernel_platform/common
-          
+          cd kernel_workspace/kernel_platform/common       
           git add  . && git commit -m "auto commit"
-          if [ "${{ github.event.inputs.BLACK_LIST }}" = "true" ]; then
-            echo "进行危险的屏蔽"
-            wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/blacklist_module_danger.patch
-            patch -p1 -F 3 < blacklist_module_danger.patch && git add  . && git commit -m "auto commit" || git reset --hard
-          else
-            echo "进行安全的屏蔽"
-            wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/blacklist_module.patch
-            patch -p1 -F 3 < blacklist_module.patch && git add  . && git commit -m "auto commit" || git reset --hard
-          fi
+          patch_profile="${{ github.event.inputs.BLACK_LIST }}"
+          wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/blacklist_module_profile/"$patch_profile" || true
+          patch -p1 -F 3 < "./$patch_profile" && git add  . && git commit -m "auto commit" || git reset --hard
           # Remove check_defconfig
           sed -i 's/check_defconfig//' ./build.config.gki
           echo "移除内核模块完成"
@@ -638,13 +557,17 @@ jobs:
             echo "CONFIG_KPM=y" >> "$CONFIG_FILE"
           fi
 
-          # VFS配置
-          if [ "${{ github.event.inputs.VFS }}" = "true" ]; then
-            echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> "$CONFIG_FILE"
-            echo "CONFIG_KSU_MANUAL_HOOK=y" >> "$CONFIG_FILE"
-          else
+          # HOOK配置
+          if [ "${{ github.event.inputs.HOOK }}" = "kprobe" ]; then
             echo "CONFIG_KSU_SUSFS_SUS_SU=y" >> "$CONFIG_FILE"
             echo "CONFIG_KPROBES=y" >> "$CONFIG_FILE"
+            echo "CONFIG_KSU_KPROBES_HOOK=y" >> "$CONFIG_FILE"
+          elif [ "${{ github.event.inputs.HOOK }}" = "manual" ]; then
+            echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> "$CONFIG_FILE"
+            echo "CONFIG_KSU_MANUAL_HOOK=y" >> "$CONFIG_FILE"
+          elif [ "${{ github.event.inputs.HOOK }}" = "tracepoint" ]; then
+            echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> "$CONFIG_FILE"
+            echo "CONFIG_KSU_TRACEPOINT_HOOK=y" >> "$CONFIG_FILE" 
           fi
 
           # SUSFS配置
@@ -701,9 +624,6 @@ jobs:
           echo "CONFIG_ZRAM=y" >> "$CONFIG_FILE"
           echo "CONFIG_ZRAM_DEF_COMP_ZSTD=y" >> "$CONFIG_FILE"
           echo "CONFIG_ZRAM_DEF_COMP=\"zstd\"" >> "$CONFIG_FILE"
-          echo "CONFIG_ZRAM_DEDUP=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_ZRAM_MEMORY_TRACKING=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_ZRAM_TRACK_ENTRY_ACTIME=y" >> "$CONFIG_FILE"
           
           
           # cmdline优化性能
@@ -714,7 +634,8 @@ jobs:
           # 防止单点故障导致系统崩溃
           echo "CONFIG_PANIC_ON_OOPS=n" >> "$CONFIG_FILE"
           echo "CONFIG_PANIC_ON_OOPS_VALUE=0" >> "$CONFIG_FILE"
-          if [ "${{ github.event.inputs.BLACK_LIST }}" = "true" ]; then
+          blacklist="${{ github.event.inputs.BLACK_LIST }}"
+          if [ "$blacklist" = "blacklist_module_danger.patch" ] || [ "$blacklist" = "haruhi_blacklist.patch" ]; then
               # qcom llcc
               echo "CONFIG_QCOM_LLCC=y" >> "$CONFIG_FILE"
               # walt scheduler
@@ -800,12 +721,16 @@ jobs:
           # # 禁用io调度器
           echo "CONFIG_MQ_IOSCHED_KYBER=n" >> "$CONFIG_FILE"
           
-          # 关闭可选功能(放心使用本代码)
+          # 控制可选功能(放心使用本代码)
           echo "CONFIG_DAMON=n" >> "$CONFIG_FILE"
-          echo "CONFIG_CRYPTO_SHA1_ARM64_CE=n" >> "$CONFIG_FILE"
-          echo "CONFIG_VIRTIO_PCI_LEGACY=n" >> "$CONFIG_FILE"
+          echo "CONFIG_CRYPTO_SHA1_ARM64_CE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_VIRTIO_PCI_LEGACY=y" >> "$CONFIG_FILE"
+          echo "CONFIG_WQ_POWER_EFFICIENT_DEFAULT=y" >> "$CONFIG_FILE"
           echo "CONFIG_HEADERS_INSTALL=n" >> "$CONFIG_FILE"
           echo "CONFIG_PROC_MEM_ALWAYS_FORCE=n" >> "$CONFIG_FILE"
+          
+          echo "CONFIG_DTPM=n" >> "$CONFIG_FILE"
+          echo "CONFIG_IDLE_INJECT=n" >> "$CONFIG_FILE"
      
           # 无用kunit
           echo "CONFIG_FAT_KUNIT_TEST=n" >> "$CONFIG_FILE"
@@ -825,125 +750,33 @@ jobs:
 
           # 修各种abi不兼容
           # 蓝牙
-          echo "CONFIG_RFKILL=y" >> "$CONFIG_FILE"
-          echo "CONFIG_BT=y" >> "$CONFIG_FILE"
-          echo "CONFIG_BT_RFCOMM=y" >> "$CONFIG_FILE"
-          echo "CONFIG_BT_HIDP=y" >> "$CONFIG_FILE"
-
+          patch_profile="${{ github.event.inputs.BLACK_LIST }}"
+          if [ "$patch_profile" = "blacklist_module_danger.patch" ] || [ "$patch_profile" = "blacklist_module.patch" ] || [ "$patch_profile" = "scx_enable.patch" ] ; then
+              echo "CONFIG_RFKILL=y" >> "$CONFIG_FILE"
+              echo "CONFIG_BT=y" >> "$CONFIG_FILE"
+              echo "CONFIG_BT_RFCOMM=y" >> "$CONFIG_FILE"
+              echo "CONFIG_BT_HIDP=y" >> "$CONFIG_FILE"
+              echo "CONFIG_TLS=y" >> "$CONFIG_FILE"
+          fi
+          
           # 移除无意义的内容
           echo "CONFIG_UBSAN=n">> "$CONFIG_FILE"
           echo "CONFIG_UBSAN_TRAP=n" >> "$CONFIG_FILE"
           echo "CONFIG_UBSAN_BOUNDS=n" >> "$CONFIG_FILE"
           echo "CONFIG_IKHEADERS=n" >> "$CONFIG_FILE"
-          
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
-
-      - name: Build Kernel ZyC clang19
-        run: |
-          export PATH="/usr/lib/ccache:$PATH"
-          # 安装依赖工具
-          # sudo apt install -y lld
-          cd kernel_workspace/kernel_platform/common
-          
-          # 安装自定义clang
-          mkdir cust_clang; cd cust_clang
-          wget -q https://github.com/cctv18/oneplus_sm8650_toolchain/releases/download/LLVM-Clang20-r547379/build-tools.zip
-          unzip build*.zip >/dev/null
-          wget -q https://github.com/ZyCromerZ/Clang/releases/download/19.0.0git-20240723-release/Clang-19.0.0git-20240723.tar.gz
-          tar -zxvf Clang-*.tar.gz > /dev/null
-          ls -al
-          cd  ..
-          export cust_clang="$(realpath ./cust_clang/bin)"
-          sudo -E chmod -R +x "$cust_clang"
-          export PATH="$cust_clang:$PATH"
-          echo $PATH
-          export CC="$(realpath ./cust_clang/bin/clang)" LTO="thin"
-          export CC="ccache $CC" LTO="thin"
-          export PAHOLE="$(realpath ./cust_clang/build-tools/bin/pahole)"
-          MAKE_ARGS="LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
-            RUSTC=../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc \
-            LD=ld.lld HOSTLD=ld.lld KCFLAGS+=-Wno-error"
-          FDO_FILE="$(realpath ./android/gki/aarch64/afdo/kernel.afdo)"
-          EXTRA_FLAGS="CLANG_AUTOFDO_PROFILE=$FDO_FILE"
-          echo $EXTRA_FLAGS
-          echo "这里显示fdo文件: $(ls $FDO_FILE)"
-          make -j$(nproc --all) O=out $MAKE_ARGS $EXTRA_FLAGS gki_defconfig all 2>&1 | tee  ../../../build.txt
-          for i in $(find  . -type f -name ".config"); do
-             cp $i  ../../../config.txt
-          done
-          git log | head -n 200 > ../../../commit.txt
-          # 显示 ccache 统计信息
-          ccache -s
-
-      - name: Make AnyKernel3
-        run: |
-          git clone https://github.com/reigadegr/AnyKernel3 --depth=1
-          rm -rf ./AnyKernel3/.git
-          CONFIG_FILE="./common/arch/arm64/configs/gki_defconfig"
-          cp "$CONFIG_FILE" ./AnyKernel3 || echo "复制gki_defconfig失败"
-          cp *build.txt ./AnyKernel3 || echo "复制log失败"
-          cp config.txt ./AnyKernel3 || echo "复制config失败"
-          cp commit.txt ./AnyKernel3 || echo "复制commit失败"
-          mkdir -p kernel_workspace/kernel_platform/out/Final-Image-Find/
-          dir1=""
-          dir2=""
-          image_path=$(find "./kernel_workspace/kernel_platform/common/out/" -name "Image" | head -n 1)
-          if [ -n "$image_path" ]; then
-            dir1=$(dirname "$image_path")/
-            echo "使用 make 编译的统一路径，成功找到 Image 文件"
-          else
-            image_path=$(find "./kernel_workspace/kernel_platform/out/" -name "Image" | head -n 1)
-            if [ -n "$image_path" ]; then
-              dir2=$(dirname "$image_path")
-              echo "使用官方脚本编译，成功找到 Image 文件"
-            else
-              echo "未找到 Image 文件，构建失败" >&2
-              exit 1
-            fi
-          fi
-          if [ -n "$image_path" ] && [ -f "$image_path" ]; then
-            echo "Image file finally located at: $image_path"
-            cp "$image_path" ./AnyKernel3/Image
-            cp "$image_path" kernel_workspace/kernel_platform/out/Final-Image-Find/Image
-          fi
-          if [ -n "$dir2" ] && [ "${{ env.CPU }}" = "sm8750" ] && [ "${{ github.event.inputs.FAST_BUILD }}" = "false" ]; then
-            echo "当前正在使用官方脚本构建 sm8750，需额外复制一些其它镜像文件：dtbo.img、system_dlkm.img、vendor_dlkm.img、vendor_boot.img。请注意，如果你在刷完官方脚本构建后想换成极速构建，请还原这些分区！"
-            echo "You are currently building sm8750 with the official script. Additional image files will be copied: dtbo.img, system_dlkm.img, vendor_dlkm.img, vendor_boot.img. Please note: If you switch to fast build after flashing this build, make sure to restore these partitions!"
-            for file in dtbo.img system_dlkm.erofs.img vendor_dlkm.img vendor_boot.img; do
-              if [ -f "$dir2$file" ]; then
-                target_name="$file"
-                if [ "$file" = "system_dlkm.erofs.img" ]; then
-                  target_name="system_dlkm.img"
-                fi
-                cp "$dir2$file" "./AnyKernel3/$target_name"
-              else
-                echo "$file 不存在，跳过复制"
-              fi
-            done
-          fi
-
-      - name: Apply patch_linux and replace Image
-        if: ${{ github.event.inputs.KPM == 'true' }}
-        run: |
-          cd kernel_workspace/kernel_platform/out/Final-Image-Find
-          curl -LO --retry 5 --retry-delay 2 --retry-connrefused https://raw.githubusercontent.com/Numbersf/Action-Build/SukiSU-Ultra/patches/patch_linux
-          chmod +x patch_linux
-          ./patch_linux
-          rm -f Image
-          mv oImage Image
-          cp Image $GITHUB_WORKSPACE/AnyKernel3/Image
 
       - name: Set zip Suffix
         id: suffix
         run: |
-          echo "value=${{ github.event.inputs.VFS == 'true' && '_VFS' || '' }}${{ github.event.inputs.KPM == 'true' && '_KPM' || '' }}" >> $GITHUB_OUTPUT
+          echo "value=${{ github.event.inputs.VFS }}${{ github.event.inputs.KPM == 'true' && '_KPM' || '' }}" >> $GITHUB_OUTPUT
 
       - name: Upload AnyKernel3
         uses: actions/upload-artifact@v4
         with:
           name: AnyKernel3_SukiSUUltra_${{ env.KSUVER }}_${{ steps.extract_info.outputs.value }}${{ steps.suffix.outputs.value }}
-          path: ./AnyKernel3/*
+          path: ./kernel_workspace/kernel_platform/common/*
 
 
       - name: Post-build Disk Check
