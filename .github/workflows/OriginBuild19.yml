@@ -51,7 +51,7 @@ on:
         type: string
         description: "使用的分支"
         required: true
-        default: "gki16"
+        default: "gki24"
       BLACK_LIST:
         type: choice
         description: "如何去屏蔽一加内核模块？"
@@ -859,11 +859,15 @@ jobs:
           MAKE_ARGS="LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
             RUSTC=../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc \
             LD=ld.lld HOSTLD=ld.lld KCFLAGS+=-Wno-error"
-          FDO_FILE="$(realpath ./android/gki/aarch64/afdo/kernel.afdo)"
-          EXTRA_FLAGS="CLANG_AUTOFDO_PROFILE=$FDO_FILE"
-          echo $EXTRA_FLAGS
-          echo "这里显示fdo文件: $(ls $FDO_FILE)"
-          make -j$(nproc --all) O=out $MAKE_ARGS $EXTRA_FLAGS gki_defconfig all 2>&1 | tee  ../../../build.txt
+          if [ -f "./android/gki/aarch64/afdo/kernel.afdo" ]; then
+              FDO_FILE="$(realpath ./android/gki/aarch64/afdo/kernel.afdo)"
+              EXTRA_FLAGS="CLANG_AUTOFDO_PROFILE=$FDO_FILE"
+              echo $EXTRA_FLAGS
+              echo "这里显示fdo文件: $(ls $FDO_FILE)"
+              make -j$(nproc --all) O=out $MAKE_ARGS $EXTRA_FLAGS gki_defconfig all 2>&1 | tee  ../../../build.txt
+          else
+              make -j$(nproc --all) O=out $MAKE_ARGS gki_defconfig all 2>&1 | tee  ../../../build.txt
+          fi
           for i in $(find  . -type f -name ".config"); do
              cp $i  ../../../config.txt
           done
