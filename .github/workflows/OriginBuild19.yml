@@ -771,7 +771,7 @@ jobs:
           # echo "CONFIG_STACKPROTECTOR_PER_TASK=n" >> "$CONFIG_FILE"
           
           # 优化内存策略(放心开启)
-          echo "CONFIG_RCU_LAZY_DEFAULT_OFF=y" >> "$CONFIG_FILE"
+          echo "CONFIG_RCU_LAZY_DEFAULT_OFF=n" >> "$CONFIG_FILE"
           echo "CONFIG_TASKS_TRACE_RCU_READ_MB=y" >> "$CONFIG_FILE"
           echo "CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y" >> "$CONFIG_FILE"
           echo "CONFIG_ANON_MIN_RATIO=5" >> "$CONFIG_FILE"
