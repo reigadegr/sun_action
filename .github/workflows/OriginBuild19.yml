@@ -64,6 +64,7 @@ on:
           - "haruhi_blacklist.patch"
           - "scx_enable.patch"
           - "non"
+          - "ogki_mode"
       SUSFS_ENABLE:
         type: boolean
         description: "是否开启susfs？"
@@ -556,7 +557,7 @@ jobs:
         run: |
           cd kernel_workspace/kernel_platform/common
           blacklist="${{ github.event.inputs.BLACK_LIST }}"
-          if [ "$blacklist" != "blacklist_module_danger.patch" ] && [ "$blacklist" != "haruhi_blacklist.patch" ]; then
+          if [ "$blacklist" != "blacklist_module_danger.patch" ] && [ "$blacklist" != "haruhi_blacklist.patch" ] && [ "$blacklist" != "ogki_mode" ]; then
               sed -i '1iobj-y += hmbird_patch.o' drivers/Makefile
               wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/hmbird_patch.patch
               echo "正在打OGKI转换GKI补丁"
