@@ -56,6 +56,11 @@ on:
         description: "是否启用极速构建？"
         required: true
         default: true
+      BRANCH:
+        type: string
+        description: "使用的分支"
+        required: true
+        default: "v4"
       VFS:
         type: boolean
         description: "是否启用手动钩子(VFS)？"
@@ -233,7 +238,7 @@ jobs:
           # repo sync -c -j$(nproc --all) --no-tags --no-clone-bundle --force-sync
           # git clone --depth 1 https://github.com/reigadegr/android_kernel_xiaomi_mt6895 -b v3 common
           export MY_PAT="${{ secrets.MY_PAT }}"
-          git clone --depth 1 https://reigadegr:${MY_PAT}@github.com/reigadegr/lineage_xaga -b v4 common
+          git clone --depth 1 https://reigadegr:${MY_PAT}@github.com/reigadegr/lineage_xaga -b "${{ github.event.inputs.BRANCH }}" common
           cd common; git log; cd  ..; pwd; ls       
           
           cd  ..; pwd; ls
