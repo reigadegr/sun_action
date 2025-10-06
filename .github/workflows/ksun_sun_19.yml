@@ -1,4 +1,4 @@
-name: mksu_sun_clang19
+name: Ksu_Next_sun_clang19
 on:
   workflow_dispatch:
     inputs:
@@ -464,8 +464,8 @@ jobs:
           echo "分支名: $BRANCH_NAME"
           echo "自定义版本标识: $CUSTOM_TAG"
 
-          curl -LSs "https://raw.githubusercontent.com/5ec1cff/KernelSU/main/kernel/setup.sh" | bash -s main
-          cd ./KernelSU
+          curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -s next
+          cd ./KernelSU*
           if [ "${{ github.event.inputs.SUSFS_ENABLE }}" = "true" ]; then
             echo "正在打susfs补丁"
             wget https://github.com/ShirkNeko/susfs4ksu/raw/gki-${{ env.KANDROID_VERSION }}-${{ env.KERNEL_VERSION }}/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch
