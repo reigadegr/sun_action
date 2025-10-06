@@ -508,10 +508,10 @@ jobs:
           KSU_VERSION=$(expr $(git rev-list --count main 2>/dev/null || echo 13000) + 10700)
           echo "KSUVER=$KSU_VERSION" >> $GITHUB_ENV
 
-          echo "::group::最终 Makefile 中版本信息及部分调试结果预览"
-          grep -A10 "REPO_OWNER" kernel/Makefile
-          grep "KSU_VERSION_FULL" kernel/Makefile
-          echo "::endgroup::"
+          # echo "::group::最终 Makefile 中版本信息及部分调试结果预览"
+          # grep -A10 "REPO_OWNER" kernel/Makefile
+          # grep "KSU_VERSION_FULL" kernel/Makefile
+          # echo "::endgroup::"
 
       - name: Apply Patches SukiSU Ultra
         run: |
@@ -615,11 +615,6 @@ jobs:
 
           # SukiSU Ultra配置
           echo "CONFIG_KSU=y" >> "$CONFIG_FILE"
-
-          # KPM配置
-          if [ "${{ github.event.inputs.KPM }}" = "true" ]; then
-            echo "CONFIG_KPM=y" >> "$CONFIG_FILE"
-          fi
 
           # HOOK配置
           if [ "${{ github.event.inputs.HOOK }}" = "kprobe" ]; then
