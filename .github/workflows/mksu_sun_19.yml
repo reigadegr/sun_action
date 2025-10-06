@@ -466,6 +466,12 @@ jobs:
 
           curl -LSs "https://raw.githubusercontent.com/5ec1cff/KernelSU/main/kernel/setup.sh" | bash -s main
           cd ./KernelSU
+          if [ "${{ github.event.inputs.SUSFS_ENABLE }}" = "true" ]; then
+            echo "正在打susfs补丁"
+            wget https://github.com/ShirkNeko/susfs4ksu/raw/gki-${{ env.KANDROID_VERSION }}-${{ env.KERNEL_VERSION }}/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch
+            patch -p1 -F 3 < 10_enable_susfs_for_ksu.patch || true
+            echo "susfs_patch完成"
+          fi
 
           KSU_API_VERSION=$(curl -fsSL "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/$BRANCH_NAME/kernel/Makefile" | \
             grep -m1 "KSU_VERSION_API :=" | awk -F'= ' '{print $2}' | tr -d '[:space:]')
