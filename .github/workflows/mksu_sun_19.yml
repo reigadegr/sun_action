@@ -51,7 +51,7 @@ on:
         type: string
         description: "使用的分支"
         required: true
-        default: "gki24"
+        default: "gki27"
       BLACK_LIST:
         type: choice
         description: "如何去屏蔽一加内核模块？"
