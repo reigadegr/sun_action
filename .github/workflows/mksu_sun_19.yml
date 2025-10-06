@@ -74,7 +74,7 @@ on:
         type: choice
         description: "钩子选择"
         required: true
-        default: manual
+        default: kprobe
         options:
           - kprobe
           - manual
