@@ -541,7 +541,6 @@ jobs:
           if [ "${{ github.event.inputs.SUSFS_ENABLE }}" = "true" ]; then
             echo "正在打susfs补丁"
             patch -p1 -F 3 < 50_add_susfs_in_gki-${{ env.KANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch || true
-            patch -p1 -F 3 < 10_enable_susfs_for_ksu.patch || true
             echo "susfs_patch完成"
           fi
 
