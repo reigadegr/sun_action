@@ -468,8 +468,9 @@ jobs:
           cd ./KernelSU
           if [ "${{ github.event.inputs.SUSFS_ENABLE }}" = "true" ]; then
             echo "正在打susfs补丁"
-            wget https://github.com/ShirkNeko/susfs4ksu/raw/gki-${{ env.KANDROID_VERSION }}-${{ env.KERNEL_VERSION }}/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch
-            patch -p1 -F 3 < 10_enable_susfs_for_ksu.patch || true
+            # wget https://github.com/ShirkNeko/susfs4ksu/raw/gki-${{ env.KANDROID_VERSION }}-${{ env.KERNEL_VERSION }}/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch
+            wget https://gitlab.com/simonpunk/susfs4ksu/-/raw/0ed9845a3f6ed624d55484384f2b414a7527fc3b/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch
+            patch -p1 -F 3 < 10_enable_susfs_for_ksu.patch
             echo "susfs_patch完成"
           fi
 
@@ -522,7 +523,11 @@ jobs:
       - name: Apply Patches SukiSU Ultra
         run: |
           cd kernel_workspace
-          git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-${{ env.KANDROID_VERSION }}-${{ env.KERNEL_VERSION }} --depth 1
+          # git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-${{ env.KANDROID_VERSION }}-${{ env.KERNEL_VERSION }} --depth 1
+          wget -O susfs4ksu.tar.gz https://gitlab.com/simonpunk/susfs4ksu/-/archive/0ed9845a3f6ed624d55484384f2b414a7527fc3b/susfs4ksu-0ed9845a3f6ed624d55484384f2b414a7527fc3b.tar.gz
+          tar -xf susfs4ksu.tar.gz
+
+          mv susfs4ksu-0ed9845a3f6ed624d55484384f2b414a7527fc3b susfs4ksu
           git clone https://github.com/ShirkNeko/SukiSU_patch.git --depth 1
           cd kernel_platform
           echo "正在拉取susfs补丁"
@@ -540,7 +545,8 @@ jobs:
 
           if [ "${{ github.event.inputs.SUSFS_ENABLE }}" = "true" ]; then
             echo "正在打susfs补丁"
-            patch -p1 -F 3 < 50_add_susfs_in_gki-${{ env.KANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch || true
+            wget https://gitlab.com/simonpunk/susfs4ksu/-/raw/0ed9845a3f6ed624d55484384f2b414a7527fc3b/kernel_patches/50_add_susfs_in_gki-android15-6.6.patch
+            patch -p1 -F 3 < 50_add_susfs_in_gki-${{ env.KANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch
             echo "susfs_patch完成"
           fi
 
