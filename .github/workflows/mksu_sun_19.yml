@@ -469,8 +469,8 @@ jobs:
           if [ "${{ github.event.inputs.SUSFS_ENABLE }}" = "true" ]; then
             echo "正在打susfs补丁"
             # wget https://github.com/ShirkNeko/susfs4ksu/raw/gki-${{ env.KANDROID_VERSION }}-${{ env.KERNEL_VERSION }}/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch
-            wget https://gitlab.com/simonpunk/susfs4ksu/-/raw/0ed9845a3f6ed624d55484384f2b414a7527fc3b/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch
-            patch -p1 -F 3 < 10_enable_susfs_for_ksu.patch
+            wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/mksu_159_enable_susfs.patch
+            patch -p1 -F 3 < mksu_159_enable_susfs.patch
             echo "susfs_patch完成"
           fi
 
