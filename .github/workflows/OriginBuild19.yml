@@ -610,6 +610,16 @@ jobs:
              git clean -df
           done
 
+      - name: "⚡ Setup Baseband-guard | 配置 Baseband-guard"
+        run: |
+          set -e
+          cd kernel_workspace/kernel_platform/common
+          curl -sSL https://github.com/vc-teahouse/Baseband-guard/raw/main/setup.sh -o setup.sh
+          bash setup.sh
+          echo "⚡ 启用BBG防格机..."
+          echo 'CONFIG_BBG=y' >> ./arch/arm64/configs/gki_defconfig
+          echo 'CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,selinux,smack,tomoyo,apparmor,bpf,baseband_guard"' >> ./arch/arm64/configs/gki_defconfig
+
       # 配置信息,带*为附加项目,具有一定危险性和不确定性
       - name: Add Configuration Settings
         run: |
