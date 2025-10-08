@@ -466,21 +466,64 @@ jobs:
           sed -i 's/check_defconfig//' ./common/build.config.gki
           echo "✅ 内核配置更新完成"
          
-      - name: "🔨 Build Kernel | 编译内核"
+      # - name: "🔨 Build Kernel | 编译内核"
+        # run: |
+          # echo "🏗️ 开始内核编译..."
+          # export KBUILD_BUILD_TIMESTAMP="Wed Aug  6 13:29:27 UTC 2025"
+          # export KBUILD_BUILD_VERSION=1
+          # export PATH="$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/prebuilts-master/clang/host/linux-x86/clang-r416183b/bin:$PATH"
+          # export PATH="/usr/lib/ccache:$PATH"
+          # cd kernel_workspace/kernel_platform/common
+          # make -j$(nproc --all) LLVM_IAS=1 LLVM=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC="ccache clang" RUSTC=../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc PAHOLE=../../prebuilts/kernel-build-tools/linux-x86/bin/pahole LD=ld.lld HOSTLD=ld.lld O=out gki_defconfig all
+          
+          # # 显示ccache统计信息
+          # ccache -s
+          # echo "✅ 内核编译完成"
+
+      - name: "🔨 Build Kernel ZyC clang19 | 编译内核"
         run: |
-          echo "🏗️ 开始内核编译..."
+          export PATH="/usr/lib/ccache:$PATH"
+          # 安装依赖工具
+          # sudo apt install -y lld
+          cd kernel_workspace/kernel_platform/common
+          
+          # 安装自定义clang
+          mkdir cust_clang; cd cust_clang
+          wget -q https://github.com/cctv18/oneplus_sm8650_toolchain/releases/download/LLVM-Clang20-r547379/build-tools.zip
+          unzip build*.zip >/dev/null
+          wget -q https://github.com/ZyCromerZ/Clang/releases/download/19.0.0git-20240723-release/Clang-19.0.0git-20240723.tar.gz
+          tar -zxvf Clang-*.tar.gz > /dev/null
+          ls -al
+          cd  ..
           export KBUILD_BUILD_TIMESTAMP="Wed Aug  6 13:29:27 UTC 2025"
           export KBUILD_BUILD_VERSION=1
-          export PATH="$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/prebuilts-master/clang/host/linux-x86/clang-r416183b/bin:$PATH"
-          export PATH="/usr/lib/ccache:$PATH"
-          sudo apt install libelf-dev
-          cd kernel_workspace/kernel_platform/common
-          make -j$(nproc --all) LLVM_IAS=1 LLVM=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC="ccache clang" RUSTC=../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc PAHOLE=../../prebuilts/kernel-build-tools/linux-x86/bin/pahole LD=ld.lld HOSTLD=ld.lld O=out gki_defconfig all
-          
-          # 显示ccache统计信息
+          export cust_clang="$(realpath ./cust_clang/bin)"
+          sudo -E chmod -R +x "$cust_clang"
+          export PATH="$cust_clang:$PATH"
+          echo $PATH
+          export CC="$(realpath ./cust_clang/bin/clang)" LTO="thin"
+          export CC="ccache $CC" LTO="thin"
+          export PAHOLE="$(realpath ./cust_clang/build-tools/bin/pahole)"
+          MAKE_ARGS="LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
+            RUSTC=../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc \
+            LD=ld.lld HOSTLD=ld.lld KCFLAGS+=-Wno-error"
+          if [ -f "./android/gki/aarch64/afdo/kernel.afdo" ]; then
+              FDO_FILE="$(realpath ./android/gki/aarch64/afdo/kernel.afdo)"
+              EXTRA_FLAGS="CLANG_AUTOFDO_PROFILE=$FDO_FILE"
+              echo $EXTRA_FLAGS
+              echo "这里显示fdo文件: $(ls $FDO_FILE)"
+              make -j$(nproc --all) O=out $MAKE_ARGS $EXTRA_FLAGS gki_defconfig all 2>&1 | tee  ../../../build.txt
+          else
+              make -j$(nproc --all) O=out LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- RUSTC=../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc PAHOLE=../../prebuilts/kernel-build-tools/linux-x86/bin/pahole LD=ld.lld HOSTLD=ld.lld CC="ccache clang" gki_defconfig all 2>&1 | tee  ../../../build.txt
+          fi
+          for i in $(find  . -type f -name ".config"); do
+             cp $i  ../../../config.txt
+          done
+          git log | head -n 200 > ../../../commit.txt
+          # 显示 ccache 统计信息
           ccache -s
           echo "✅ 内核编译完成"
-         
+
       - name: "📦 Package Kernel | 打包内核"
         run: |
           echo "📦 准备AnyKernel3打包环境..."
