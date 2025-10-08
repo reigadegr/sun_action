@@ -643,8 +643,8 @@ jobs:
           tar -zxvf Clang-*.tar.gz > /dev/null
           ls -al
           cd  ..
-          export KBUILD_BUILD_TIMESTAMP="Wed Aug  6 13:29:27 UTC 2025"
-          export KBUILD_BUILD_VERSION=1
+          # export KBUILD_BUILD_TIMESTAMP="Wed Aug  6 13:29:27 UTC 2025"
+          # export KBUILD_BUILD_VERSION=1
           export cust_clang="$(realpath ./cust_clang/bin)"
           sudo -E chmod -R +x "$cust_clang"
           export PATH="$cust_clang:$PATH"
@@ -662,7 +662,7 @@ jobs:
               echo "这里显示fdo文件: $(ls $FDO_FILE)"
               make -j$(nproc --all) O=out $MAKE_ARGS $EXTRA_FLAGS gki_defconfig all 2>&1 | tee  ../../../build.txt
           else
-              make -j$(nproc --all) O=out LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- RUSTC=../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc PAHOLE=../../prebuilts/kernel-build-tools/linux-x86/bin/pahole LD=ld.lld HOSTLD=ld.lld CC="ccache clang" gki_defconfig all 2>&1 | tee  ../../../build.txt
+              make -j$(nproc --all) O=out $MAKE_ARGS gki_defconfig all 2>&1 | tee  ../../../build.txt
           fi
           for i in $(find  . -type f -name ".config"); do
              cp $i  ../../../config.txt
@@ -675,8 +675,11 @@ jobs:
       - name: "📦 Package Kernel | 打包内核"
         run: |
           echo "📦 准备AnyKernel3打包环境..."
-          git clone https://github.com/Xiaomichael/AnyKernel3 --depth=1
+          git clone https://github.com/reigadegr/AnyKernel3 --depth=1
           rm -rf ./AnyKernel3/.git
+          cp *build.txt ./AnyKernel3 || echo "复制log失败"
+          cp config.txt ./AnyKernel3 || echo "复制config失败"
+          cp commit.txt ./AnyKernel3 || echo "复制commit失败"
           mkdir -p kernel_workspace/kernel_platform/out/Final-Image-Find/
           dir1=""
           dir2=""
