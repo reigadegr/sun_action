@@ -2,13 +2,6 @@ name: Build KernelSU Next
 on:
   workflow_dispatch:
     inputs:
-      CPU:
-        description: "CPU分支"
-        required: true
-        type: choice
-        options:
-          - 'sm8750'
-        default: 'sm8750'
         
       FILE:
         description: "手机型号"
@@ -77,6 +70,12 @@ on:
         description: "自定义内核后缀 (不输入使用随机字符串)"
         required: false
         default: "KONATA"
+
+      SUSFS_ENABLE:
+        type: boolean
+        description: "是否开启susfs？"
+        required: true
+        default: false
 
 jobs:
   build:
@@ -314,7 +313,11 @@ jobs:
         run: |
           cd kernel_workspace/kernel_platform
           echo "🛠️ 正在设置KernelSU Next..."
-          curl -LSs "https://raw.githubusercontent.com/pershoot/KernelSU-Next/next-susfs/kernel/setup.sh" | bash -s next-susfs
+          if [ "${{ github.event.inputs.SUSFS_ENABLE }}" = "true" ]; then
+              curl -LSs "https://raw.githubusercontent.com/pershoot/KernelSU-Next/next-susfs/kernel/setup.sh" | bash -s next-susfs
+          else
+              curl -LSs "https://raw.githubusercontent.com/pershoot/KernelSU-Next/next/kernel/setup.sh" | bash -s next
+           fi
           cd KernelSU-Next
           KSU_VERSION=$(expr $(curl -sI "https://api.github.com/repos/KernelSU-Next/KernelSU-Next/commits?sha=next&per_page=1" | grep -i "link:" | sed -n 's/.*page=\([0-9]*\)>; rel="last".*/\1/p') "+" 10200)
           echo "KSUVER=$KSU_VERSION" >> $GITHUB_ENV
@@ -331,7 +334,7 @@ jobs:
           cd kernel_platform
           echo "📝 复制补丁文件..."
           cp ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch ./common/
-          cp ../kernel_patches/next/scope_min_manual_hooks_v1.4.patch ./common/
+          cp ../kernel_patches/next/scope_min_manual_hooks_v1.5.patch ./common/
            
           cp ../kernel_patches/zram/001-lz4.patch ./common/
           cp ../kernel_patches/zram/lz4armv8.S ./common/lib
@@ -346,11 +349,12 @@ jobs:
           # echo "📦 应用lz4+zstd补丁..."
           # patch -p1 -F 3 < 001-lz4.patch
           # patch -p1 -F 3 < 002-zstd.patch
-           
-          patch -p1 -F 3 < 50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch
+          if [ "${{ github.event.inputs.SUSFS_ENABLE }}" = "true" ]; then
+              patch -p1 -F 3 < 50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch
+          fi
           cp ../../kernel_patches/69_hide_stuff.patch ./
           patch -p1 -F 3 < 69_hide_stuff.patch
-          patch -p1 -F 3 < scope_min_manual_hooks_v1.4.patch
+          patch -p1 -F 3 < scope_min_manual_hooks_v1.5.patch
           echo "✅ 所有补丁应用完成"
 
       # OGKI转换GKI，无需修改 dtbo 开机
@@ -403,25 +407,25 @@ jobs:
           # Add KSU configuration settings
           echo "CONFIG_KSU=y" >> ./common/arch/arm64/configs/gki_defconfig
           echo "CONFIG_KSU_KPROBES_HOOK=n" >> ./common/arch/arm64/configs/gki_defconfig
-            
-          # Add SUSFS configuration settings
-          echo "CONFIG_KSU_SUSFS=y" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_SUS_PATH=y" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_SUS_MOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_AUTO_ADD_SUS_KSU_DEFAULT_MOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_AUTO_ADD_SUS_BIND_MOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_SUS_KSTAT=y" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_SUS_OVERLAYFS=n" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_TRY_UMOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_AUTO_ADD_TRY_UMOUNT_FOR_BIND_MOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_SPOOF_UNAME=y" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_ENABLE_LOG=y" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> ./common/arch/arm64/configs/gki_defconfig
-
+          if [ "${{ github.event.inputs.SUSFS_ENABLE }}" = "true" ]; then
+              # Add SUSFS configuration settings
+              echo "CONFIG_KSU_SUSFS=y" >> ./common/arch/arm64/configs/gki_defconfig
+              echo "CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
+              echo "CONFIG_KSU_SUSFS_SUS_PATH=y" >> ./common/arch/arm64/configs/gki_defconfig
+              echo "CONFIG_KSU_SUSFS_SUS_MOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
+              echo "CONFIG_KSU_SUSFS_AUTO_ADD_SUS_KSU_DEFAULT_MOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
+              echo "CONFIG_KSU_SUSFS_AUTO_ADD_SUS_BIND_MOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
+              echo "CONFIG_KSU_SUSFS_SUS_KSTAT=y" >> ./common/arch/arm64/configs/gki_defconfig
+              echo "CONFIG_KSU_SUSFS_SUS_OVERLAYFS=n" >> ./common/arch/arm64/configs/gki_defconfig
+              echo "CONFIG_KSU_SUSFS_TRY_UMOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
+              echo "CONFIG_KSU_SUSFS_AUTO_ADD_TRY_UMOUNT_FOR_BIND_MOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
+              echo "CONFIG_KSU_SUSFS_SPOOF_UNAME=y" >> ./common/arch/arm64/configs/gki_defconfig
+              echo "CONFIG_KSU_SUSFS_ENABLE_LOG=y" >> ./common/arch/arm64/configs/gki_defconfig
+              echo "CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y" >> ./common/arch/arm64/configs/gki_defconfig
+              echo "CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y" >> ./common/arch/arm64/configs/gki_defconfig
+              echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> ./common/arch/arm64/configs/gki_defconfig
+              echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> ./common/arch/arm64/configs/gki_defconfig
+          fi
           echo "⚡ 启用BBG防格机..."
           echo 'CONFIG_BBG=y' >> ./common/arch/arm64/configs/gki_defconfig
           echo 'CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,selinux,smack,tomoyo,apparmor,bpf,baseband_guard"' >> ./common/arch/arm64/configs/gki_defconfig
