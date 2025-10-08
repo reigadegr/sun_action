@@ -464,7 +464,151 @@ jobs:
             
           sed -i 's/check_defconfig//' ./common/build.config.gki
           echo "✅ 内核配置更新完成"
-         
+      # 配置信息,带*为附加项目,具有一定危险性和不确定性
+      - name: Add Configuration Settings
+        run: |
+          cd kernel_workspace/kernel_platform
+          CONFIG_FILE=./common/arch/arm64/configs/gki_defconfig
+          
+          # ECN配置*
+          echo "CONFIG_IP_ECN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_TCP_ECN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IPV6_ECN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_NF_TARGET_ECN=y" >> "$CONFIG_FILE"
+          
+          # lto thin，O2 
+          echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
+          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3=n" >> "$CONFIG_FILE"
+          echo "CONFIG_LLVM_POLLY=y" >> "$CONFIG_FILE"
+          echo "CONFIG_LD_DEAD_CODE_DATA_ELIMINATION=y" >> "$CONFIG_FILE"
+          echo "CONFIG_AUTOFDO_CLANG=y" >> "$CONFIG_FILE"
+          
+          # Inline zram                   
+          echo "CONFIG_ZSMALLOC=y" >> "$CONFIG_FILE"
+          echo "CONFIG_ZRAM=y" >> "$CONFIG_FILE"
+          echo "CONFIG_ZRAM_DEF_COMP_ZSTD=y" >> "$CONFIG_FILE"
+          echo "CONFIG_ZRAM_DEF_COMP=\"zstd\"" >> "$CONFIG_FILE"
+          
+          # TMPFS配置*
+          echo "CONFIG_TMPFS_XATTR=y" >> "$CONFIG_FILE"
+          echo "CONFIG_TMPFS_POSIX_ACL=y" >> "$CONFIG_FILE"
+
+          # cmdline优化性能
+          echo "CONFIG_CMDLINE=\"console=ttynull nokaslr stack_depot_disable=on cgroup_disable=pressure kasan=off kvm-arm.mode=protected bootconfig thp_anon=16K-2M:always mitigations=off kpti=0 hardened_usercopy=off audit=0 norandmaps arm64.nobti arm64.nomte arm64.nopauth\"" >> "$CONFIG_FILE"
+          echo "CONFIG_CMDLINE_FROM_BOOTLOADER=n" >> "$CONFIG_FILE"
+          echo "CONFIG_CMDLINE_EXTEND=y" >> "$CONFIG_FILE"
+          
+          # 防止单点故障导致系统崩溃
+          echo "CONFIG_PANIC_ON_OOPS=n" >> "$CONFIG_FILE"
+          echo "CONFIG_PANIC_ON_OOPS_VALUE=0" >> "$CONFIG_FILE"
+          blacklist="${{ github.event.inputs.BLACK_LIST }}"
+          if [ "$blacklist" = "blacklist_module_danger.patch" ] || [ "$blacklist" = "haruhi_blacklist.patch" ]; then
+              # qcom llcc
+              echo "CONFIG_QCOM_LLCC=y" >> "$CONFIG_FILE"
+              # walt scheduler
+              echo "CONFIG_SCHED_WALT=y" >> "$CONFIG_FILE"
+          else
+              echo "CONFIG_QCOM_LLCC=n" >> "$CONFIG_FILE"
+              # walt scheduler
+              echo "CONFIG_SCHED_WALT=n" >> "$CONFIG_FILE"
+          fi
+          # 透明大页
+          echo "CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS=y" >> "$CONFIG_FILE"   
+          echo "CONFIG_TRANSPARENT_HUGEPAGE_MADVISE=n" >> "$CONFIG_FILE"
+          
+          echo "CONFIG_CFI_PERMISSIVE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_SLAB_MERGE_DEFAULT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_DMABUF_HUGETLB=y" >> "$CONFIG_FILE"
+          echo "CONFIG_ARM64_SME=y" >> "$CONFIG_FILE"
+          
+          echo "CONFIG_PCIEASPM_POWER_SUPERSAVE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_KFENCE_STATIC_KEYS=y" >> "$CONFIG_FILE"
+          
+          # 模块签名校验          
+          echo "CONFIG_MODULE_SIG_PROTECT=n" >> "$CONFIG_FILE"
+          
+          # 幽灵漏洞
+          echo "CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY=n" >> "$CONFIG_FILE"
+          echo "CONFIG_UNMAP_KERNEL_AT_EL0=n" >> "$CONFIG_FILE"
+
+          # 内核静态字段只读(默认开启保护)
+          echo "CONFIG_RODATA_FULL_DEFAULT_ENABLED=y" >> "$CONFIG_FILE"
+
+          # # 关闭部分安全特性(开启也会导致各种符号版本错误)
+          # echo "CONFIG_SLAB_FREELIST_RANDOM=n" >> "$CONFIG_FILE"
+          # echo "CONFIG_SHUFFLE_PAGE_ALLOCATOR=n" >> "$CONFIG_FILE"
+          # echo "CONFIG_SLAB_FREELIST_HARDENED=n" >> "$CONFIG_FILE"
+          
+          # # 堆栈保护关闭
+          # echo "CONFIG_STACKPROTECTOR_PER_TASK=n" >> "$CONFIG_FILE"
+          
+          # 优化内存策略(放心开启)
+          echo "CONFIG_RCU_LAZY_DEFAULT_OFF=n" >> "$CONFIG_FILE"
+          echo "CONFIG_TASKS_TRACE_RCU_READ_MB=y" >> "$CONFIG_FILE"
+          echo "CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y" >> "$CONFIG_FILE"
+          echo "CONFIG_ANON_MIN_RATIO=5" >> "$CONFIG_FILE"
+          echo "CONFIG_CLEAN_LOW_RATIO=2" >> "$CONFIG_FILE"
+          echo "CONFIG_CLEAN_MIN_RATIO=1" >> "$CONFIG_FILE"
+          
+          # 华为auth qos
+          echo "CONFIG_AUTHORITY_CTRL=y" >> "$CONFIG_FILE"
+          echo "CONFIG_QOS_CTRL=y" >> "$CONFIG_FILE"
+          echo "CONFIG_QOS_AUTHORITY=y" >> "$CONFIG_FILE"
+          echo "CONFIG_QOS_POLICY_MAX_NR=5" >> "$CONFIG_FILE"
+                    
+          echo "CONFIG_UDMABUF=y" >> "$CONFIG_FILE"
+          # # 禁用io调度器
+          echo "CONFIG_MQ_IOSCHED_KYBER=n" >> "$CONFIG_FILE"
+          
+          # 控制可选功能(放心使用本代码)
+          echo "CONFIG_DAMON=n" >> "$CONFIG_FILE"
+          echo "CONFIG_CRYPTO_SHA1_ARM64_CE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_VIRTIO_PCI_LEGACY=y" >> "$CONFIG_FILE"
+          echo "CONFIG_WQ_POWER_EFFICIENT_DEFAULT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_HEADERS_INSTALL=n" >> "$CONFIG_FILE"
+          echo "CONFIG_PROC_MEM_ALWAYS_FORCE=n" >> "$CONFIG_FILE"
+          
+          echo "CONFIG_DTPM=n" >> "$CONFIG_FILE"
+          echo "CONFIG_IDLE_INJECT=n" >> "$CONFIG_FILE"
+     
+          # 无用kunit
+          echo "CONFIG_FAT_KUNIT_TEST=n" >> "$CONFIG_FILE"
+          echo "CONFIG_EXT4_KUNIT_TESTS=n" >> "$CONFIG_FILE"          
+          echo "CONFIG_RTC_LIB_KUNIT_TEST=n" >> "$CONFIG_FILE"
+          echo "CONFIG_CLK_KUNIT_TEST=n" >> "$CONFIG_FILE"
+          echo "CONFIG_CLK_GATE_KUNIT_TEST=n" >> "$CONFIG_FILE"
+          echo "CONFIG_IIO_FORMAT_KUNIT_TESTAULT=n" >> "$CONFIG_FILE"          
+          echo "CONFIG_INPUT_KUNIT_TEST=n" >> "$CONFIG_FILE"
+          echo "CONFIG_SND_SOC_UTILS_KUNIT_TEST=n" >> "$CONFIG_FILE"
+          echo "CONFIG_SND_SOC_TOPOLOGY_KUNIT_TEST=n" >> "$CONFIG_FILE"
+          echo "CONFIG_HID_KUNIT_TEST=n" >> "$CONFIG_FILE"
+          echo "CONFIG_REGMAP_KUNIT=n" >> "$CONFIG_FILE"
+          echo "CONFIG_TIME_KUNIT_TEST=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NETDEV_ADDR_LIST_TEST=n" >> "$CONFIG_FILE"
+          echo "CONFIG_IIO_FORMAT_KUNIT_TEST=n" >> "$CONFIG_FILE"
+
+          # 修各种abi不兼容
+          # 蓝牙
+          patch_profile="${{ github.event.inputs.BLACK_LIST }}"
+          if [ "$patch_profile" = "blacklist_module_danger.patch" ] || [ "$patch_profile" = "blacklist_module.patch" ] || [ "$patch_profile" = "scx_enable.patch" ] ; then
+              echo "CONFIG_RFKILL=y" >> "$CONFIG_FILE"
+              echo "CONFIG_BT=y" >> "$CONFIG_FILE"
+              echo "CONFIG_BT_RFCOMM=y" >> "$CONFIG_FILE"
+              echo "CONFIG_BT_HIDP=y" >> "$CONFIG_FILE"
+              echo "CONFIG_TLS=y" >> "$CONFIG_FILE"
+          fi
+          
+          # 移除无意义的内容
+          echo "CONFIG_UBSAN=n">> "$CONFIG_FILE"
+          echo "CONFIG_UBSAN_TRAP=n" >> "$CONFIG_FILE"
+          echo "CONFIG_UBSAN_BOUNDS=n" >> "$CONFIG_FILE"
+          echo "CONFIG_IKHEADERS=n" >> "$CONFIG_FILE"
+          # 移除构建审查
+          sed -i 's/check_defconfig//' ./common/build.config.gki
+
       # - name: "🔨 Build Kernel | 编译内核"
         # run: |
           # echo "🏗️ 开始内核编译..."
