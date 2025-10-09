@@ -334,7 +334,7 @@ jobs:
           cd kernel_platform
           echo "📝 复制补丁文件..."
           cp ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch ./common/
-          cp ../kernel_patches/next/scope_min_manual_hooks_v1.4.patch ./common/
+          cp ../kernel_patches/next/scope_min_manual_hooks_v1.5.patch ./common/
            
           cp ../kernel_patches/zram/001-lz4.patch ./common/
           cp ../kernel_patches/zram/lz4armv8.S ./common/lib
@@ -354,7 +354,7 @@ jobs:
           fi
           cp ../../kernel_patches/69_hide_stuff.patch ./
           patch -p1 -F 3 < 69_hide_stuff.patch
-          patch -p1 -F 3 < scope_min_manual_hooks_v1.4.patch
+          patch -p1 -F 3 < scope_min_manual_hooks_v1.5.patch
           echo "✅ 所有补丁应用完成"
 
       # OGKI转换GKI，无需修改 dtbo 开机
