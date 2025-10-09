@@ -8,27 +8,6 @@ on:
         required: true
         default: oneplus_13t
         options:
-          - oneplus_nord_ce4_lite_5g_v
-          - oneplus_nord_ce4_v
-          - oneplus_nord_4_v
-          - oneplus_ace_3v_v
-          - oneplus_10_pro_v
-          - oneplus_10t_v
-          - oneplus_11r_v
-          - oneplus_ace2_v
-          - oneplus_ace_pro_v
-          - oneplus_11_v
-          - oneplus_12r_v
-          - oneplus_ace2_pro_v
-          - oneplus_ace3_v
-          - oneplus_open_v
-          - oneplus12_v
-          - oneplus_13r
-          - oneplus_ace3_pro_v
-          - oneplus_ace5
-          - oneplus_pad_pro_v
-          - oneplus_pad2_v
-          - oneplus_ace5_pro
           - oneplus_13
           - oneplus_13t
           - oneplus_13s
@@ -51,7 +30,7 @@ on:
         type: string
         description: "使用的分支"
         required: true
-        default: "gki27"
+        default: "gki30"
       BLACK_LIST:
         type: choice
         description: "如何去屏蔽一加内核模块？"
@@ -79,16 +58,10 @@ on:
           - kprobe
           - manual
           - tracepoint
-      KPM:
-        type: boolean
-        description: "是否启用内核模块(KPM)？"
-        required: true
-        default: false
-
 
 jobs:
   build:
-    name: ${{ github.event.inputs.KPM == 'true' && ' [KPM]' || '' }}For ${{ github.event.inputs.FILE }} ${{ github.event.inputs.SUFFIX }}
+    name: For ${{ github.event.inputs.FILE }} ${{ github.event.inputs.SUFFIX }}
     runs-on: ubuntu-latest
     env:
       CCACHE_COMPILERCHECK: "%compiler% -dumpmachine; %compiler% -dumpversion"
@@ -105,27 +78,6 @@ jobs:
           set -e
           cd "$GITHUB_WORKSPACE"
           declare -A KVERSION_MAP=(
-            ["oneplus_nord_ce4_lite_5g"]="android14 6.1"
-            ["oneplus_nord_ce4"]="android14 5.15"
-            ["oneplus_nord_4"]="android14 6.1"
-            ["oneplus_ace_3v"]="android14 6.1"
-            ["oneplus_10_pro"]="android12 5.10"
-            ["oneplus_10t"]="android12 5.10"
-            ["oneplus_11r"]="android12 5.10"
-            ["oneplus_ace2"]="android12 5.10"
-            ["oneplus_ace_pro"]="android12 5.10"
-            ["oneplus_11"]="android13 5.15"
-            ["oneplus_12r"]="android13 5.15"
-            ["oneplus_ace2_pro"]="android13 5.15"
-            ["oneplus_ace3"]="android13 5.15"
-            ["oneplus_open"]="android13 5.15"
-            ["oneplus12"]="android14 6.1"
-            ["oneplus_13r"]="android14 6.1"
-            ["oneplus_ace3_pro"]="android14 6.1"
-            ["oneplus_ace5"]="android14 6.1"
-            ["oneplus_pad_pro"]="android14 6.1"
-            ["oneplus_pad2"]="android14 6.1"
-            ["oneplus_ace5_pro"]="android15 6.6"
             ["oneplus_13"]="android15 6.6"
             ["oneplus_13t"]="android15 6.6"
             ["oneplus_13s"]="android15 6.6"
@@ -223,7 +175,6 @@ jobs:
           python3 -c "print(''.join(f'U+{ord(c):04X} ' for c in '''${{ github.event.inputs.SUFFIX }}'''))"
           echo "Selected SUSFS_ENABLE: ${{ github.event.inputs.SUSFS_ENABLE }}"
           echo "Selected HOOK: ${{ github.event.inputs.HOOK }}"
-          echo "Selected KPM: ${{ github.event.inputs.KPM }}"
 
       - name: Check Disk Space
         run: df -h
@@ -920,21 +871,10 @@ jobs:
             cp "$image_path" kernel_workspace/kernel_platform/out/Final-Image-Find/Image
           fi
 
-      - name: Apply patch_linux and replace Image
-        if: ${{ github.event.inputs.KPM == 'true' }}
-        run: |
-          cd kernel_workspace/kernel_platform/out/Final-Image-Find
-          curl -LO --retry 5 --retry-delay 2 --retry-connrefused https://raw.githubusercontent.com/Numbersf/Action-Build/SukiSU-Ultra/patches/patch_linux
-          chmod +x patch_linux
-          ./patch_linux
-          rm -f Image
-          mv oImage Image
-          cp Image $GITHUB_WORKSPACE/AnyKernel3/Image
-
       - name: Set zip Suffix
         id: suffix
         run: |
-          echo "value=${{ github.event.inputs.VFS }}${{ github.event.inputs.KPM == 'true' && '_KPM' || '' }}" >> $GITHUB_OUTPUT
+          echo "value=${{ github.event.inputs.VFS }}" >> $GITHUB_OUTPUT
 
       - name: Upload AnyKernel3
         uses: actions/upload-artifact@v4
