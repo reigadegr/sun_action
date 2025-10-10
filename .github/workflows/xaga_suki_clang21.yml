@@ -697,6 +697,7 @@ jobs:
           export DESCRIPTION+=$'\n⚠️ CI 构建，未经测试，可能不开机! 请确保您方便救砖后刷入此内核!'
           export DESCRIPTION+=$'\n🤐susfs status: ${{ github.event.inputs.SUSFS_ENABLE }}'
           export DESCRIPTION+=$'\n🥺kpm status: ${{ github.event.inputs.KPM}}'
+          export DESCRIPTION+=$'\n🔨branch: ${{ github.event.inputs.BRANCH }}'
           python3 "$(realpath ./tgbot.py)" "$(realpath ./"$ZIP_NAME")" && exit 0 || true
 
       - name: Post-build Disk Check
