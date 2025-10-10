@@ -119,7 +119,7 @@ jobs:
       - name: "📦 Cache & Install Dependencies | 缓存 & 安装构建依赖"
         uses: awalsh128/cache-apt-pkgs-action@latest 
         with: 
-          packages: python3 git curl ccache libelf-dev build-essential flex bison libssl-dev libncurses-dev liblz4-tool zlib1g-dev libxml2-utils rsync unzip gawk
+          packages: python3 git curl ccache libelf-dev build-essential flex bison libssl-dev libncurses-dev liblz4-tool zlib1g-dev libxml2-utils rsync zip unzip gawk lsb-release linux-modules-extra-"$(uname -r)" pahole automake zlib1g-dev make openssl bc device-tree-compiler python3-telethon python-is-python3 zstd libzstd-dev pigz asciidoc dos2unix lz4 fakeroot gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi gcc-arm-linux-gnueabihf libc6-dev-armel-cross libc6-dev-armhf-cross libc6-dev-arm64-cross selinux-policy-dev
           execute_install_scripts: true
 
       - name: Optimize Memory Management
