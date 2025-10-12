@@ -7,18 +7,19 @@ on:
         type: choice
         description: '清理的工作流名称'
         required: true
-        default: 'repo_build'
+        default: 'Build KernelSU Next'
         options:
           - xaga_suki_clang21
           - xaga_mksu_clang21
           - DebugBuild_clang21
           - OriginBuild_clang21
           - OriginBuild_clang19
+          - Build KernelSU Next
           - Upload
       count:
         description: '最多访问的运行次数'
         required: false
-        default: '80'
+        default: '20'
       delete_failed:
         description: '删除指定工作流失败的运行记录？'
         required: false
@@ -40,7 +41,7 @@ on:
         type: boolean
         default: false
       clear_cache:
-        description: '是否删除所有ccache缓存？'
+        description: '是否删除所有缓存？'
         required: false
         type: boolean
         default: false
@@ -156,7 +157,7 @@ jobs:
     permissions:
       actions: write
     steps:
-      - name: 删除并重置缓存
+      - name: 删除并重置缓存 (ccache + apt-cache)
         uses: actions/github-script@v6
         with:
           script: |
@@ -176,7 +177,11 @@ jobs:
               if (!caches || caches.length === 0) break;
 
               for (const cache of caches) {
-                if (cache.key.startsWith('ccache-')) {
+                if (
+                  cache.key.startsWith('ccache-') ||
+                  cache.key.includes('apt-cache') ||
+                  cache.key.includes('apt')
+                ) {
                   console.log(`删除缓存: ${cache.key}`);
                   await github.rest.actions.deleteActionsCacheById({
                     owner,
