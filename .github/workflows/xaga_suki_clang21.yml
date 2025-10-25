@@ -41,7 +41,7 @@ on:
         type: choice
         description: "钩子选择"
         required: true
-        default: tracepoint
+        default: manual
         options:
           - kprobe
           - manual
