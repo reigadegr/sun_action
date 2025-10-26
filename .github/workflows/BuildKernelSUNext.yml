@@ -55,7 +55,7 @@ on:
         type: choice
         description: "如何去屏蔽一加内核模块？"
         required: true
-        default: "scx_enable.patch"
+        default: "fengchi_enable.patch"
         options:
           - "blacklist_module.patch"
           - "blacklist_module_danger.patch"
