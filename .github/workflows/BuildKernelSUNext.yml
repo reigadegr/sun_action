@@ -49,7 +49,7 @@ on:
         type: string
         description: "使用的分支"
         required: true
-        default: "r1"
+        default: "r4"
 
       BLACK_LIST:
         type: choice
@@ -564,7 +564,7 @@ jobs:
           # 修各种abi不兼容
           # 蓝牙
           patch_profile="${{ github.event.inputs.BLACK_LIST }}"
-          if [ "$patch_profile" = "blacklist_module_danger.patch" ] || [ "$patch_profile" = "blacklist_module.patch" ] || [ "$patch_profile" = "scx_enable.patch" ] ; then
+          if [ "$patch_profile" = "blacklist_module_danger.patch" ] || [ "$patch_profile" = "blacklist_module.patch" ] || [ "$patch_profile" = "scx_enable.patch" ] || [ "$patch_profile" = "fengchi_enable.patch" ] ; then
               echo "CONFIG_RFKILL=y" >> "$CONFIG_FILE"
               echo "CONFIG_BT=y" >> "$CONFIG_FILE"
               echo "CONFIG_BT_RFCOMM=y" >> "$CONFIG_FILE"
