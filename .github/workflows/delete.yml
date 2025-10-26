@@ -11,11 +11,12 @@ on:
         options:
           - xaga_suki_clang21
           - xaga_mksu_clang21
+          - xaga_nonksu_21
           - DebugBuild_clang21
           - OriginBuild_clang21
           - OriginBuild_clang19
           - Build KernelSU Next
-          - Upload
+          - Upload KernelSU Next
       count:
         description: '最多访问的运行次数'
         required: false
@@ -59,10 +60,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 安装环境
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gh jq
+      - name: "📦 Install system dependencies (Ubuntu)"
+        uses: awalsh128/cache-apt-pkgs-action@latest 
+        with: 
+          packages: gh jq
+          execute_install_scripts: true
 
       - name: 认证 GitHub CLI
         run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
@@ -179,6 +181,7 @@ jobs:
               for (const cache of caches) {
                 if (
                   cache.key.startsWith('ccache-') ||
+                  cache.key.includes('setup') ||
                   cache.key.includes('apt-cache') ||
                   cache.key.includes('apt')
                 ) {
