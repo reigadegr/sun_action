@@ -122,37 +122,6 @@ jobs:
           packages: python3 git curl
           execute_install_scripts: true
 
-      # ====================== 缓存管理阶段 ======================
-      - name: "💾 Restore ccache | 恢复ccache缓存"
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.CCACHE_DIR }}
-          key: ccache-${{ runner.os }}-${{ github.ref }}-${{ github.event.inputs.FILE }}-Next
-          restore-keys: |
-            ccache-${{ runner.os }}-${{ github.event.inputs.FILE }}-Next
-            ccache-${{ runner.os }}-Next
-
-      - name: "⚙️ Initialize ccache | 初始化ccache"
-        run: |
-          echo "🔧 正在初始化ccache..."
-          INIT_FLAG="${{ env.CCACHE_DIR }}/.ccache_initialized"
-          
-          if command -v ccache >/dev/null 2>&1; then
-            if [ ! -f "$INIT_FLAG" ]; then
-              mkdir -p "${{ env.CCACHE_DIR }}"
-              ccache -M ${{ env.CCACHE_MAXSIZE }}
-              touch "$INIT_FLAG"
-              echo "🆕 ccache初始化完成"
-            else
-              echo "ℹ️ ccache已存在，跳过初始化"
-            fi
-          else
-            echo "⚠️ 未找到ccache命令，跳过初始化"
-          fi
-          # 显示缓存统计
-          ccache -s
-          echo "✅ ccache初始化流程完成"
-
       # ====================== 源码准备阶段 ======================
       - name: "📥 Install Repo Tool | 安装Repo工具"
         run: |
