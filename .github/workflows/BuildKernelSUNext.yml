@@ -542,6 +542,9 @@ jobs:
           echo "CONFIG_HEADERS_INSTALL=n" >> "$CONFIG_FILE"
           echo "CONFIG_PROC_MEM_ALWAYS_FORCE=n" >> "$CONFIG_FILE"
           
+          # eBPF调试支持
+          echo "CONFIG_IKHEADERS=y" >> "$CONFIG_FILE"
+          
           echo "CONFIG_DTPM=n" >> "$CONFIG_FILE"
           echo "CONFIG_IDLE_INJECT=n" >> "$CONFIG_FILE"
      
@@ -576,7 +579,6 @@ jobs:
           echo "CONFIG_UBSAN=n">> "$CONFIG_FILE"
           echo "CONFIG_UBSAN_TRAP=n" >> "$CONFIG_FILE"
           echo "CONFIG_UBSAN_BOUNDS=n" >> "$CONFIG_FILE"
-          echo "CONFIG_IKHEADERS=n" >> "$CONFIG_FILE"
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
 
