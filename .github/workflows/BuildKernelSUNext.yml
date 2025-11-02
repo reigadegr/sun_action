@@ -323,7 +323,7 @@ jobs:
         run: |
           cd kernel_workspace/kernel_platform/common
           blacklist="${{ github.event.inputs.BLACK_LIST }}"
-          if [ "$blacklist" != "blacklist_module_danger.patch" ] && [ "$blacklist" != "haruhi_blacklist.patch" ] && [ "$blacklist" != "fengchi_enable.patch" ]; then
+          if [ "$blacklist" != "blacklist_module_danger.patch" ] && [ "$blacklist" != "haruhi_blacklist.patch" ] && [ "$blacklist" != "fengchi_enable.patch" ] && [ "$blacklist" != "humming_bird_blacklist.patch" ]; then
               sed -i '1iobj-y += hmbird_patch.o' drivers/Makefile
               wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/hmbird_patch.patch
               echo "正在打OGKI转换GKI补丁"
