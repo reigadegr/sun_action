@@ -18,6 +18,7 @@ on:
           - OriginBuild_clang19
           - Build KernelSU Next
           - Upload KernelSU Next
+          - Build KSUN clang21
       count:
         description: '最多访问的运行次数'
         required: false
