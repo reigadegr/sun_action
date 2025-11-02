@@ -1,8 +1,8 @@
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index ea1b4e116389..9672950f931d 100644
+index ea1b4e116389..3bc3b17f5c37 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
-@@ -2872,6 +2872,94 @@ static int early_mod_check(struct load_info *info, int flags)
+@@ -2872,6 +2872,87 @@ static int early_mod_check(struct load_info *info, int flags)
  	return err;
  }
  
@@ -11,13 +11,11 @@ index ea1b4e116389..9672950f931d 100644
 +    "clk_gate_test",
 +    "clk_test",
 +    "cpu_hotplug",
-+    "cpu_mpam",
 +    "cpucp_fast",
 +    "dev_addr_lists_test",
 +    "ext4_inode_test",
 +    "f_fs_ipc_log",
 +    "fat_test",
-+    "gzvm",
 +    "hid_uclogic_test",
 +    "hidp",
 +    "hung_task_enh",
@@ -28,9 +26,6 @@ index ea1b4e116389..9672950f931d 100644
 +    "kunit_example_test",
 +    "kunit_test",
 +    "lib_test",
-+    "mpam",
-+    "mpam_msc",
-+    "mpam_msc_slc",
 +    "oplus_bsp_dfr_hung_task_enhance",
 +    "oplus_bsp_dfr_reboot_speed",
 +    "oplus_bsp_dfr_ubt",
@@ -78,12 +73,10 @@ index ea1b4e116389..9672950f931d 100644
 +    "oplus_sys_stability_helper",
 +    "oplus_uprobe",
 +    "oplus_wq_dynamic_priority",
-+    "platform_mpam",
 +    "qcom_cpufreq_thermal",
 +    "regmap_kunit",
 +    "rfcomm",
 +    "rfkill",
-+    "slc_mpam",
 +    "soc_topology_test",
 +    "soc_utils_test",
 +    "thermal_config",
@@ -97,7 +90,7 @@ index ea1b4e116389..9672950f931d 100644
  /*
   * Allocate and load the module: note that size of section 0 is always
   * zero, and we rely on this for optional sections.
-@@ -2882,6 +2970,7 @@ static int load_module(struct load_info *info, const char __user *uargs,
+@@ -2882,6 +2963,7 @@ static int load_module(struct load_info *info, const char __user *uargs,
  	struct module *mod;
  	bool module_allocated = false;
  	long err = 0;
@@ -105,7 +98,7 @@ index ea1b4e116389..9672950f931d 100644
  	char *after_dashes;
  
  	/*
-@@ -2913,6 +3002,13 @@ static int load_module(struct load_info *info, const char __user *uargs,
+@@ -2913,6 +2995,13 @@ static int load_module(struct load_info *info, const char __user *uargs,
  	if (err)
  		goto free_copy;
  
