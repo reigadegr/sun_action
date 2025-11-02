@@ -1,4 +1,4 @@
-name: Build KSUN 21
+name: Build KSUN clang21
 on:
   workflow_dispatch:
     inputs:
@@ -594,7 +594,7 @@ jobs:
           wget -q https://github.com/cctv18/oneplus_sm8650_toolchain/releases/download/LLVM-Clang20-r547379/build-tools.zip
           unzip build*.zip >/dev/null
 
-          wget -q https://github.com/bachnxuan/aosp_clang_mirror/releases/download/clang-r574158-13996053/clang-r574158.tar.gz
+          wget -q https://github.com/bachnxuan/aosp_clang_mirror/releases/download/clang-r574158-14278474/clang-r574158.tar.gz
           tar -zxvf *.tar.gz > /dev/null
           ls -al
           cd  ..
