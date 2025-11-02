@@ -614,9 +614,9 @@ jobs:
               EXTRA_FLAGS="CLANG_AUTOFDO_PROFILE=$FDO_FILE"
               echo $EXTRA_FLAGS
               echo "这里显示fdo文件: $(ls $FDO_FILE)"
-              make -j$(nproc --all) O=out $MAKE_ARGS $EXTRA_FLAGS KCFLAGS+="-Wno-error -Wno-default-const-init-field-unsafe" gki_defconfig all 2>&1 | tee  ../../../build.txt
+              make -j$(nproc --all) O=out $MAKE_ARGS $EXTRA_FLAGS KCFLAGS+="-Wno-error -Wno-default-const-init-field-unsafe -Wno-default-const-init-var-unsafe" gki_defconfig all 2>&1 | tee  ../../../build.txt
           else
-              make -j$(nproc --all) O=out $MAKE_ARGS KCFLAGS+="-Wno-error -Wno-default-const-init-field-unsafe" gki_defconfig all 2>&1 | tee  ../../../build.txt
+              make -j$(nproc --all) O=out $MAKE_ARGS KCFLAGS+="-Wno-error -Wno-default-const-init-field-unsafe -Wno-default-const-init-var-unsafe" gki_defconfig all 2>&1 | tee  ../../../build.txt
           fi
           for i in $(find  . -type f -name ".config"); do
              cp $i  ../../../config.txt
