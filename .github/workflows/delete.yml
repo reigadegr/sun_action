@@ -13,9 +13,7 @@ on:
           - xaga_mksu_clang21
           - xaga_nonksu_21
           - mksu_sun_clang19
-          - DebugBuild_clang21
-          - OriginBuild_clang21
-          - OriginBuild_clang19
+          - Build SukiSU Ultra clang21
           - Build KernelSU Next
           - Upload KernelSU Next
           - Build KSUN clang21
