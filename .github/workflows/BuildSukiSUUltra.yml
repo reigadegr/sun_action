@@ -287,8 +287,12 @@ jobs:
 
           # 下载并执行设置脚本
           echo "🛠️ 正在设置SukiSU Ultra..."
-          curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/susfs-main/kernel/setup.sh" | bash -s susfs-main
-          
+
+          if [ "${{ github.event.inputs.SUSFS_ENABLE }}" = "true" ]; then
+              curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/susfs-main/kernel/setup.sh" | bash -s susfs-main
+          else
+              curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/susfs-main/kernel/setup.sh" | bash -s main
+           fi
           cd KernelSU
           echo "⬇️ 下载SukiSU设置工具..."
           curl -L -o sukisu_setup.bin https://github.com/Xiaomichael/OnePlus-Actions/raw/Build/script/sukisu_setup.bin
