@@ -631,6 +631,7 @@ jobs:
              cp $i  ../../../config.txt
           done
           git log | head -n 200 > ../../../commit.txt
+          cp -af ./drivers/of/overwriter/overwrite_configs.c  ../../../overwrite_configs.c
           # 显示 ccache 统计信息
           ccache -s
           echo "✅ 内核编译完成"
@@ -643,6 +644,7 @@ jobs:
           cp *build.txt ./AnyKernel3 || echo "复制log失败"
           cp config.txt ./AnyKernel3 || echo "复制config失败"
           cp commit.txt ./AnyKernel3 || echo "复制commit失败"
+          cp overwrite_configs.c  ./AnyKernel3 || echo "复制 overwrite_configs.c失败"
           mkdir -p kernel_workspace/kernel_platform/out/Final-Image-Find/
           dir1=""
           dir2=""
