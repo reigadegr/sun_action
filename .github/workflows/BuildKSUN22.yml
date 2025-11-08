@@ -631,7 +631,9 @@ jobs:
              cp $i  ../../../config.txt
           done
           git log | head -n 200 > ../../../commit.txt
-          cp -af ./drivers/of/overwriter/overwrite_configs.c  ../../../overwrite_configs.c
+          for i in $(find  . -name overwrite_configs.c); do
+              cp -af "$i"  ../../../overwrite_configs.c
+          done
           # 显示 ccache 统计信息
           ccache -s
           echo "✅ 内核编译完成"
