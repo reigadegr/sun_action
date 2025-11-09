@@ -1,8 +1,8 @@
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index ea1b4e116389..cb86cd55bbfc 100644
+index ea1b4e116389..4cd6bc3de5d8 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
-@@ -2872,6 +2872,90 @@ static int early_mod_check(struct load_info *info, int flags)
+@@ -2872,6 +2872,92 @@ static int early_mod_check(struct load_info *info, int flags)
  	return err;
  }
  
@@ -19,6 +19,7 @@ index ea1b4e116389..cb86cd55bbfc 100644
 +    "gpucc_kera",
 +    "hid_uclogic_test",
 +    "hidp",
++    "horae_shell_temp",
 +    "hung_task_enh",
 +    "iio_test_format",
 +    "input_test",
@@ -59,6 +60,7 @@ index ea1b4e116389..cb86cd55bbfc 100644
 +    "oplus_connectivity_routerboost",
 +    "oplus_exit_mm_optimize",
 +    "oplus_freqqos_monitor",
++    "oplus_ipa_thermal",
 +    "oplus_lock_torture",
 +    "oplus_network_app_monitor",
 +    "oplus_network_dns_hook",
@@ -93,7 +95,7 @@ index ea1b4e116389..cb86cd55bbfc 100644
  /*
   * Allocate and load the module: note that size of section 0 is always
   * zero, and we rely on this for optional sections.
-@@ -2882,6 +2966,7 @@ static int load_module(struct load_info *info, const char __user *uargs,
+@@ -2882,6 +2968,7 @@ static int load_module(struct load_info *info, const char __user *uargs,
  	struct module *mod;
  	bool module_allocated = false;
  	long err = 0;
@@ -101,7 +103,7 @@ index ea1b4e116389..cb86cd55bbfc 100644
  	char *after_dashes;
  
  	/*
-@@ -2913,6 +2998,13 @@ static int load_module(struct load_info *info, const char __user *uargs,
+@@ -2913,6 +3000,13 @@ static int load_module(struct load_info *info, const char __user *uargs,
  	if (err)
  		goto free_copy;
  
