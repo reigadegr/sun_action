@@ -580,8 +580,9 @@ jobs:
           sudo -E chmod -R +x "$cust_clang"
           export PATH="$cust_clang:$PATH"
           echo $PATH
-          export CC="$(realpath ./cust_clang/bin/clang)" LTO="thin"
-          export CC="ccache $CC" LTO="thin"
+          which clang
+          # export CC="$(realpath ./cust_clang/bin/clang)" LTO="thin"
+          # export CC="ccache $CC" LTO="thin"
           export LTO="thin"
           export PAHOLE="$(realpath ./cust_clang/build-tools/bin/pahole)"
           if [ -f "./android/gki/aarch64/afdo/kernel.afdo" ]; then
@@ -589,9 +590,9 @@ jobs:
               EXTRA_FLAGS="CLANG_AUTOFDO_PROFILE=$FDO_FILE"
               echo $EXTRA_FLAGS
               echo "这里显示fdo文件: $(ls $FDO_FILE)"
-              make -j$(nproc --all) O=out LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE="aarch64-linux-gnu-" LD=ld.lld HOSTLD=ld.lld RUSTC="../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc" $EXTRA_FLAGS KCFLAGS+="-Wno-error -Wno-default-const-init-field-unsafe -Wno-default-const-init-var-unsafe" gki_defconfig all 2>&1 | tee  ../../../build.txt
+              make -j$(nproc --all) O=out LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE="aarch64-linux-gnu-" CC="ccache clang" LD=ld.lld HOSTLD=ld.lld RUSTC="../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc" $EXTRA_FLAGS KCFLAGS+="-Wno-error -Wno-default-const-init-field-unsafe -Wno-default-const-init-var-unsafe" gki_defconfig all 2>&1 | tee  ../../../build.txt
           else
-              make -j$(nproc --all) O=out LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE="aarch64-linux-gnu-" LD=ld.lld HOSTLD=ld.lld RUSTC="../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc" KCFLAGS+="-Wno-error -Wno-default-const-init-field-unsafe -Wno-default-const-init-var-unsafe" gki_defconfig all 2>&1 | tee  ../../../build.txt
+              make -j$(nproc --all) O=out LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE="aarch64-linux-gnu-" CC="ccache clang" LD=ld.lld HOSTLD=ld.lld RUSTC="../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc" KCFLAGS+="-Wno-error -Wno-default-const-init-field-unsafe -Wno-default-const-init-var-unsafe" gki_defconfig all 2>&1 | tee  ../../../build.txt
           fi
           for i in $(find  . -type f -name ".config"); do
              cp $i  ../../../config.txt
