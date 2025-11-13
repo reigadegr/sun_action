@@ -268,7 +268,7 @@ jobs:
           echo "Commit Date: $COMMIT_DATE"
 
           echo "✅ MKSU 配置完成"
-          git add  .; git commit -m "MKSU 配置完成"
+          git add  .; git commit -m "MKSU 配置完成" || true
         
       - name: "🔧 Setup SUSFS | 配置 SUSFS"
         run: |
