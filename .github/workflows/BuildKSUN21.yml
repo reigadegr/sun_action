@@ -2,30 +2,6 @@ name: Build KSUN clang21
 on:
   workflow_dispatch:
     inputs:
-        
-      FILE:
-        description: "手机型号"
-        required: true
-        type: choice
-        options:
-          - 'oneplus_13'
-        default: 'oneplus_13'
-        
-      ANDROID_VERSION:
-        description: "KMI安卓版本"
-        required: true
-        type: choice
-        options:
-          - 'android15'
-        default: 'android15'
-        
-      KERNEL_VERSION:
-        description: "内核版本"
-        required: true
-        type: choice
-        options:
-          - '6.6'
-        default: '6.6'
 
       bbr:
        description: "是否启用bbr算法(优化上行数据, 对手机日用无太大意义甚至可能负优化)"
@@ -88,7 +64,7 @@ on:
 
 jobs:
   build:
-    name: For ${{ github.event.inputs.FILE }}
+    name: For oneplus_13
     runs-on: ubuntu-latest
     env:
       CCACHE_COMPILERCHECK: "%compiler% -dumpmachine; %compiler% -dumpversion"
@@ -98,23 +74,13 @@ jobs:
       
     steps:
       # ====================== 系统初始化阶段 ======================
-      - name: "🚀 Maximize Build Space | 最大化构建空间"
-        if: ${{ github.event.inputs.KERNEL_VERSION == '6.1' }}
-        uses: easimon/maximize-build-space@master
-        with:
-          root-reserve-mb: 8192
-          temp-reserve-mb: 4096
-          remove-dotnet: 'true'
-          remove-android: 'true'
-          remove-haskell: 'true'
-          remove-codeql: 'true'
 
       - name: "⚙️ Setup Cache Env | 设置缓存环境"
         run: |
           echo "🔧 正在设置机型隔离缓存目录..."
-          echo "CCACHE_DIR=$HOME/.ccache_${{ github.event.inputs.FILE }}_Next" >> $GITHUB_ENV
-          mkdir -p "$HOME/.ccache_${{ github.event.inputs.FILE }}_Next"
-          echo "✅ 缓存目录已设置: $HOME/.ccache_${{ github.event.inputs.FILE }}_Next" 
+          echo "CCACHE_DIR=$HOME/.ccache_oneplus_13_Next" >> $GITHUB_ENV
+          mkdir -p "$HOME/.ccache_oneplus_13_Next"
+          echo "✅ 缓存目录已设置: $HOME/.ccache_oneplus_13_Next" 
 
       - name: "🔐 Configure Git | 配置Git账户"
         run: |
@@ -128,12 +94,12 @@ jobs:
       - name: "📦 Cache & Install Dependencies | 缓存 & 安装构建依赖"
         uses: awalsh128/cache-apt-pkgs-action@latest 
         with: 
-          packages: python3 git curl ccache libelf-dev build-essential flex bison libssl-dev libncurses-dev liblz4-tool zlib1g-dev libxml2-utils rsync zip unzip gawk lsb-release pahole automake zlib1g-dev make openssl bc device-tree-compiler python3-telethon python-is-python3 zstd libzstd-dev pigz asciidoc dos2unix lz4 fakeroot gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi gcc-arm-linux-gnueabihf libc6-dev-armel-cross libc6-dev-armhf-cross libc6-dev-arm64-cross selinux-policy-dev
+          packages: python3 git curl ccache libelf-dev build-essential flex bison libssl-dev libncurses-dev liblz4-tool zlib1g-dev libxml2-utils rsync zip unzip gawk lsb-release pahole automake zlib1g-dev make openssl bc device-tree-compiler python3-telethon python-is-python3 zstd libzstd-dev pigz asciidoc dos2unix lz4 fakeroot gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi gcc-arm-linux-gnueabihf libc6-dev-armel-cross libc6-dev-armhf-cross libc6-dev-arm64-cross selinux-policy-dev linux-modules-extra-6.11.0-1018-azure
           execute_install_scripts: true
 
       - name: Optimize Memory Management
         run: |
-          sudo apt-get install linux-modules-extra-"$(uname -r)"
+          # sudo apt-get install linux-modules-extra-"$(uname -r)"
           echo linux-modules-extra-"$(uname -r)"
           sudo -E sysctl vm.swappiness=1
           sudo -E sysctl vm.min_free_kbytes=32768
@@ -156,9 +122,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ env.CCACHE_DIR }}
-          key: ccache-${{ runner.os }}-${{ github.ref }}-${{ github.event.inputs.FILE }}-Next
+          key: ccache-${{ runner.os }}-${{ github.ref }}-oneplus_13-Next
           restore-keys: |
-            ccache-${{ runner.os }}-${{ github.event.inputs.FILE }}-Next
+            ccache-${{ runner.os }}-oneplus_13-Next
             ccache-${{ runner.os }}-Next
 
       - name: "⚙️ Initialize ccache | 初始化ccache"
@@ -196,7 +162,7 @@ jobs:
           echo "🌐 正在初始化内核仓库..."
           mkdir kernel_workspace && cd kernel_workspace
           mkdir kernel_platform && cd kernel_platform
-          # repo init -u https://github.com/Xiaomichael/kernel_manifest.git -b refs/heads/oneplus/${{ github.event.inputs.CPU }} -m ${{ github.event.inputs.FILE }}.xml --depth=1
+          # repo init -u https://github.com/Xiaomichael/kernel_manifest.git -b refs/heads/oneplus/${{ github.event.inputs.CPU }} -m oneplus_13.xml --depth=1
 
           git clone --depth 1 https://github.com/reigadegr/android_kernel_common_oneplus_sm8750 -b "${{ github.event.inputs.BRANCH }}" common2 &
           repo init -u https://android.googlesource.com/kernel/manifest -b common-android15-6.6 --depth=1
@@ -220,7 +186,7 @@ jobs:
             sleep 1
           done
           mv common2 common
-          echo "Kernel version:-${{ github.event.inputs.ANDROID_VERSION }}-oki"
+          echo "Kernel version:-android15-oki"
           cd  ..
           rm kernel_platform/common/android/abi_gki_protected_exports_* || echo "No protected exports!"
           rm kernel_platform/msm-kernel/android/abi_gki_protected_exports_* || echo "No protected exports!"
@@ -235,7 +201,7 @@ jobs:
         run: |
           cd kernel_workspace/kernel_platform
           SUFFIX="${{ github.event.inputs.SUFFIX }}"
-          KANDROID_VERSION="${{ github.event.inputs.ANDROID_VERSION }}"
+          KANDROID_VERSION="android15"
           
           work_space=$(pwd)
           for path in common; do
@@ -299,12 +265,12 @@ jobs:
         run: |
           cd kernel_workspace
           echo "⬇️ 下载SUSFS补丁..."
-          git clone --depth 1 https://gitlab.com/simonpunk/susfs4ksu.git -b gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}
+          git clone --depth 1 https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android15-6.6
           git clone --depth 1 https://github.com/Xiaomichael/kernel_patches.git
           git clone --depth 1 https://github.com/ShirkNeko/SukiSU_patch.git
           cd kernel_platform
           echo "📝 复制补丁文件..."
-          cp ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch ./common/
+          cp ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-android15-6.6.patch ./common/
           cp ../kernel_patches/next/scope_min_manual_hooks_v1.4.patch ./common/
            
           cp ../kernel_patches/zram/001-lz4.patch ./common/
@@ -321,7 +287,7 @@ jobs:
           # patch -p1 -F 3 < 001-lz4.patch
           # patch -p1 -F 3 < 002-zstd.patch
           if [ "${{ github.event.inputs.SUSFS_ENABLE }}" = "true" ]; then
-              patch -p1 -F 3 < 50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch
+              patch -p1 -F 3 < 50_add_susfs_in_gki-android15-6.6.patch
           fi
           cp ../../kernel_patches/69_hide_stuff.patch ./
           patch -p1 -F 3 < 69_hide_stuff.patch
@@ -665,7 +631,7 @@ jobs:
       - name: "🧠 Set Artifact Name | 设置产物名称"
         id: set_name
         run: |
-          echo "ARTIFACT_NAME=${{ github.event.inputs.FILE }}_KernelSU_Next_${{ env.KSUVER }}" >> $GITHUB_OUTPUT
+          echo "ARTIFACT_NAME=oneplus_13_KernelSU_Next_${{ env.KSUVER }}" >> $GITHUB_OUTPUT
          
       - name: "📤 Upload AnyKernel3 | 上传 AnyKernel3"
         uses: actions/upload-artifact@v4
