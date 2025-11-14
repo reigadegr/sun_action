@@ -559,7 +559,7 @@ jobs:
       - name: "📤 Upload AnyKernel3 | 上传 源代码"
         uses: actions/upload-artifact@v4
         with:
-          name: AnyKernel3_Source_${{ env.KSUVER }}_${{ steps.extract_info.outputs.value }}${{ steps.suffix.outputs.value }}
+          name: anykernel3_source
           path: ./kernel_workspace/kernel_platform/common/*
 
       - name: 📊 Post-build disk check (构建后空间检查)
