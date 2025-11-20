@@ -34,7 +34,7 @@ on:
         type: string
         description: "使用的分支"
         required: true
-        default: "r6"
+        default: "r7"
 
       BLACK_LIST:
         type: choice
