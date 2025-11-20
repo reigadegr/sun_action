@@ -258,7 +258,7 @@ jobs:
               patch -p1 -F 3 < mksu_159_enable_susfs.patch
               cd  ..
           else
-              curl -LSs "https://raw.githubusercontent.com/5ec1cff/KernelSU/main/kernel/setup.sh" | bash -s main
+              curl -LSs "https://raw.githubusercontent.com/5ec1cff/KernelSU/main/kernel/setup.sh" | bash -s old_mksu
           fi
           cd KernelSU*
           COMMIT_HASH=$(git rev-parse --short HEAD)
