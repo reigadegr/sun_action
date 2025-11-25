@@ -252,7 +252,7 @@ jobs:
           cd kernel_workspace/kernel_platform
           echo "🛠️ 正在设置MKSU..."
           if [ "${{ github.event.inputs.SUSFS_ENABLE }}" = "true" ]; then
-              curl -LSs "https://raw.githubusercontent.com/5ec1cff/KernelSU/main/kernel/setup.sh" | sed 's/tiann/5ec1cff/g' | bash -s main
+              curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
               cd KernelSU*
               wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/mksu_159_enable_susfs.patch
               patch -p1 -F 3 < mksu_159_enable_susfs.patch
