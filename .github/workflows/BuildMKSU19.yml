@@ -573,8 +573,9 @@ jobs:
           ls -al
           cd  ..
           export cust_clang="$(realpath ./cust_clang/bin)"
-          sudo -E chmod -R +x "$cust_clang"
-          export PATH="$cust_clang:$PATH"
+          export cust_pahole="$(realpath ./cust_clang/build-tools/bin)"
+          sudo -E chmod -R +x "$cust_clang" "$cust_pahole"
+          export PATH="$cust_clang:$cust_pahole:$PATH"
           echo $PATH
           which clang
           # export CC="$(realpath ./cust_clang/bin/clang)" LTO="thin"
