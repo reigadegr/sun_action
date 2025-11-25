@@ -603,7 +603,7 @@ jobs:
       - name: "🧠 Set Artifact Name | 设置产物名称"
         id: set_name
         run: |
-          echo "ARTIFACT_NAME=oneplus_13_MKSU_${{ env.KSUVER }}" >> $GITHUB_OUTPUT
+          echo "ARTIFACT_NAME=oneplus_13_MKSU_破星" >> $GITHUB_OUTPUT
          
       - name: "📤 Upload AnyKernel3 | 上传 AnyKernel3"
         uses: actions/upload-artifact@v4
