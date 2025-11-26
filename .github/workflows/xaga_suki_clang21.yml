@@ -36,7 +36,7 @@ on:
         type: string
         description: "使用的分支"
         required: true
-        default: "v4"
+        default: "os3_246"
       HOOK:
         type: choice
         description: "钩子选择"

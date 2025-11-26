@@ -60,7 +60,7 @@ on:
         type: string
         description: "使用的分支"
         required: true
-        default: "v4"
+        default: "os3_246"
       VFS:
         type: boolean
         description: "是否启用手动钩子(VFS)？"
@@ -355,9 +355,9 @@ jobs:
         run: |
           cd kernel_workspace/kernel_platform
           if [ "${{ github.event.inputs.SUSFS_ENABLE }}" = "true" ]; then
-            curl -LSs "https://raw.githubusercontent.com/5ec1cff/KernelSU/old_mksu/kernel/setup.sh" | bash -s old_mksu
+            curl -LSs "https://raw.githubusercontent.com/5ec1cff/KernelSU/main/kernel/setup.sh" | sed 's/tiann/5ec1cff/g' | bash -s main
           else
-            curl -LSs "https://raw.githubusercontent.com/5ec1cff/KernelSU/old_mksu/kernel/setup.sh" | bash -s old_mksu
+            curl -LSs "https://raw.githubusercontent.com/5ec1cff/KernelSU/main/kernel/setup.sh" | sed 's/tiann/5ec1cff/g' | bash -s main
           fi
           cd ./KernelSU*
           KSU_VERSION=$(expr $(/usr/bin/git rev-list --count main) "+" 10700)
