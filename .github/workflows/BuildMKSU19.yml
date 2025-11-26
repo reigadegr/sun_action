@@ -557,7 +557,7 @@ jobs:
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
 
-      - name: "🔨 Build Kernel aosp clang21 | 编译内核"
+      - name: "🔨 Build Kernel aosp clang19 | 编译内核"
         run: |
           export PATH="/usr/lib/ccache:$PATH"
           # 安装依赖工具
