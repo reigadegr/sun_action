@@ -326,6 +326,7 @@ jobs:
             "fix_usb_network_share.patch" \
             "ignore_module_check.patch" \
             "fix_sme_error.patch" \
+            "disable_mlgo.patch" \
             "enable_sme.patch"; do
              wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/$i
              patch -p1 -F 3 < $i && git add  . && git commit -m "$i commit" || git reset --hard
