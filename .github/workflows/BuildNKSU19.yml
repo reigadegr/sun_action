@@ -354,6 +354,7 @@ jobs:
           echo "CONFIG_TCP_ECN=y" >> "$CONFIG_FILE"
           echo "CONFIG_IPV6_ECN=y" >> "$CONFIG_FILE"
           echo "CONFIG_IP_NF_TARGET_ECN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP6_NF_TARGET_NPT=y" >> "$CONFIG_FILE"
           
           # lto thin，O2 
           echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
@@ -434,15 +435,23 @@ jobs:
           echo "CONFIG_MQ_IOSCHED_KYBER=n" >> "$CONFIG_FILE"
           
           # 控制可选功能(放心使用本代码)
-          echo "CONFIG_DAMON=n" >> "$CONFIG_FILE"
+          echo "CONFIG_DAMON=y" >> "$CONFIG_FILE"
+          echo "CONFIG_DAMON_SYSFS=y" >> "$CONFIG_FILE"
+          echo "CONFIG_DAMON_VADDR=y" >> "$CONFIG_FILE"
+          echo "CONFIG_DAMON_RECLAIM=y" >> "$CONFIG_FILE"
+          echo "CONFIG_DAMON_LRU_SORT=y" >> "$CONFIG_FILE"
+          
           echo "CONFIG_CRYPTO_SHA1_ARM64_CE=y" >> "$CONFIG_FILE"
           echo "CONFIG_VIRTIO_PCI_LEGACY=y" >> "$CONFIG_FILE"
-          echo "CONFIG_WQ_POWER_EFFICIENT_DEFAULT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_WQ_POWER_EFFICIENT_DEFAULT=n" >> "$CONFIG_FILE"
           echo "CONFIG_HEADERS_INSTALL=n" >> "$CONFIG_FILE"
           echo "CONFIG_PROC_MEM_ALWAYS_FORCE=n" >> "$CONFIG_FILE"
           
-          # eBPF调试支持
+          # eBPF调试支持，优化
           echo "CONFIG_IKHEADERS=y" >> "$CONFIG_FILE"
+          echo "CONFIG_OPTPROBES=y" >> "$CONFIG_FILE"
+          echo "CONFIG_HAVE_KPROBES_ON_FTRACE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_HAVE_OPTPROBES=y" >> "$CONFIG_FILE"
           
           echo "CONFIG_DTPM=n" >> "$CONFIG_FILE"
           echo "CONFIG_IDLE_INJECT=n" >> "$CONFIG_FILE"
@@ -474,10 +483,15 @@ jobs:
               echo "CONFIG_TLS=y" >> "$CONFIG_FILE"
           fi
           
-          # 移除无意义的内容
+          # ubsan调试
           echo "CONFIG_UBSAN=n">> "$CONFIG_FILE"
-          echo "CONFIG_UBSAN_TRAP=n" >> "$CONFIG_FILE"
-          echo "CONFIG_UBSAN_BOUNDS=n" >> "$CONFIG_FILE"
+          # echo "CONFIG_UBSAN_TRAP=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_UBSAN_BOUNDS=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_CC_HAS_UBSAN_ARRAY_BOUNDS=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_UBSAN_ARRAY_BOUNDS=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_UBSAN_LOCAL_BOUNDS=y" >> "$CONFIG_FILE"
+          # echo "CONFIG_UBSAN_SANITIZE_ALL=y" >> "$CONFIG_FILE"
+
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
 
