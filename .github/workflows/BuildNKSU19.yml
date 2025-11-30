@@ -67,9 +67,9 @@ jobs:
       - name: "⚙️ Setup Cache Env | 设置缓存环境"
         run: |
           echo "🔧 正在设置机型隔离缓存目录..."
-          echo "CCACHE_DIR=$HOME/.ccache_oneplus_13_Mksu19" >> $GITHUB_ENV
-          mkdir -p "$HOME/.ccache_oneplus_13_Mksu19"
-          echo "✅ 缓存目录已设置: $HOME/.ccache_oneplus_13_Mksu19" 
+          echo "CCACHE_DIR=$HOME/.ccache_oneplus_13_nonksu19" >> $GITHUB_ENV
+          mkdir -p "$HOME/.ccache_oneplus_13_nonksu19"
+          echo "✅ 缓存目录已设置: $HOME/.ccache_oneplus_13_nonksu19" 
 
       - name: "🔐 Configure Git | 配置Git账户"
         run: |
@@ -112,10 +112,10 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ env.CCACHE_DIR }}
-          key: ccache-${{ runner.os }}-${{ github.ref }}-oneplus_13-Mksu19
+          key: ccache-${{ runner.os }}-${{ github.ref }}-oneplus_13-nonksu19
           restore-keys: |
-            ccache-${{ runner.os }}-oneplus_13-Mksu19
-            ccache-${{ runner.os }}-Mksu19
+            ccache-${{ runner.os }}-oneplus_13-nonksu19
+            ccache-${{ runner.os }}-nonksu19
 
       - name: "⚙️ Initialize ccache | 初始化ccache"
         run: |
