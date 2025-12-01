@@ -281,6 +281,7 @@ jobs:
             "ignore_module_check.patch" \
             "fix_sme_error.patch" \
             "disable_mlgo.patch" \
+            "enable_have_optprobes.patch" \
             "enable_sme.patch"; do
              wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/$i
              patch -p1 -F 3 < $i && git add  . && git commit -m "$i commit" || git reset --hard
@@ -355,6 +356,7 @@ jobs:
           echo "CONFIG_IPV6_ECN=y" >> "$CONFIG_FILE"
           echo "CONFIG_IP_NF_TARGET_ECN=y" >> "$CONFIG_FILE"
           echo "CONFIG_IP6_NF_TARGET_NPT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_NETFILTER_XTABLES_COMPAT=y" >> "$CONFIG_FILE"
           
           # lto thin，O2 
           echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
@@ -449,6 +451,7 @@ jobs:
           
           # eBPF调试支持，优化
           echo "CONFIG_IKHEADERS=y" >> "$CONFIG_FILE"
+          echo "CONFIG_HAVE_KPROBES=y" >> "$CONFIG_FILE"
           echo "CONFIG_OPTPROBES=y" >> "$CONFIG_FILE"
           echo "CONFIG_HAVE_KPROBES_ON_FTRACE=y" >> "$CONFIG_FILE"
           echo "CONFIG_HAVE_OPTPROBES=y" >> "$CONFIG_FILE"
