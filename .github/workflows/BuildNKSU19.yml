@@ -356,7 +356,6 @@ jobs:
           echo "CONFIG_IPV6_ECN=y" >> "$CONFIG_FILE"
           echo "CONFIG_IP_NF_TARGET_ECN=y" >> "$CONFIG_FILE"
           echo "CONFIG_IP6_NF_TARGET_NPT=y" >> "$CONFIG_FILE"
-          echo "CONFIG_NETFILTER_XTABLES_COMPAT=y" >> "$CONFIG_FILE"
           
           # lto thin，O2 
           echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
@@ -452,12 +451,11 @@ jobs:
           # eBPF调试支持，优化
           echo "CONFIG_IKHEADERS=y" >> "$CONFIG_FILE"
           echo "CONFIG_HAVE_KPROBES=y" >> "$CONFIG_FILE"
-          echo "CONFIG_OPTPROBES=y" >> "$CONFIG_FILE"
-          echo "CONFIG_HAVE_KPROBES_ON_FTRACE=y" >> "$CONFIG_FILE"
-          echo "CONFIG_HAVE_OPTPROBES=y" >> "$CONFIG_FILE"
           
           echo "CONFIG_DTPM=n" >> "$CONFIG_FILE"
           echo "CONFIG_IDLE_INJECT=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NETFILTER_XTABLES_COMPAT=n" >> "$CONFIG_FILE"
+          echo "CONFIG_ARM64_BTI=n" >> "$CONFIG_FILE"
      
           # 无用kunit
           echo "CONFIG_FAT_KUNIT_TEST=n" >> "$CONFIG_FILE"
@@ -488,12 +486,12 @@ jobs:
           
           # ubsan调试
           echo "CONFIG_UBSAN=n">> "$CONFIG_FILE"
-          # echo "CONFIG_UBSAN_TRAP=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_UBSAN_BOUNDS=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_CC_HAS_UBSAN_ARRAY_BOUNDS=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_UBSAN_ARRAY_BOUNDS=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_UBSAN_LOCAL_BOUNDS=y" >> "$CONFIG_FILE"
-          # echo "CONFIG_UBSAN_SANITIZE_ALL=y" >> "$CONFIG_FILE"
+          echo "CONFIG_UBSAN_TRAP=y" >> "$CONFIG_FILE"
+          echo "CONFIG_UBSAN_BOUNDS=y" >> "$CONFIG_FILE"
+          echo "CONFIG_CC_HAS_UBSAN_ARRAY_BOUNDS=y" >> "$CONFIG_FILE"
+          echo "CONFIG_UBSAN_ARRAY_BOUNDS=y" >> "$CONFIG_FILE"
+          echo "CONFIG_UBSAN_LOCAL_BOUNDS=y" >> "$CONFIG_FILE"
+          echo "CONFIG_UBSAN_SANITIZE_ALL=y" >> "$CONFIG_FILE"
 
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
