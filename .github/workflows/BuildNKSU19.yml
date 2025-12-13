@@ -21,6 +21,15 @@ on:
            - 'Off'
         default: 'On'
 
+      hymo:
+        description: "是否添加HymoFS"
+        required: true
+        type: choice
+        options:
+           - 'On'
+           - 'Off'
+        default: 'Off'
+
       proxy:
        description: "是否添加代理性能优化(MTK系列跑的时候请关闭否则出现恶性bug)"
        required: true
@@ -245,6 +254,7 @@ jobs:
           git add  .; git commit -m "MKSU 配置完成" || true
 
       - name: "⚡ Setup HymoFS | 配置 HymoFS"
+        if: ${{ github.event.inputs.hymo == 'On'}}
         run: |
           set -e
           cd kernel_workspace/kernel_platform/common
