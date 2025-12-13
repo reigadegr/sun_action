@@ -17,6 +17,7 @@ on:
           - Build SukiSU Ultra clang21
           - Build KernelSU Next
           - Upload KernelSU Next
+          - Build MKSU clang19
           - Build KSUN clang21
       count:
         description: '最多访问的运行次数'
