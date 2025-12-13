@@ -12,6 +12,7 @@ on:
           - xaga_suki_clang21
           - xaga_mksu_clang21
           - xaga_nonksu_21
+          - Build non-KSU clang19
           - mksu_sun_clang19
           - Build SukiSU Ultra clang21
           - Build KernelSU Next
