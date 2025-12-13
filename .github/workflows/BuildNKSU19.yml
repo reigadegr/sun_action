@@ -19,7 +19,7 @@ on:
         options:
            - 'On'
            - 'Off'
-        default: 'Off'
+        default: 'On'
 
       proxy:
        description: "是否添加代理性能优化(MTK系列跑的时候请关闭否则出现恶性bug)"
@@ -243,7 +243,17 @@ jobs:
 
           echo "✅ MKSU 配置完成"
           git add  .; git commit -m "MKSU 配置完成" || true
-        
+
+      - name: "⚡ Setup HymoFS | 配置 HymoFS"
+        run: |
+          set -e
+          cd kernel_workspace/kernel_platform/common
+          wget https://raw.githubusercontent.com/Anatdx/HymoFS/refs/heads/main/patch/hymofs.patch
+          git add  .; git commit -m "即将打HymoFS补丁" || true
+          patch -p1 -F 3 < hymofs.patch && git add  .; git commit -m "打HymoFS完毕"
+          echo "CONFIG_HYMOFS=y" >> ./common/arch/arm64/configs/gki_defconfig
+          git add  .; git commit -m "配置CONFIG_HYMOFS=y完毕"
+
       - name: "🔧 Setup patchs | 配置 补丁"
         run: |
           cd kernel_workspace
