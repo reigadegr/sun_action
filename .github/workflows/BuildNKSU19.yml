@@ -251,7 +251,7 @@ jobs:
           wget https://raw.githubusercontent.com/Anatdx/HymoFS/refs/heads/main/patch/hymofs.patch
           git add  .; git commit -m "即将打HymoFS补丁" || true
           patch -p1 -F 3 < hymofs.patch && git add  .; git commit -m "打HymoFS完毕"
-          echo "CONFIG_HYMOFS=y" >> ./common/arch/arm64/configs/gki_defconfig
+          echo "CONFIG_HYMOFS=y" >> ./arch/arm64/configs/gki_defconfig
           git add  .; git commit -m "配置CONFIG_HYMOFS=y完毕"
 
       - name: "🔧 Setup patchs | 配置 补丁"
