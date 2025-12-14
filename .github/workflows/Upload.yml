@@ -10,10 +10,19 @@ on:
        options:
           - 'On'
           - 'Off'
-       default: 'Off'
+       default: 'On'
 
       bbg:
         description: "是否添加BBG防格机模块"
+        required: true
+        type: choice
+        options:
+           - 'On'
+           - 'Off'
+        default: 'On'
+
+      hymo:
+        description: "是否添加HymoFS"
         required: true
         type: choice
         options:
@@ -34,7 +43,7 @@ on:
         type: string
         description: "使用的分支"
         required: true
-        default: "r6"
+        default: "r9"
 
       BLACK_LIST:
         type: choice
@@ -42,11 +51,6 @@ on:
         required: true
         default: "fengchi_enable.patch"
         options:
-          - "blacklist_module.patch"
-          - "blacklist_module_danger.patch"
-          - "humming_bird_blacklist.patch"
-          - "haruhi_blacklist.patch"
-          - "scx_enable.patch"
           - "fengchi_enable.patch"
           - "non"
 
@@ -55,12 +59,6 @@ on:
         description: "自定义内核后缀 (不输入使用随机字符串)"
         required: false
         default: "KONATA"
-
-      SUSFS_ENABLE:
-        type: boolean
-        description: "是否开启susfs？"
-        required: true
-        default: false
 
 jobs:
   build:
@@ -78,9 +76,9 @@ jobs:
       - name: "⚙️ Setup Cache Env | 设置缓存环境"
         run: |
           echo "🔧 正在设置机型隔离缓存目录..."
-          echo "CCACHE_DIR=$HOME/.ccache_oneplus_13_Mksu" >> $GITHUB_ENV
-          mkdir -p "$HOME/.ccache_oneplus_13_Mksu"
-          echo "✅ 缓存目录已设置: $HOME/.ccache_oneplus_13_Mksu" 
+          echo "CCACHE_DIR=$HOME/.ccache_oneplus_13_nonksu19" >> $GITHUB_ENV
+          mkdir -p "$HOME/.ccache_oneplus_13_nonksu19"
+          echo "✅ 缓存目录已设置: $HOME/.ccache_oneplus_13_nonksu19" 
 
       - name: "🔐 Configure Git | 配置Git账户"
         run: |
@@ -99,21 +97,21 @@ jobs:
 
       - name: Optimize Memory Management
         run: |
-          # sudo apt update
-          # sudo apt-get install linux-modules-extra-"$(uname -r)"
-          # echo linux-modules-extra-"$(uname -r)"
+          sudo apt update
+          sudo apt-get install linux-modules-extra-"$(uname -r)"
+          echo linux-modules-extra-"$(uname -r)"
           sudo -E sysctl vm.swappiness=1
           sudo -E sysctl vm.min_free_kbytes=32768
           sudo -E sysctl vm.watermark_scale_factor=100
           sudo -E sysctl vm.watermark_boost_factor=15000
           sudo -E sysctl vm.overcommit_memory=1
           sudo -E sysctl vm.page-cluster=0
-          # sudo -E modprobe zram
-          # echo "0" | sudo -E tee /sys/class/block/zram0/mem_limit
-          # echo "zstd" | sudo -E tee /sys/class/block/zram0/comp_algorithm
-          # echo "$(awk 'NR==1{print $2*1000}' </proc/meminfo)" | sudo -E tee /sys/class/block/zram0/disksize
-          # sudo -E mkswap /dev/zram0
-          # sudo -E swapon -p 100 /dev/zram0
+          sudo -E modprobe zram
+          echo "0" | sudo -E tee /sys/class/block/zram0/mem_limit
+          echo "zstd" | sudo -E tee /sys/class/block/zram0/comp_algorithm
+          echo "$(awk 'NR==1{print $2*1000}' </proc/meminfo)" | sudo -E tee /sys/class/block/zram0/disksize
+          sudo -E mkswap /dev/zram0
+          sudo -E swapon -p 100 /dev/zram0
           echo "Y" | sudo -E tee /sys/kernel/mm/lru_gen/enabled
           echo "1000" | sudo -E tee /sys/kernel/mm/lru_gen/min_ttl_ms
           echo "1" | sudo -E tee /sys/kernel/mm/swap/vma_ra_enabled
@@ -123,10 +121,10 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ env.CCACHE_DIR }}
-          key: ccache-${{ runner.os }}-${{ github.ref }}-oneplus_13-Mksu
+          key: ccache-${{ runner.os }}-${{ github.ref }}-oneplus_13-nonksu19
           restore-keys: |
-            ccache-${{ runner.os }}-oneplus_13-Mksu
-            ccache-${{ runner.os }}-Mksu
+            ccache-${{ runner.os }}-oneplus_13-nonksu19
+            ccache-${{ runner.os }}-nonksu19
 
       - name: "⚙️ Initialize ccache | 初始化ccache"
         run: |
@@ -246,23 +244,6 @@ jobs:
           cd kernel_workspace/kernel_platform/common
           curl -sSL https://github.com/vc-teahouse/Baseband-guard/raw/main/setup.sh -o setup.sh
           bash setup.sh
-          
-      - name: "⚡ Setup MKSU | 配置 MKSU"
-        run: |
-          cd kernel_workspace/kernel_platform
-          echo "🛠️ 正在设置MKSU..."
-          if [ "${{ github.event.inputs.SUSFS_ENABLE }}" = "true" ]; then
-              curl -LSs "https://raw.githubusercontent.com/5ec1cff/KernelSU/main/kernel/setup.sh" | bash -s main
-              cd KernelSU*
-              wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/mksu_159_enable_susfs.patch
-              patch -p1 -F 3 < mksu_159_enable_susfs.patch
-              cd  ..
-          else
-              curl -LSs "https://raw.githubusercontent.com/5ec1cff/KernelSU/main/kernel/setup.sh" | bash -s main
-          fi
-          cd KernelSU*
-          COMMIT_HASH=$(git rev-parse --short HEAD)
-          COMMIT_DATE=$(git log -1 --format=%cd --date=short)
 
           echo "=== KernelSU Version Information ==="
           echo "KernelSU Type: ${{ inputs.ksu_type }}"
@@ -271,35 +252,28 @@ jobs:
 
           echo "✅ MKSU 配置完成"
           git add  .; git commit -m "MKSU 配置完成" || true
-        
-      - name: "🔧 Setup SUSFS | 配置 SUSFS"
+
+      - name: "⚡ Setup HymoFS | 配置 HymoFS"
+        if: ${{ github.event.inputs.hymo == 'On'}}
+        run: |
+          set -e
+          cd kernel_workspace/kernel_platform/common
+          wget https://raw.githubusercontent.com/Anatdx/HymoFS/refs/heads/main/patch/hymofs.patch
+          git add  .; git commit -m "即将打HymoFS补丁" || true
+          patch -p1 -F 3 < hymofs.patch && git add  .; git commit -m "打HymoFS完毕"
+          echo "CONFIG_HYMOFS=y" >> ./arch/arm64/configs/gki_defconfig
+          git add  .; git commit -m "配置CONFIG_HYMOFS=y完毕"
+
+      - name: "🔧 Setup patchs | 配置 补丁"
         run: |
           cd kernel_workspace
-          echo "⬇️ 下载SUSFS补丁..."
-          git clone --depth 1 https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android15-6.6
+          echo "⬇️ 下载补丁..."
           git clone --depth 1 https://github.com/Xiaomichael/kernel_patches.git
-          git clone --depth 1 https://github.com/ShirkNeko/SukiSU_patch.git
           cd kernel_platform
           echo "📝 复制补丁文件..."
-          cp ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-android15-6.6.patch ./common/
-          cp ../kernel_patches/next/scope_min_manual_hooks_v1.4.patch ./common/
-           
-          cp ../kernel_patches/zram/001-lz4.patch ./common/
-          cp ../kernel_patches/zram/lz4armv8.S ./common/lib
-          cp ../kernel_patches/zram/002-zstd.patch ./common/
-
-          cp ../susfs4ksu/kernel_patches/fs/* ./common/fs/
-          cp ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
-           
           # Apply patches
           echo "🔧 应用补丁..."
           cd ./common
-          # echo "📦 应用lz4+zstd补丁..."
-          # patch -p1 -F 3 < 001-lz4.patch
-          # patch -p1 -F 3 < 002-zstd.patch
-          if [ "${{ github.event.inputs.SUSFS_ENABLE }}" = "true" ]; then
-              patch -p1 -F 3 < 50_add_susfs_in_gki-android15-6.6.patch
-          fi
           cp ../../kernel_patches/69_hide_stuff.patch ./
           patch -p1 -F 3 < 69_hide_stuff.patch
           # patch -p1 -F 3 < scope_min_manual_hooks_v1.4.patch
@@ -326,6 +300,8 @@ jobs:
             "fix_usb_network_share.patch" \
             "ignore_module_check.patch" \
             "fix_sme_error.patch" \
+            "disable_mlgo.patch" \
+            "enable_have_optprobes.patch" \
             "enable_sme.patch"; do
              wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/$i
              patch -p1 -F 3 < $i && git add  . && git commit -m "$i commit" || git reset --hard
@@ -339,37 +315,17 @@ jobs:
           
           echo "📦 启用 Manual Hook..."
           # Add KSU configuration settings
-          echo "CONFIG_KSU=y" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_KPROBES_HOOK=n" >> ./common/arch/arm64/configs/gki_defconfig
-          if [ "${{ github.event.inputs.SUSFS_ENABLE }}" = "true" ]; then
-              # Add SUSFS configuration settings
-              echo "CONFIG_KSU_SUSFS=y" >> ./common/arch/arm64/configs/gki_defconfig
-              echo "CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
-              echo "CONFIG_KSU_SUSFS_SUS_PATH=y" >> ./common/arch/arm64/configs/gki_defconfig
-              echo "CONFIG_KSU_SUSFS_SUS_MOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
-              echo "CONFIG_KSU_SUSFS_AUTO_ADD_SUS_KSU_DEFAULT_MOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
-              echo "CONFIG_KSU_SUSFS_AUTO_ADD_SUS_BIND_MOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
-              echo "CONFIG_KSU_SUSFS_SUS_KSTAT=y" >> ./common/arch/arm64/configs/gki_defconfig
-              echo "CONFIG_KSU_SUSFS_SUS_OVERLAYFS=n" >> ./common/arch/arm64/configs/gki_defconfig
-              echo "CONFIG_KSU_SUSFS_TRY_UMOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
-              echo "CONFIG_KSU_SUSFS_AUTO_ADD_TRY_UMOUNT_FOR_BIND_MOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
-              echo "CONFIG_KSU_SUSFS_SPOOF_UNAME=y" >> ./common/arch/arm64/configs/gki_defconfig
-              echo "CONFIG_KSU_SUSFS_ENABLE_LOG=y" >> ./common/arch/arm64/configs/gki_defconfig
-              echo "CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y" >> ./common/arch/arm64/configs/gki_defconfig
-              echo "CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y" >> ./common/arch/arm64/configs/gki_defconfig
-              echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> ./common/arch/arm64/configs/gki_defconfig
-              echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> ./common/arch/arm64/configs/gki_defconfig
-          fi
           if [ "${{ github.event.inputs.bbg }}" == "On" ]; then
               echo "⚡ 启用BBG防格机..."
               echo 'CONFIG_BBG=y' >> ./common/arch/arm64/configs/gki_defconfig
-              echo 'CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,integrity,selinux,smack,tomoyo,apparmor,bpf,baseband_guard"' >> ./common/arch/arm64/configs/gki_defconfig
+              echo 'CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,selinux,smack,tomoyo,apparmor,bpf,baseband_guard"' >> ./common/arch/arm64/configs/gki_defconfig
           fi
           
           if [ "${{ github.event.inputs.bbr }}" == "On" ]; then
             echo "🌐 启用BBR网络算法..."
             echo "CONFIG_TCP_CONG_ADVANCED=y" >> ./common/arch/arm64/configs/gki_defconfig
             echo "CONFIG_TCP_CONG_BBR=y" >> ./common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_DEFAULT_BBR=y" >> ./common/arch/arm64/configs/gki_defconfig
             echo "CONFIG_NET_SCH_FQ=y" >> ./common/arch/arm64/configs/gki_defconfig
             echo "CONFIG_TCP_CONG_BIC=n" >> ./common/arch/arm64/configs/gki_defconfig
             echo "CONFIG_TCP_CONG_WESTWOOD=n" >> ./common/arch/arm64/configs/gki_defconfig
@@ -420,6 +376,7 @@ jobs:
           echo "CONFIG_TCP_ECN=y" >> "$CONFIG_FILE"
           echo "CONFIG_IPV6_ECN=y" >> "$CONFIG_FILE"
           echo "CONFIG_IP_NF_TARGET_ECN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP6_NF_TARGET_NPT=y" >> "$CONFIG_FILE"
           
           # lto thin，O2 
           echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
@@ -494,33 +451,32 @@ jobs:
           echo "CONFIG_RCU_LAZY_DEFAULT_OFF=n" >> "$CONFIG_FILE"
           echo "CONFIG_TASKS_TRACE_RCU_READ_MB=y" >> "$CONFIG_FILE"
           echo "CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y" >> "$CONFIG_FILE"
-          echo "CONFIG_ANON_MIN_RATIO=5" >> "$CONFIG_FILE"
-          echo "CONFIG_CLEAN_LOW_RATIO=2" >> "$CONFIG_FILE"
-          echo "CONFIG_CLEAN_MIN_RATIO=1" >> "$CONFIG_FILE"
-          
-          # 华为auth qos
-          echo "CONFIG_AUTHORITY_CTRL=y" >> "$CONFIG_FILE"
-          echo "CONFIG_QOS_CTRL=y" >> "$CONFIG_FILE"
-          echo "CONFIG_QOS_AUTHORITY=y" >> "$CONFIG_FILE"
-          echo "CONFIG_QOS_POLICY_MAX_NR=5" >> "$CONFIG_FILE"
                     
           echo "CONFIG_UDMABUF=y" >> "$CONFIG_FILE"
           # # 禁用io调度器
           echo "CONFIG_MQ_IOSCHED_KYBER=n" >> "$CONFIG_FILE"
           
           # 控制可选功能(放心使用本代码)
-          echo "CONFIG_DAMON=n" >> "$CONFIG_FILE"
+          echo "CONFIG_DAMON=y" >> "$CONFIG_FILE"
+          echo "CONFIG_DAMON_SYSFS=y" >> "$CONFIG_FILE"
+          echo "CONFIG_DAMON_VADDR=y" >> "$CONFIG_FILE"
+          echo "CONFIG_DAMON_RECLAIM=y" >> "$CONFIG_FILE"
+          echo "CONFIG_DAMON_LRU_SORT=y" >> "$CONFIG_FILE"
+          
           echo "CONFIG_CRYPTO_SHA1_ARM64_CE=y" >> "$CONFIG_FILE"
           echo "CONFIG_VIRTIO_PCI_LEGACY=y" >> "$CONFIG_FILE"
-          echo "CONFIG_WQ_POWER_EFFICIENT_DEFAULT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_WQ_POWER_EFFICIENT_DEFAULT=n" >> "$CONFIG_FILE"
           echo "CONFIG_HEADERS_INSTALL=n" >> "$CONFIG_FILE"
           echo "CONFIG_PROC_MEM_ALWAYS_FORCE=n" >> "$CONFIG_FILE"
           
-          # eBPF调试支持
+          # eBPF调试支持，优化
           echo "CONFIG_IKHEADERS=y" >> "$CONFIG_FILE"
+          echo "CONFIG_HAVE_KPROBES=y" >> "$CONFIG_FILE"
           
           echo "CONFIG_DTPM=n" >> "$CONFIG_FILE"
           echo "CONFIG_IDLE_INJECT=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NETFILTER_XTABLES_COMPAT=n" >> "$CONFIG_FILE"
+          echo "CONFIG_ARM64_BTI=n" >> "$CONFIG_FILE"
      
           # 无用kunit
           echo "CONFIG_FAT_KUNIT_TEST=n" >> "$CONFIG_FILE"
@@ -549,10 +505,32 @@ jobs:
               echo "CONFIG_TLS=y" >> "$CONFIG_FILE"
           fi
           
-          # 移除无意义的内容
+          # ubsan调试
           echo "CONFIG_UBSAN=n">> "$CONFIG_FILE"
-          echo "CONFIG_UBSAN_TRAP=n" >> "$CONFIG_FILE"
-          echo "CONFIG_UBSAN_BOUNDS=n" >> "$CONFIG_FILE"
+          echo "CONFIG_UBSAN_TRAP=y" >> "$CONFIG_FILE"
+          echo "CONFIG_UBSAN_BOUNDS=y" >> "$CONFIG_FILE"
+          echo "CONFIG_CC_HAS_UBSAN_ARRAY_BOUNDS=y" >> "$CONFIG_FILE"
+          echo "CONFIG_UBSAN_ARRAY_BOUNDS=y" >> "$CONFIG_FILE"
+          echo "CONFIG_UBSAN_LOCAL_BOUNDS=y" >> "$CONFIG_FILE"
+          echo "CONFIG_UBSAN_SANITIZE_ALL=y" >> "$CONFIG_FILE"
+          
+          # 其他优化
+          # echo "CONFIG_RCU_TRACE=n" >> "$CONFIG_FILE"
+          # echo "CONFIG_ARM64_SW_TTBR0_PAN=n" >> "$CONFIG_FILE"
+          # echo "CONFIG_NET_SCH_FQ=n" >> "$CONFIG_FILE"
+          # echo "CONFIG_NET_SCH_INGRESS=n" >> "$CONFIG_FILE"
+          # echo "CONFIG_NET_SCH_HTB=n" >> "$CONFIG_FILE"
+          # echo "CONFIG_NET_SCH_PRIO=n" >> "$CONFIG_FILE"
+          # echo "CONFIG_NET_SCH_MULTIQ=n" >> "$CONFIG_FILE"
+          # echo "CONFIG_NET_SCH_SFQ=n" >> "$CONFIG_FILE"
+          # echo "CONFIG_NET_SCH_TBF=n" >> "$CONFIG_FILE"
+          # echo "CONFIG_NET_SCH_NETEM=n" >> "$CONFIG_FILE"
+          # echo "CONFIG_NET_SCH_CODEL=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_DEFAULT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_DEFAULT_FQ_CODEL=y" >> "$CONFIG_FILE"
+          echo "CONFIG_WQ_POWER_EFFICIENT_DEFAULT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_SCHED_CLUSTER=y" >> "$CONFIG_FILE"
+
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
 
