@@ -451,6 +451,7 @@ jobs:
           echo "CONFIG_RCU_LAZY_DEFAULT_OFF=n" >> "$CONFIG_FILE"
           echo "CONFIG_TASKS_TRACE_RCU_READ_MB=y" >> "$CONFIG_FILE"
           echo "CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y" >> "$CONFIG_FILE"
+          echo "CONFIG_RCU_TRACE=n" >> "$CONFIG_FILE"
                     
           echo "CONFIG_UDMABUF=y" >> "$CONFIG_FILE"
           # # 禁用io调度器
@@ -513,6 +514,22 @@ jobs:
           echo "CONFIG_UBSAN_ARRAY_BOUNDS=y" >> "$CONFIG_FILE"
           echo "CONFIG_UBSAN_LOCAL_BOUNDS=y" >> "$CONFIG_FILE"
           echo "CONFIG_UBSAN_SANITIZE_ALL=y" >> "$CONFIG_FILE"
+          
+          # 其他优化
+          echo "CONFIG_ARM64_SW_TTBR0_PAN=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_FQ=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_INGRESS=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_HTB=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_PRIO=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_MULTIQ=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_SFQ=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_TBF=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_NETEM=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_CODEL=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_DEFAULT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_DEFAULT_FQ_CODEL=y" >> "$CONFIG_FILE"
+          echo "CONFIG_WQ_POWER_EFFICIENT_DEFAULT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_SCHED_CLUSTER=y" >> "$CONFIG_FILE"
 
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
