@@ -515,7 +515,7 @@ jobs:
           echo "CONFIG_UBSAN_SANITIZE_ALL=y" >> "$CONFIG_FILE"
           
           # 其他优化
-          # echo "CONFIG_RCU_TRACE=n" >> "$CONFIG_FILE"
+          echo "CONFIG_RCU_TRACE=n" >> "$CONFIG_FILE"
           # echo "CONFIG_ARM64_SW_TTBR0_PAN=n" >> "$CONFIG_FILE"
           echo "CONFIG_NET_SCH_FQ=n" >> "$CONFIG_FILE"
           echo "CONFIG_NET_SCH_INGRESS=n" >> "$CONFIG_FILE"
