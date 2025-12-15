@@ -30,6 +30,15 @@ on:
            - 'Off'
         default: 'Off'
 
+      sysdbg:
+        description: "是否开启调试功能精准定位问题"
+        required: true
+        type: choice
+        options:
+           - 'On'
+           - 'Off'
+        default: 'Off'
+
       proxy:
        description: "是否添加代理性能优化(MTK系列跑的时候请关闭否则出现恶性bug)"
        required: true
@@ -506,15 +515,25 @@ jobs:
           fi
           
           # ubsan调试
-          echo "CONFIG_UBSAN=y">> "$CONFIG_FILE"
+          echo "CONFIG_UBSAN=n">> "$CONFIG_FILE"
           echo "CONFIG_UBSAN_TRAP=y" >> "$CONFIG_FILE"
           echo "CONFIG_UBSAN_BOUNDS=y" >> "$CONFIG_FILE"
           echo "CONFIG_CC_HAS_UBSAN_ARRAY_BOUNDS=y" >> "$CONFIG_FILE"
           echo "CONFIG_UBSAN_ARRAY_BOUNDS=y" >> "$CONFIG_FILE"
           echo "CONFIG_UBSAN_LOCAL_BOUNDS=y" >> "$CONFIG_FILE"
           echo "CONFIG_UBSAN_SANITIZE_ALL=y" >> "$CONFIG_FILE"
-          # list调试
-          echo "CONFIG_DEBUG_LIST=y" >> "$CONFIG_FILE"
+          if [ "${{ github.event.inputs.sysdbg }}" == "On" ]; then
+            echo "CONFIG_UBSAN=y">> "$CONFIG_FILE"
+            # list调试
+            echo "CONFIG_DEBUG_LIST=y" >> "$CONFIG_FILE"
+            # slub
+            echo "CONFIG_SLUB_DEBUG=y" >> "$CONFIG_FILE"
+            echo "CONFIG_SLUB_DEBUG_ON=y" >> "$CONFIG_FILE"
+            echo "CONFIG_PAGE_POISONING=y" >> "$CONFIG_FILE"
+            echo "CONFIG_DEBUG_OBJECTS_FREE=y" >> "$CONFIG_FILE"
+            echo "CONFIG_KFENCE=y" >> "$CONFIG_FILE"
+            echo "CONFIG_KFENCE_SAMPLE_INTERVAL=100" >> "$CONFIG_FILE"
+          fi
 
           # 其他优化
           echo "CONFIG_RCU_TRACE=n" >> "$CONFIG_FILE"
