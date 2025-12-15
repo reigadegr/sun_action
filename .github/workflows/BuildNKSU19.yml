@@ -506,14 +506,16 @@ jobs:
           fi
           
           # ubsan调试
-          echo "CONFIG_UBSAN=n">> "$CONFIG_FILE"
+          echo "CONFIG_UBSAN=y">> "$CONFIG_FILE"
           echo "CONFIG_UBSAN_TRAP=y" >> "$CONFIG_FILE"
           echo "CONFIG_UBSAN_BOUNDS=y" >> "$CONFIG_FILE"
           echo "CONFIG_CC_HAS_UBSAN_ARRAY_BOUNDS=y" >> "$CONFIG_FILE"
           echo "CONFIG_UBSAN_ARRAY_BOUNDS=y" >> "$CONFIG_FILE"
           echo "CONFIG_UBSAN_LOCAL_BOUNDS=y" >> "$CONFIG_FILE"
           echo "CONFIG_UBSAN_SANITIZE_ALL=y" >> "$CONFIG_FILE"
-          
+          # list调试
+          echo "CONFIG_DEBUG_LIST=y" >> "$CONFIG_FILE"
+
           # 其他优化
           echo "CONFIG_RCU_TRACE=n" >> "$CONFIG_FILE"
           # echo "CONFIG_ARM64_SW_TTBR0_PAN=n" >> "$CONFIG_FILE"
