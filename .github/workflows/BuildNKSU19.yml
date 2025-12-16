@@ -525,7 +525,7 @@ jobs:
             echo "CONFIG_UBSAN=y">> "$CONFIG_FILE"
             # list调试
             echo "CONFIG_DEBUG_LIST=y" >> "$CONFIG_FILE"
-            echo "CONFIG_CMDLINE=\"console=ttynull nokaslr stack_depot_disable=on cgroup_disable=pressure kasan=off kvm-arm.mode=protected bootconfig thp_anon=16K-2M:always kfence.sample_interval=0 kpti=0 hardened_usercopy=off audit=0 arm64.nobti arm64.nomte arm64.nopauth\"" >> "$CONFIG_FILE"
+            echo "CONFIG_CMDLINE=\"console=ttynull nokaslr stack_depot_disable=on cgroup_disable=pressure kasan=on kvm-arm.mode=protected bootconfig thp_anon=16K-2M:always kfence.sample_interval=0 kpti=0 hardened_usercopy=off audit=0 arm64.nobti arm64.nomte arm64.nopauth\"" >> "$CONFIG_FILE"
             echo "CONFIG_KFENCE_STATIC_KEYS=n" >> "$CONFIG_FILE"
           fi
 
