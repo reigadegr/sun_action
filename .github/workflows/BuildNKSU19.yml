@@ -4,7 +4,7 @@ on:
     inputs:
 
       bbr:
-       description: "是否启用bbr算法(优化上行数据, 对手机日用无太大意义甚至可能负优化)"
+       description: "是否启用bbr算法(更加现代化的tcp拥塞算法)"
        required: true
        type: choice
        options:
