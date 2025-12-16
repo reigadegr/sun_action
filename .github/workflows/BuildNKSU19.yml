@@ -550,6 +550,11 @@ jobs:
           echo "CONFIG_DEFAULT_FQ_CODEL=y" >> "$CONFIG_FILE"
           echo "CONFIG_WQ_POWER_EFFICIENT_DEFAULT=y" >> "$CONFIG_FILE"
           echo "CONFIG_SCHED_CLUSTER=y" >> "$CONFIG_FILE"
+          
+          # OPT_PROBES
+          echo "CONFIG_HAVE_KPROBES_ON_FTRACE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_HAVE_OPTPROBES=y" >> "$CONFIG_FILE"
+          echo "CONFIG_OPTPROBES=y" >> "$CONFIG_FILE"
 
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
