@@ -401,6 +401,10 @@ jobs:
           echo "CONFIG_ZRAM_DEF_COMP_ZSTD=y" >> "$CONFIG_FILE"
           echo "CONFIG_ZRAM_DEF_COMP=\"zstd\"" >> "$CONFIG_FILE"
           
+          # 关闭multi comp和writeback
+          echo "CONFIG_ZRAM_MULTI_COMP=n" >> "$CONFIG_FILE"
+          echo "CONFIG_ZRAM_WRITEBACK=n" >> "$CONFIG_FILE"
+          
           # TMPFS配置*
           echo "CONFIG_TMPFS_XATTR=y" >> "$CONFIG_FILE"
           echo "CONFIG_TMPFS_POSIX_ACL=y" >> "$CONFIG_FILE"
