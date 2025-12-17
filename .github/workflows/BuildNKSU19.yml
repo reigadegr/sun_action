@@ -178,7 +178,7 @@ jobs:
             sleep 1
           done
           mv common2 common
-          echo "Kernel version:-android15-oki"
+          cd common;git log; cd ..
           cd  ..
           rm kernel_platform/common/android/abi_gki_protected_exports_* || echo "No protected exports!"
           rm kernel_platform/msm-kernel/android/abi_gki_protected_exports_* || echo "No protected exports!"
