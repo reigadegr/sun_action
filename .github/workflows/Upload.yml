@@ -4,7 +4,7 @@ on:
     inputs:
 
       bbr:
-       description: "是否启用bbr算法(优化上行数据, 对手机日用无太大意义甚至可能负优化)"
+       description: "是否启用bbr算法(更加现代化的tcp拥塞算法)"
        required: true
        type: choice
        options:
@@ -30,6 +30,15 @@ on:
            - 'Off'
         default: 'Off'
 
+      sysdbg:
+        description: "是否开启调试功能精准定位问题"
+        required: true
+        type: choice
+        options:
+           - 'On'
+           - 'Off'
+        default: 'Off'
+
       proxy:
        description: "是否添加代理性能优化(MTK系列跑的时候请关闭否则出现恶性bug)"
        required: true
@@ -43,7 +52,7 @@ on:
         type: string
         description: "使用的分支"
         required: true
-        default: "r9"
+        default: "r10"
 
       BLACK_LIST:
         type: choice
@@ -94,27 +103,6 @@ jobs:
         with: 
           packages: python3 git curl ccache libelf-dev build-essential flex bison libssl-dev libncurses-dev liblz4-tool zlib1g-dev libxml2-utils rsync zip unzip gawk lsb-release pahole automake zlib1g-dev make openssl bc device-tree-compiler python3-telethon python-is-python3 zstd libzstd-dev pigz asciidoc dos2unix lz4 fakeroot gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi gcc-arm-linux-gnueabihf libc6-dev-armel-cross libc6-dev-armhf-cross libc6-dev-arm64-cross selinux-policy-dev
           execute_install_scripts: true
-
-      # - name: Optimize Memory Management
-        # run: |
-          # sudo apt update
-          # sudo apt-get install linux-modules-extra-"$(uname -r)"
-          # echo linux-modules-extra-"$(uname -r)"
-          # sudo -E sysctl vm.swappiness=1
-          # sudo -E sysctl vm.min_free_kbytes=32768
-          # sudo -E sysctl vm.watermark_scale_factor=100
-          # sudo -E sysctl vm.watermark_boost_factor=15000
-          # sudo -E sysctl vm.overcommit_memory=1
-          # sudo -E sysctl vm.page-cluster=0
-          # sudo -E modprobe zram
-          # echo "0" | sudo -E tee /sys/class/block/zram0/mem_limit
-          # echo "zstd" | sudo -E tee /sys/class/block/zram0/comp_algorithm
-          # echo "$(awk 'NR==1{print $2*1000}' </proc/meminfo)" | sudo -E tee /sys/class/block/zram0/disksize
-          # sudo -E mkswap /dev/zram0
-          # sudo -E swapon -p 100 /dev/zram0
-          # echo "Y" | sudo -E tee /sys/kernel/mm/lru_gen/enabled
-          # echo "1000" | sudo -E tee /sys/kernel/mm/lru_gen/min_ttl_ms
-          # echo "1" | sudo -E tee /sys/kernel/mm/swap/vma_ra_enabled
 
       # ====================== 缓存管理阶段 ======================
       - name: "💾 Restore ccache | 恢复ccache缓存"
@@ -301,7 +289,6 @@ jobs:
             "ignore_module_check.patch" \
             "fix_sme_error.patch" \
             "disable_mlgo.patch" \
-            "enable_have_optprobes.patch" \
             "enable_sme.patch"; do
              wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/$i
              patch -p1 -F 3 < $i && git add  . && git commit -m "$i commit" || git reset --hard
@@ -513,23 +500,35 @@ jobs:
           echo "CONFIG_UBSAN_ARRAY_BOUNDS=y" >> "$CONFIG_FILE"
           echo "CONFIG_UBSAN_LOCAL_BOUNDS=y" >> "$CONFIG_FILE"
           echo "CONFIG_UBSAN_SANITIZE_ALL=y" >> "$CONFIG_FILE"
-          
+          if [ "${{ github.event.inputs.sysdbg }}" == "On" ]; then
+            echo "CONFIG_UBSAN=y">> "$CONFIG_FILE"
+            # list调试
+            echo "CONFIG_DEBUG_LIST=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CMDLINE=\"console=ttynull nokaslr stack_depot_disable=on cgroup_disable=pressure kasan=on kvm-arm.mode=protected bootconfig thp_anon=16K-2M:always kfence.sample_interval=0 kpti=0 hardened_usercopy=off audit=0 arm64.nobti arm64.nomte arm64.nopauth\"" >> "$CONFIG_FILE"
+            echo "CONFIG_KFENCE_STATIC_KEYS=n" >> "$CONFIG_FILE"
+          fi
+
           # 其他优化
-          # echo "CONFIG_RCU_TRACE=n" >> "$CONFIG_FILE"
+          echo "CONFIG_RCU_TRACE=n" >> "$CONFIG_FILE"
           # echo "CONFIG_ARM64_SW_TTBR0_PAN=n" >> "$CONFIG_FILE"
-          # echo "CONFIG_NET_SCH_FQ=n" >> "$CONFIG_FILE"
-          # echo "CONFIG_NET_SCH_INGRESS=n" >> "$CONFIG_FILE"
-          # echo "CONFIG_NET_SCH_HTB=n" >> "$CONFIG_FILE"
-          # echo "CONFIG_NET_SCH_PRIO=n" >> "$CONFIG_FILE"
-          # echo "CONFIG_NET_SCH_MULTIQ=n" >> "$CONFIG_FILE"
-          # echo "CONFIG_NET_SCH_SFQ=n" >> "$CONFIG_FILE"
-          # echo "CONFIG_NET_SCH_TBF=n" >> "$CONFIG_FILE"
-          # echo "CONFIG_NET_SCH_NETEM=n" >> "$CONFIG_FILE"
-          # echo "CONFIG_NET_SCH_CODEL=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_FQ=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_INGRESS=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_HTB=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_PRIO=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_MULTIQ=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_SFQ=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_TBF=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_NETEM=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_CODEL=n" >> "$CONFIG_FILE"
           echo "CONFIG_NET_SCH_DEFAULT=y" >> "$CONFIG_FILE"
           echo "CONFIG_DEFAULT_FQ_CODEL=y" >> "$CONFIG_FILE"
           echo "CONFIG_WQ_POWER_EFFICIENT_DEFAULT=y" >> "$CONFIG_FILE"
           echo "CONFIG_SCHED_CLUSTER=y" >> "$CONFIG_FILE"
+          
+          # OPT_PROBES
+          echo "CONFIG_HAVE_KPROBES_ON_FTRACE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_HAVE_OPTPROBES=y" >> "$CONFIG_FILE"
+          echo "CONFIG_OPTPROBES=y" >> "$CONFIG_FILE"
 
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
