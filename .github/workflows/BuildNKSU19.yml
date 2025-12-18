@@ -387,6 +387,10 @@ jobs:
           echo "CONFIG_ZRAM_MULTI_COMP=n" >> "$CONFIG_FILE"
           echo "CONFIG_ZRAM_WRITEBACK=n" >> "$CONFIG_FILE"
           
+          # 开启跟踪和记账功能
+          echo "CONFIG_ZRAM_MEMORY_TRACKING=y" >> "$CONFIG_FILE"
+          echo "CONFIG_ZRAM_TRACK_ENTRY_ACTIME=y" >> "$CONFIG_FILE"
+          
           # TMPFS配置*
           echo "CONFIG_TMPFS_XATTR=y" >> "$CONFIG_FILE"
           echo "CONFIG_TMPFS_POSIX_ACL=y" >> "$CONFIG_FILE"
