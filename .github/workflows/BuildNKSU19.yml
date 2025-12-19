@@ -463,7 +463,6 @@ jobs:
           
           echo "CONFIG_CRYPTO_SHA1_ARM64_CE=y" >> "$CONFIG_FILE"
           echo "CONFIG_VIRTIO_PCI_LEGACY=y" >> "$CONFIG_FILE"
-          echo "CONFIG_WQ_POWER_EFFICIENT_DEFAULT=n" >> "$CONFIG_FILE"
           echo "CONFIG_HEADERS_INSTALL=n" >> "$CONFIG_FILE"
           echo "CONFIG_PROC_MEM_ALWAYS_FORCE=n" >> "$CONFIG_FILE"
           
@@ -533,7 +532,7 @@ jobs:
           echo "CONFIG_NET_SCH_CODEL=n" >> "$CONFIG_FILE"
           echo "CONFIG_NET_SCH_DEFAULT=y" >> "$CONFIG_FILE"
           echo "CONFIG_DEFAULT_FQ_CODEL=y" >> "$CONFIG_FILE"
-          echo "CONFIG_WQ_POWER_EFFICIENT_DEFAULT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_WQ_POWER_EFFICIENT_DEFAULT=n" >> "$CONFIG_FILE"
           echo "CONFIG_SCHED_CLUSTER=y" >> "$CONFIG_FILE"
           
           # OPT_PROBES
