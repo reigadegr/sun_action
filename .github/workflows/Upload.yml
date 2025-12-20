@@ -369,13 +369,13 @@ jobs:
           echo "CONFIG_IP6_NF_TARGET_NPT=y" >> "$CONFIG_FILE"
           
           # lto thin，O2 
-          echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
-          echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
-          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_LTO_CLANG_THIN=n" >> "$CONFIG_FILE"
+          echo "CONFIG_LTO_CLANG=n" >> "$CONFIG_FILE"
+          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=n" >> "$CONFIG_FILE"
           echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3=n" >> "$CONFIG_FILE"
-          echo "CONFIG_LLVM_POLLY=y" >> "$CONFIG_FILE"
+          echo "CONFIG_LLVM_POLLY=n" >> "$CONFIG_FILE"
           echo "CONFIG_LD_DEAD_CODE_DATA_ELIMINATION=y" >> "$CONFIG_FILE"
-          echo "CONFIG_AUTOFDO_CLANG=y" >> "$CONFIG_FILE"
+          echo "CONFIG_AUTOFDO_CLANG=n" >> "$CONFIG_FILE"
           
           # Inline zram                   
           echo "CONFIG_ZSMALLOC=y" >> "$CONFIG_FILE"
@@ -544,6 +544,27 @@ jobs:
           echo "CONFIG_DEBUG_INFO_COMPRESSED_NONE=n" >> "$CONFIG_FILE"
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
+
+      - name: ⚠️⚠️Add Debug Configuration Settings
+        run: |
+          cd kernel_workspace/kernel_platform
+          CONFIG_FILE=./common/arch/arm64/configs/gki_defconfig
+          
+          # ECN配置*
+          echo "CONFIG_IP_ECN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_TCP_ECN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IPV6_ECN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_NF_TARGET_ECN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP6_NF_TARGET_NPT=y" >> "$CONFIG_FILE"
+          
+          # lto thin，O2 
+          echo "CONFIG_LTO_CLANG_THIN=n" >> "$CONFIG_FILE"
+          echo "CONFIG_LTO_CLANG=n" >> "$CONFIG_FILE"
+          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=n" >> "$CONFIG_FILE"
+          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3=n" >> "$CONFIG_FILE"
+          echo "CONFIG_LLVM_POLLY=n" >> "$CONFIG_FILE"
+          echo "CONFIG_LD_DEAD_CODE_DATA_ELIMINATION=y" >> "$CONFIG_FILE"
+          echo "CONFIG_AUTOFDO_CLANG=n" >> "$CONFIG_FILE"
 
       - name: "📤 Upload AnyKernel3 | 上传 源代码"
         uses: actions/upload-artifact@v4
