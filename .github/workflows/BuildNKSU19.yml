@@ -19,7 +19,7 @@ on:
         options:
            - 'On'
            - 'Off'
-        default: 'On'
+        default: 'Off'
 
       hymo:
         description: "是否添加HymoFS"
@@ -52,7 +52,7 @@ on:
         type: string
         description: "使用的分支"
         required: true
-        default: "r10"
+        default: "r11"
 
       BLACK_LIST:
         type: choice
