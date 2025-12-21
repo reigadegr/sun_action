@@ -52,7 +52,7 @@ on:
         type: string
         description: "存储库"
         required: true
-        default: "OnePlusOSS/android_kernel_common_oneplus_sm8850"
+        default: "https://github.com/OnePlusOSS/android_kernel_common_oneplus_sm8850"
 
       BRANCH:
         type: string
@@ -177,7 +177,7 @@ jobs:
           mkdir kernel_platform && cd kernel_platform
           # repo init -u https://github.com/Xiaomichael/kernel_manifest.git -b refs/heads/oneplus/${{ github.event.inputs.CPU }} -m oneplus_13.xml --depth=1
 
-          git clone --depth 1 https://github.com/"${{ github.event.inputs.REPO }}" -b "${{ github.event.inputs.BRANCH }}" common2 &
+          git clone --depth 1 "${{ github.event.inputs.REPO }}" -b "${{ github.event.inputs.BRANCH }}" common2 &
           # repo init -u https://android.googlesource.com/kernel/manifest -b common-android16-6.12-lts --depth=1
           
           # sed -i '/external\//d' .repo/manifests/default.xml
