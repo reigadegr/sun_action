@@ -69,6 +69,14 @@ on:
         required: false
         default: "KONATA"
 
+      ENABLE_RUST:
+        type: choice
+        description: "启用rust支持？"
+        required: true
+        default: "false"
+        options:
+          - "false"
+          - "true"
 jobs:
   build:
     name: For oneplus_13
@@ -542,7 +550,25 @@ jobs:
 
           echo "CONFIG_DEBUG_INFO_COMPRESSED_ZSTD=y" >> "$CONFIG_FILE"
           echo "CONFIG_DEBUG_INFO_COMPRESSED_NONE=n" >> "$CONFIG_FILE"
-          echo "CONFIG_RUST=y" >> "$CONFIG_FILE"
+            if [ "${{ github.event.inputs.ENABLE_RUST }}" == "true" ]; then
+                echo "CONFIG_RUST=y" >> "$CONFIG_FILE"
+                
+                # --- 禁用与 Rust 不兼容的内核安全/调试特性 ---
+                # 1. 禁用模块版本化 (MODVERSIONS)
+                echo "CONFIG_MODVERSIONS=n" >> "$CONFIG_FILE"
+                
+                # 2. 禁用 GCC 插件 (GCC_PLUGINS)
+                echo "CONFIG_GCC_PLUGINS=n" >> "$CONFIG_FILE"
+                
+                # 3. 禁用内核随机化结构体布局 (RANDSTRUCT)
+                echo "CONFIG_RANDSTRUCT=n" >> "$CONFIG_FILE"
+                echo "CONFIG_GCC_PLUGIN_RANDSTRUCT=n" >> "$CONFIG_FILE"
+                
+                # 4. 禁用影子调用栈 (SHADOW_CALL_STACK)
+                echo "CONFIG_SHADOW_CALL_STACK=n" >> "$CONFIG_FILE"
+
+                echo "DEBUG_INFO_BTF=n" >> "$CONFIG_FILE"
+            fi
           
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
@@ -569,15 +595,12 @@ jobs:
           export PATH="$cust_clang:$cust_pahole:$PATH"
           echo $PATH
           which clang
-          # export CC="$(realpath ./cust_clang/bin/clang)" LTO="thin"
-          # export CC="ccache $CC" LTO="thin"
-          export LTO="thin"
           export PAHOLE="$(realpath ./cust_clang/build-tools/bin/pahole)"
-
-          rustup override set "1.90.0"
-          rustup component add rust-src
-          cargo install --force --root "$(realpath ./cust_clang)" bindgen-cli
-          
+          if [ "${{ github.event.inputs.ENABLE_RUST }}" == "true" ]; then
+              rustup override set "1.90.0"
+              rustup component add rust-src
+              cargo install --force --root "$(realpath ./cust_clang)" bindgen-cli
+          fi
           RUSTC="$(which rustc)"
           RUSTC="RUSTC=$RUSTC"
           if [ -f "./android/gki/aarch64/afdo/kernel.afdo" ]; then
