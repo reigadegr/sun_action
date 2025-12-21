@@ -440,7 +440,7 @@ jobs:
           # # 关闭部分安全特性(开启也会导致各种符号版本错误)
           # echo "CONFIG_SLAB_FREELIST_RANDOM=n" >> "$CONFIG_FILE"
           # echo "CONFIG_SHUFFLE_PAGE_ALLOCATOR=n" >> "$CONFIG_FILE"
-          # echo "CONFIG_SLAB_FREELIST_HARDENED=n" >> "$CONFIG_FILE"
+          echo "CONFIG_SLAB_FREELIST_HARDENED=n" >> "$CONFIG_FILE"
           
           # # 堆栈保护关闭
           # echo "CONFIG_STACKPROTECTOR_PER_TASK=n" >> "$CONFIG_FILE"
