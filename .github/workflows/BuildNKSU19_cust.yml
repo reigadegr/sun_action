@@ -612,15 +612,18 @@ jobs:
           echo $PATH
           which clang
           export PAHOLE="$(realpath ./cust_clang/build-tools/bin/pahole)"
-          RUSTC="$(which rustc)"
-          RUSTC="RUSTC=$RUSTC"
+
           if [ "${{ github.event.inputs.ENABLE_RUST }}" == "true" ]; then
-              rustup override set "$(scripts/min-tool-version.sh rustc)"
+              # rustup override set "$(scripts/min-tool-version.sh rustc)"
+              rustup override set "1.82.0"
               rustup component add rust-src
               cargo install --force --root "$(realpath ./cust_clang)" bindgen-cli
               make -j$(nproc --all) O=out rustavailable
               rm -rf out || true
           fi
+          
+          RUSTC="$(which rustc)"
+          RUSTC="RUSTC=$RUSTC"
           
           if [ -f "./android/gki/aarch64/afdo/kernel.afdo" ]; then
               FDO_FILE="$(realpath ./android/gki/aarch64/afdo/kernel.afdo)"
