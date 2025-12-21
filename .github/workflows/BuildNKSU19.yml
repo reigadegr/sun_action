@@ -542,6 +542,8 @@ jobs:
 
           echo "CONFIG_DEBUG_INFO_COMPRESSED_ZSTD=y" >> "$CONFIG_FILE"
           echo "CONFIG_DEBUG_INFO_COMPRESSED_NONE=n" >> "$CONFIG_FILE"
+          echo "CONFIG_RUST=y" >> "$CONFIG_FILE"
+          
           # 移除构建审查
           sed -i 's/check_defconfig//' ./common/build.config.gki
 
