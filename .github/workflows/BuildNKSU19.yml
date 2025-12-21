@@ -567,7 +567,7 @@ jobs:
                 # 4. 禁用影子调用栈 (SHADOW_CALL_STACK)
                 echo "CONFIG_SHADOW_CALL_STACK=n" >> "$CONFIG_FILE"
 
-                echo "DEBUG_INFO_BTF=n" >> "$CONFIG_FILE"
+                echo "CONFIG_DEBUG_INFO_BTF=n" >> "$CONFIG_FILE"
             fi
           
           # 移除构建审查
