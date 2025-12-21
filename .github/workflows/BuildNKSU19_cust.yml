@@ -1,0 +1,681 @@
+name: Build non-KSU clang19 cust612
+on:
+  workflow_dispatch:
+    inputs:
+
+      bbr:
+       description: "是否启用bbr算法(更加现代化的tcp拥塞算法)"
+       required: true
+       type: choice
+       options:
+          - 'On'
+          - 'Off'
+       default: 'On'
+
+      bbg:
+        description: "是否添加BBG防格机模块"
+        required: true
+        type: choice
+        options:
+           - 'On'
+           - 'Off'
+        default: 'Off'
+
+      hymo:
+        description: "是否添加HymoFS"
+        required: true
+        type: choice
+        options:
+           - 'On'
+           - 'Off'
+        default: 'Off'
+
+      sysdbg:
+        description: "是否开启调试功能精准定位问题"
+        required: true
+        type: choice
+        options:
+           - 'On'
+           - 'Off'
+        default: 'Off'
+
+      proxy:
+       description: "是否添加代理性能优化(MTK系列跑的时候请关闭否则出现恶性bug)"
+       required: true
+       type: choice
+       options:
+          - 'On'
+          - 'Off'
+       default: 'On'
+
+      REPO:
+        type: string
+        description: "存储库"
+        required: true
+        default: "OnePlusOSS/android_kernel_common_oneplus_sm8850"
+
+      BRANCH:
+        type: string
+        description: "使用的分支"
+        required: true
+        default: "oneplus/sm8850_b_16.0.0_oneplus_15"
+
+      BLACK_LIST:
+        type: choice
+        description: "如何去屏蔽一加内核模块？"
+        required: true
+        default: "fengchi_enable.patch"
+        options:
+          - "fengchi_enable.patch"
+          - "non"
+
+      SUFFIX:
+        type: string
+        description: "自定义内核后缀 (不输入使用随机字符串)"
+        required: false
+        default: "KONATA"
+
+      ENABLE_RUST:
+        type: choice
+        description: "启用rust支持？"
+        required: true
+        default: "false"
+        options:
+          - "false"
+          - "true"
+jobs:
+  build:
+    name: For oneplus_13
+    runs-on: ubuntu-latest
+    env:
+      CCACHE_COMPILERCHECK: "%compiler% -dumpmachine; %compiler% -dumpversion"
+      CCACHE_NOHASHDIR: "true"
+      CCACHE_HARDLINK: "true"
+      CCACHE_MAXSIZE: 8G
+      
+    steps:
+      # ====================== 系统初始化阶段 ======================
+
+      - name: "⚙️ Setup Cache Env | 设置缓存环境"
+        run: |
+          echo "🔧 正在设置机型隔离缓存目录..."
+          echo "CCACHE_DIR=$HOME/.ccache_oneplus_13_nonksu19" >> $GITHUB_ENV
+          mkdir -p "$HOME/.ccache_oneplus_13_nonksu19"
+          echo "✅ 缓存目录已设置: $HOME/.ccache_oneplus_13_nonksu19" 
+
+      - name: "🔐 Configure Git | 配置Git账户"
+        run: |
+          echo "🔧 正在配置Git用户信息..."
+          git config --global user.name "build"
+          git config --global user.email "2210077278@qq.com"
+          echo "✅ Git配置完成"
+
+      # ====================== 依赖管理阶段 ======================
+
+      - name: "📦 Cache & Install Dependencies | 缓存 & 安装构建依赖"
+        uses: awalsh128/cache-apt-pkgs-action@latest 
+        with: 
+          packages: lsb-release ccache sccache pahole \
+            git automake flex bison build-essential zlib1g-dev make rustup \
+            libelf-dev libssl-dev openssl bc device-tree-compiler gzip libdw-dev \
+            python3-telethon python-is-python3 zip unzip zstd libzstd-dev pigz \
+            libncurses-dev asciidoc dos2unix lz4 fakeroot python3 python3-pip \
+            gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi gcc-arm-linux-gnueabihf \
+            libc6-dev-armel-cross libc6-dev-armhf-cross libc6-dev-arm64-cross \
+            python3-python-socks python3-async-timeout
+          execute_install_scripts: true
+
+      - name: Optimize Memory Management
+        run: |
+          wget https://github.com/reigadegr/sun_action/raw/main/script/memopt.sh
+          nohup sh memopt.sh >/dev/null 2>&1 &
+
+      # ====================== 缓存管理阶段 ======================
+      - name: "💾 Restore ccache | 恢复ccache缓存"
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ccache-${{ runner.os }}-${{ github.ref }}-oneplus_13-nonksu19
+          restore-keys: |
+            ccache-${{ runner.os }}-oneplus_13-nonksu19
+            ccache-${{ runner.os }}-nonksu19
+
+      - name: "⚙️ Initialize ccache | 初始化ccache"
+        run: |
+          echo "🔧 正在初始化ccache..."
+          INIT_FLAG="${{ env.CCACHE_DIR }}/.ccache_initialized"
+          
+          if command -v ccache >/dev/null 2>&1; then
+            if [ ! -f "$INIT_FLAG" ]; then
+              mkdir -p "${{ env.CCACHE_DIR }}"
+              ccache -M ${{ env.CCACHE_MAXSIZE }}
+              touch "$INIT_FLAG"
+              echo "🆕 ccache初始化完成"
+            else
+              echo "ℹ️ ccache已存在，跳过初始化"
+            fi
+          else
+            echo "⚠️ 未找到ccache命令，跳过初始化"
+          fi
+          # 显示缓存统计
+          ccache -s
+          echo "✅ ccache初始化流程完成"
+
+      # ====================== 源码准备阶段 ======================
+      - name: "📥 Install Repo Tool | 安装Repo工具"
+        run: |
+          echo "⬇️ 正在下载repo工具..."
+          curl -fsSL https://storage.googleapis.com/git-repo-downloads/repo > ~/repo
+          chmod a+x ~/repo
+          sudo mv ~/repo /usr/local/bin/repo
+          echo "✅ repo工具安装完成"
+
+      - name: "⬇️ Clone Kernel Source | 克隆内核源码"
+        run: |
+          echo "🌐 正在初始化内核仓库..."
+          mkdir kernel_workspace && cd kernel_workspace
+          mkdir kernel_platform && cd kernel_platform
+          # repo init -u https://github.com/Xiaomichael/kernel_manifest.git -b refs/heads/oneplus/${{ github.event.inputs.CPU }} -m oneplus_13.xml --depth=1
+
+          git clone --depth 1 https://github.com/"${{ github.event.inputs.REPO }}" -b "${{ github.event.inputs.BRANCH }}" common2 &
+          repo init -u https://android.googlesource.com/kernel/manifest -b common-android15-6.12-lts --depth=1
+          
+          sed -i '/external\//d' .repo/manifests/default.xml
+          sed -i '/kleaf\//d' .repo/manifests/default.xml
+          sed -i '/jdk11/d' .repo/manifests/default.xml
+          sed -i '/mkbootimg/d' .repo/manifests/default.xml
+          sed -i '/linux-glibc/d' .repo/manifests/default.xml
+          sed -i '/clang-tools/d' .repo/manifests/default.xml
+          sed -i '/build-tools/d' .repo/manifests/default.xml
+          sed -i '/ndk/d' .repo/manifests/default.xml
+          sed -i '/linux-x86/d' .repo/manifests/default.xml
+          sed -i '/common-modules/d' .repo/manifests/default.xml
+          
+          echo "🔄 同步代码库(使用$(nproc --all)线程)..."
+          repo sync -c -j$(nproc --all) --no-tags --no-clone-bundle --force-sync
+          rm -rf common .repo
+          until [ -z "$(pidof git)" ]; do
+            echo "等一下git"
+            sleep 1
+          done
+          mv common2 common
+          cd common;git log; cd ..
+          cd  ..
+          rm kernel_platform/common/android/abi_gki_protected_exports_* || echo "No protected exports!"
+          rm kernel_platform/msm-kernel/android/abi_gki_protected_exports_* || echo "No protected exports!"
+          sed -i 's/ -dirty//g' kernel_platform/common/scripts/setlocalversion || true
+          sed -i 's/ -dirty//g' kernel_platform/msm-kernel/scripts/setlocalversion || true
+          sed -i 's/ -dirty//g' kernel_platform/external/dtc/scripts/setlocalversion || true
+
+          echo "✅ 内核配置完成"
+
+      - name: Custom Kernel Suffix if set
+        if: ${{ github.event.inputs.SUFFIX != '' }}
+        run: |
+          cd kernel_workspace/kernel_platform
+          SUFFIX="${{ github.event.inputs.SUFFIX }}"
+          KANDROID_VERSION="android15"
+          
+          work_space=$(pwd)
+          for path in common; do
+            
+            cd "$path"
+            path="$(realpath scripts/setlocalversion)"
+
+            echo "Modifying: $path"
+
+            # Remove -dirty
+            sed -i 's/ -dirty//g' "$path"
+            sed -i '$i res=$(echo "$res" | sed '\''s/-dirty//g'\'')' "$path"
+
+            if grep -q 'KERNELVERSION.*scm_version' "$path"; then
+              echo "Detected NEW setlocalversion format"
+              wget https://github.com/reigadegr/sun_action/raw/main/utils/gen_dev_name.sh
+              sh gen_dev_name.sh "${SUFFIX}"
+              full="${KERNELVERSION}-${KANDROID_VERSION}-${SUFFIX}"
+              full="$(cat tmp)"
+              git add  .; git commit -m "auto commit" || echo "无需提交"
+              sed -i "s|echo \"\${KERNELVERSION}.*scm_version}\"|echo \"${full}\"|" "$path"
+              git diff
+            elif grep -q 'echo "\$res"' "$path"; then
+              echo "Detected OLD setlocalversion format"
+              echo "快速构建 enabled: using static res"
+              sed -i "s/^res=.*/res=\"-${KANDROID_VERSION}-${SUFFIX}\"/" "$path"
+            else
+              echo "Unknown format, appending echo manually"
+              echo "echo \"\$res-${SUFFIX}\"" >> "$path"
+            fi
+
+            chmod +x "$path"
+          done
+
+       # ====================== 内核定制阶段 ======================
+                
+      - name: "⚡ Setup Baseband-guard | 配置 Baseband-guard"
+        if: ${{ github.event.inputs.bbg == 'On'}}
+        run: |
+          set -e
+          cd kernel_workspace/kernel_platform/common
+          curl -sSL https://github.com/vc-teahouse/Baseband-guard/raw/main/setup.sh -o setup.sh
+          bash setup.sh
+
+          echo "=== KernelSU Version Information ==="
+          echo "KernelSU Type: ${{ inputs.ksu_type }}"
+          echo "Commit Hash: $COMMIT_HASH"
+          echo "Commit Date: $COMMIT_DATE"
+
+          echo "✅ MKSU 配置完成"
+          git add  .; git commit -m "MKSU 配置完成" || true
+
+      - name: "⚡ Setup HymoFS | 配置 HymoFS"
+        if: ${{ github.event.inputs.hymo == 'On'}}
+        run: |
+          set -e
+          cd kernel_workspace/kernel_platform/common
+          wget https://raw.githubusercontent.com/Anatdx/HymoFS/refs/heads/main/patch/hymofs.patch
+          git add  .; git commit -m "即将打HymoFS补丁" || true
+          patch -p1 -F 3 < hymofs.patch && git add  .; git commit -m "打HymoFS完毕"
+          echo "CONFIG_HYMOFS=y" >> ./arch/arm64/configs/gki_defconfig
+          git add  .; git commit -m "配置CONFIG_HYMOFS=y完毕"
+
+      - name: "🔧 Setup patchs | 配置 补丁"
+        run: |
+          cd kernel_workspace
+          echo "⬇️ 下载补丁..."
+          git clone --depth 1 https://github.com/Xiaomichael/kernel_patches.git
+          cd kernel_platform
+          echo "📝 复制补丁文件..."
+          # Apply patches
+          echo "🔧 应用补丁..."
+          cd ./common
+          cp ../../kernel_patches/69_hide_stuff.patch ./
+          patch -p1 -F 3 < 69_hide_stuff.patch
+          # patch -p1 -F 3 < scope_min_manual_hooks_v1.4.patch
+          echo "✅ 所有补丁应用完成"
+
+      - name: Remove OnePlus Kernel Module
+        run: |          
+          cd kernel_workspace/kernel_platform/common       
+          git add  . && git commit -m "auto commit"
+          patch_profile="${{ github.event.inputs.BLACK_LIST }}"
+          wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/blacklist_module_profile/"$patch_profile" || true
+          patch -p1 -F 3 < "./$patch_profile" && git add  . && git commit -m "移除不需要的内核模块" || git reset --hard
+          # Remove check_defconfig
+          sed -i 's/check_defconfig//' ./build.config.gki
+          echo "移除内核模块完成"
+
+      - name: Fix upstream bugs
+        run: |          
+          cd kernel_workspace/kernel_platform/common
+          git add  . && git commit -m "auto commit"
+          for i in "fix_screen_off_crash.patch" \
+            "fix_screen_flicker.patch" \
+            "unlock_cpufreq.patch" \
+            "fix_usb_network_share.patch" \
+            "ignore_module_check.patch" \
+            "disable_mlgo.patch"; do
+             wget https://github.com/reigadegr/sun_action/raw/main/patchs/6.6/$i
+             patch -p1 -F 3 < $i && git add  . && git commit -m "$i commit" || git reset --hard
+             git clean -df
+          done
+
+      - name: "⚙️ Configure Kernel Options | 配置内核选项"
+        run: |
+          echo "⚙️ 正在配置内核编译选项..."
+          cd kernel_workspace/kernel_platform
+          
+          echo "📦 启用 Manual Hook..."
+          # Add KSU configuration settings
+          if [ "${{ github.event.inputs.bbg }}" == "On" ]; then
+              echo "⚡ 启用BBG防格机..."
+              echo 'CONFIG_BBG=y' >> ./common/arch/arm64/configs/gki_defconfig
+              echo 'CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,selinux,smack,tomoyo,apparmor,bpf,baseband_guard"' >> ./common/arch/arm64/configs/gki_defconfig
+          fi
+          
+          if [ "${{ github.event.inputs.bbr }}" == "On" ]; then
+            echo "🌐 启用BBR网络算法..."
+            echo "CONFIG_TCP_CONG_ADVANCED=y" >> ./common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_TCP_CONG_BBR=y" >> ./common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_DEFAULT_BBR=y" >> ./common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_NET_SCH_FQ=y" >> ./common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_TCP_CONG_BIC=n" >> ./common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_TCP_CONG_WESTWOOD=n" >> ./common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_TCP_CONG_HTCP=n" >> ./common/arch/arm64/configs/gki_defconfig
+          fi
+
+          # Add O2 config
+          echo "📦 加入O2优化..."
+          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> ./common/arch/arm64/configs/gki_defconfig
+          
+          if [ "${{ github.event.inputs.proxy }}" == "On" ]; then
+            # Add proxy config
+            echo "CONFIG_BPF_STREAM_PARSER=y" >> ./common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=y" >> ./common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_NETFILTER_XT_SET=y" >> ./common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_IP_SET=y" >> ./common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_IP_SET_MAX=65534" >> ./common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_IP_SET_BITMAP_IP=y" >> ./common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_IP_SET_BITMAP_IPMAC=y" >> ./common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_IP_SET_BITMAP_PORT=y" >> ./common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_IP_SET_HASH_IP=y" >> ./common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_IP_SET_HASH_IPMARK=y" >> ./common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_IP_SET_HASH_IPPORT=y" >> ./common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_IP_SET_HASH_IPPORTIP=y" >> ./common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_IP_SET_HASH_IPPORTNET=y" >> ./common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_IP_SET_HASH_IPMAC=y" >> ./common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_IP_SET_HASH_MAC=y" >> ./common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_IP_SET_HASH_NETPORTNET=y" >> ./common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_IP_SET_HASH_NET=y" >> ./common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_IP_SET_HASH_NETNET=y" >> ./common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_IP_SET_HASH_NETPORT=y" >> ./common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_IP_SET_HASH_NETIFACE=y" >> ./common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_IP_SET_LIST_SET=y" >> ./common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_IP6_NF_NAT=y" >> ./common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_IP6_NF_TARGET_MASQUERADE=y" >> ./common/arch/arm64/configs/gki_defconfig
+          fi
+            
+          sed -i 's/check_defconfig//' ./common/build.config.gki
+          echo "✅ 内核配置更新完成"
+      # 配置信息,带*为附加项目,具有一定危险性和不确定性
+      - name: Add Configuration Settings
+        run: |
+          cd kernel_workspace/kernel_platform
+          CONFIG_FILE=./common/arch/arm64/configs/gki_defconfig
+          
+          # ECN配置*
+          echo "CONFIG_IP_ECN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_TCP_ECN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IPV6_ECN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP_NF_TARGET_ECN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_IP6_NF_TARGET_NPT=y" >> "$CONFIG_FILE"
+          
+          # lto thin，O2 
+          echo "CONFIG_LTO_CLANG_THIN=y" >> "$CONFIG_FILE"
+          echo "CONFIG_LTO_CLANG=y" >> "$CONFIG_FILE"
+          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3=n" >> "$CONFIG_FILE"
+          echo "CONFIG_LLVM_POLLY=y" >> "$CONFIG_FILE"
+          echo "CONFIG_LD_DEAD_CODE_DATA_ELIMINATION=y" >> "$CONFIG_FILE"
+          echo "CONFIG_AUTOFDO_CLANG=y" >> "$CONFIG_FILE"
+          
+          # Inline zram                   
+          echo "CONFIG_ZSMALLOC=y" >> "$CONFIG_FILE"
+          echo "CONFIG_ZRAM=y" >> "$CONFIG_FILE"
+          echo "CONFIG_ZRAM_DEF_COMP_ZSTD=y" >> "$CONFIG_FILE"
+          echo "CONFIG_ZRAM_DEF_COMP=\"zstd\"" >> "$CONFIG_FILE"
+          
+          # 关闭multi comp和writeback
+          echo "CONFIG_ZRAM_MULTI_COMP=n" >> "$CONFIG_FILE"
+          echo "CONFIG_ZRAM_WRITEBACK=n" >> "$CONFIG_FILE"
+          
+          # 跟踪和记账功能
+          echo "CONFIG_ZRAM_MEMORY_TRACKING=n" >> "$CONFIG_FILE"
+          echo "CONFIG_ZRAM_TRACK_ENTRY_ACTIME=n" >> "$CONFIG_FILE"
+          
+          # TMPFS配置*
+          echo "CONFIG_TMPFS_XATTR=y" >> "$CONFIG_FILE"
+          echo "CONFIG_TMPFS_POSIX_ACL=y" >> "$CONFIG_FILE"
+
+          # cmdline优化性能
+          echo "CONFIG_CMDLINE=\"console=ttynull nokaslr stack_depot_disable=on cgroup_disable=pressure kasan=off kvm-arm.mode=protected bootconfig thp_anon=16K-2M:always mitigations=off kpti=0 hardened_usercopy=off audit=0 norandmaps arm64.nobti arm64.nomte arm64.nopauth\"" >> "$CONFIG_FILE"
+          echo "CONFIG_CMDLINE_FROM_BOOTLOADER=n" >> "$CONFIG_FILE"
+          echo "CONFIG_CMDLINE_EXTEND=y" >> "$CONFIG_FILE"
+          
+          # 防止单点故障导致系统崩溃
+          echo "CONFIG_PANIC_ON_OOPS=n" >> "$CONFIG_FILE"
+          echo "CONFIG_PANIC_ON_OOPS_VALUE=0" >> "$CONFIG_FILE"
+          blacklist="${{ github.event.inputs.BLACK_LIST }}"
+          if [ "$blacklist" = "blacklist_module_danger.patch" ] || [ "$blacklist" = "haruhi_blacklist.patch" ]; then
+              # qcom llcc
+              echo "CONFIG_QCOM_LLCC=y" >> "$CONFIG_FILE"
+              # walt scheduler
+              echo "CONFIG_SCHED_WALT=y" >> "$CONFIG_FILE"
+          else
+              echo "CONFIG_QCOM_LLCC=n" >> "$CONFIG_FILE"
+              # walt scheduler
+              echo "CONFIG_SCHED_WALT=n" >> "$CONFIG_FILE"
+          fi
+          # 透明大页
+          echo "CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS=y" >> "$CONFIG_FILE"   
+          echo "CONFIG_TRANSPARENT_HUGEPAGE_MADVISE=n" >> "$CONFIG_FILE"
+          
+          echo "CONFIG_CFI_PERMISSIVE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_SLAB_MERGE_DEFAULT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_DMABUF_HUGETLB=y" >> "$CONFIG_FILE"
+          echo "CONFIG_ARM64_SME=y" >> "$CONFIG_FILE"
+          
+          echo "CONFIG_PCIEASPM_POWER_SUPERSAVE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_KFENCE_STATIC_KEYS=y" >> "$CONFIG_FILE"
+          
+          # 模块签名校验          
+          echo "CONFIG_MODULE_SIG_PROTECT=n" >> "$CONFIG_FILE"
+          
+          # 幽灵漏洞
+          echo "CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY=n" >> "$CONFIG_FILE"
+          echo "CONFIG_UNMAP_KERNEL_AT_EL0=n" >> "$CONFIG_FILE"
+
+          # 内核静态字段只读(默认开启保护)
+          echo "CONFIG_RODATA_FULL_DEFAULT_ENABLED=y" >> "$CONFIG_FILE"
+
+          # # 关闭部分安全特性(开启也会导致各种符号版本错误)
+          echo "CONFIG_SLAB_FREELIST_RANDOM=n" >> "$CONFIG_FILE"
+          echo "CONFIG_SHUFFLE_PAGE_ALLOCATOR=n" >> "$CONFIG_FILE"
+          echo "CONFIG_SLAB_FREELIST_HARDENED=n" >> "$CONFIG_FILE"
+          
+          # # 堆栈保护关闭
+          # echo "CONFIG_STACKPROTECTOR_PER_TASK=n" >> "$CONFIG_FILE"
+          
+          # 优化内存策略(放心开启)
+          echo "CONFIG_RCU_LAZY_DEFAULT_OFF=n" >> "$CONFIG_FILE"
+          echo "CONFIG_TASKS_TRACE_RCU_READ_MB=y" >> "$CONFIG_FILE"
+          echo "CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y" >> "$CONFIG_FILE"
+                    
+          echo "CONFIG_UDMABUF=y" >> "$CONFIG_FILE"
+          # # 禁用io调度器
+          echo "CONFIG_MQ_IOSCHED_KYBER=n" >> "$CONFIG_FILE"
+          
+          # 控制可选功能(放心使用本代码)
+          echo "CONFIG_DAMON=y" >> "$CONFIG_FILE"
+          echo "CONFIG_DAMON_SYSFS=y" >> "$CONFIG_FILE"
+          echo "CONFIG_DAMON_VADDR=y" >> "$CONFIG_FILE"
+          echo "CONFIG_DAMON_RECLAIM=y" >> "$CONFIG_FILE"
+          echo "CONFIG_DAMON_LRU_SORT=y" >> "$CONFIG_FILE"
+          
+          echo "CONFIG_CRYPTO_SHA1_ARM64_CE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_VIRTIO_PCI_LEGACY=y" >> "$CONFIG_FILE"
+          echo "CONFIG_HEADERS_INSTALL=n" >> "$CONFIG_FILE"
+          echo "CONFIG_PROC_MEM_ALWAYS_FORCE=n" >> "$CONFIG_FILE"
+          
+          # eBPF调试支持，优化
+          echo "CONFIG_IKHEADERS=y" >> "$CONFIG_FILE"
+          echo "CONFIG_HAVE_KPROBES=y" >> "$CONFIG_FILE"
+          
+          echo "CONFIG_DTPM=n" >> "$CONFIG_FILE"
+          echo "CONFIG_IDLE_INJECT=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NETFILTER_XTABLES_COMPAT=n" >> "$CONFIG_FILE"
+          echo "CONFIG_ARM64_BTI=n" >> "$CONFIG_FILE"
+     
+          # 无用kunit
+          echo "CONFIG_FAT_KUNIT_TEST=n" >> "$CONFIG_FILE"
+          echo "CONFIG_EXT4_KUNIT_TESTS=n" >> "$CONFIG_FILE"          
+          echo "CONFIG_RTC_LIB_KUNIT_TEST=n" >> "$CONFIG_FILE"
+          echo "CONFIG_CLK_KUNIT_TEST=n" >> "$CONFIG_FILE"
+          echo "CONFIG_CLK_GATE_KUNIT_TEST=n" >> "$CONFIG_FILE"
+          echo "CONFIG_IIO_FORMAT_KUNIT_TESTAULT=n" >> "$CONFIG_FILE"          
+          echo "CONFIG_INPUT_KUNIT_TEST=n" >> "$CONFIG_FILE"
+          echo "CONFIG_SND_SOC_UTILS_KUNIT_TEST=n" >> "$CONFIG_FILE"
+          echo "CONFIG_SND_SOC_TOPOLOGY_KUNIT_TEST=n" >> "$CONFIG_FILE"
+          echo "CONFIG_HID_KUNIT_TEST=n" >> "$CONFIG_FILE"
+          echo "CONFIG_REGMAP_KUNIT=n" >> "$CONFIG_FILE"
+          echo "CONFIG_TIME_KUNIT_TEST=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NETDEV_ADDR_LIST_TEST=n" >> "$CONFIG_FILE"
+          echo "CONFIG_IIO_FORMAT_KUNIT_TEST=n" >> "$CONFIG_FILE"
+
+          # 修各种abi不兼容
+          # 蓝牙
+          patch_profile="${{ github.event.inputs.BLACK_LIST }}"
+          if [ "$patch_profile" = "blacklist_module_danger.patch" ] || [ "$patch_profile" = "blacklist_module.patch" ] || [ "$patch_profile" = "scx_enable.patch" ] || [ "$patch_profile" = "fengchi_enable.patch" ] ; then
+              echo "CONFIG_RFKILL=y" >> "$CONFIG_FILE"
+              echo "CONFIG_BT=y" >> "$CONFIG_FILE"
+              echo "CONFIG_BT_RFCOMM=y" >> "$CONFIG_FILE"
+              echo "CONFIG_BT_HIDP=y" >> "$CONFIG_FILE"
+              echo "CONFIG_TLS=y" >> "$CONFIG_FILE"
+          fi
+          
+          # ubsan调试
+          echo "CONFIG_UBSAN=n">> "$CONFIG_FILE"
+          echo "CONFIG_UBSAN_TRAP=y" >> "$CONFIG_FILE"
+          echo "CONFIG_UBSAN_BOUNDS=y" >> "$CONFIG_FILE"
+          echo "CONFIG_CC_HAS_UBSAN_ARRAY_BOUNDS=y" >> "$CONFIG_FILE"
+          echo "CONFIG_UBSAN_ARRAY_BOUNDS=y" >> "$CONFIG_FILE"
+          echo "CONFIG_UBSAN_LOCAL_BOUNDS=y" >> "$CONFIG_FILE"
+          echo "CONFIG_UBSAN_SANITIZE_ALL=y" >> "$CONFIG_FILE"
+          if [ "${{ github.event.inputs.sysdbg }}" == "On" ]; then
+            echo "CONFIG_UBSAN=y">> "$CONFIG_FILE"
+            # list调试
+            echo "CONFIG_DEBUG_LIST=y" >> "$CONFIG_FILE"
+            echo "CONFIG_CMDLINE=\"console=ttynull nokaslr stack_depot_disable=on cgroup_disable=pressure kasan=on kvm-arm.mode=protected bootconfig thp_anon=16K-2M:always kfence.sample_interval=0 kpti=0 hardened_usercopy=off audit=0 arm64.nobti arm64.nomte arm64.nopauth\"" >> "$CONFIG_FILE"
+            echo "CONFIG_KFENCE_STATIC_KEYS=n" >> "$CONFIG_FILE"
+          fi
+
+          # 其他优化
+          echo "CONFIG_RCU_TRACE=n" >> "$CONFIG_FILE"
+          # echo "CONFIG_ARM64_SW_TTBR0_PAN=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_FQ=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_INGRESS=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_HTB=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_PRIO=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_MULTIQ=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_SFQ=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_TBF=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_NETEM=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_CODEL=n" >> "$CONFIG_FILE"
+          echo "CONFIG_NET_SCH_DEFAULT=y" >> "$CONFIG_FILE"
+          echo "CONFIG_DEFAULT_FQ_CODEL=y" >> "$CONFIG_FILE"
+          echo "CONFIG_WQ_POWER_EFFICIENT_DEFAULT=n" >> "$CONFIG_FILE"
+          echo "CONFIG_SCHED_CLUSTER=y" >> "$CONFIG_FILE"
+          
+          # OPT_PROBES
+          echo "CONFIG_HAVE_KPROBES_ON_FTRACE=y" >> "$CONFIG_FILE"
+          echo "CONFIG_HAVE_OPTPROBES=y" >> "$CONFIG_FILE"
+          echo "CONFIG_OPTPROBES=y" >> "$CONFIG_FILE"
+
+          echo "CONFIG_DEBUG_INFO_COMPRESSED_ZSTD=y" >> "$CONFIG_FILE"
+          echo "CONFIG_DEBUG_INFO_COMPRESSED_NONE=n" >> "$CONFIG_FILE"
+            if [ "${{ github.event.inputs.ENABLE_RUST }}" == "true" ]; then
+                echo "CONFIG_RUST=y" >> "$CONFIG_FILE"
+                
+                # --- 禁用与 Rust 不兼容的内核安全/调试特性 ---
+                # 1. 禁用模块版本化 (MODVERSIONS)
+                echo "CONFIG_MODVERSIONS=n" >> "$CONFIG_FILE"
+                
+                # 2. 禁用 GCC 插件 (GCC_PLUGINS)
+                echo "CONFIG_GCC_PLUGINS=n" >> "$CONFIG_FILE"
+                
+                # 3. 禁用内核随机化结构体布局 (RANDSTRUCT)
+                echo "CONFIG_RANDSTRUCT=n" >> "$CONFIG_FILE"
+                echo "CONFIG_GCC_PLUGIN_RANDSTRUCT=n" >> "$CONFIG_FILE"
+                
+                # 4. 禁用影子调用栈 (SHADOW_CALL_STACK)
+                echo "CONFIG_SHADOW_CALL_STACK=n" >> "$CONFIG_FILE"
+                
+                echo "CONFIG_LTO_CLANG_THIN=n" >> "$CONFIG_FILE"
+                echo "CONFIG_LTO_CLANG=n" >> "$CONFIG_FILE"
+                echo "CONFIG_LTO=n" >> "$CONFIG_FILE"
+                # echo "CONFIG_DEBUG_INFO_BTF=n" >> "$CONFIG_FILE"
+            fi
+          
+          # 移除构建审查
+          sed -i 's/check_defconfig//' ./common/build.config.gki
+
+      - name: "🔨 Build Kernel Zyc clang19 | 编译内核"
+        run: |
+          export PATH="/usr/lib/ccache:$PATH"
+          # 安装依赖工具
+          # sudo apt install -y lld
+          cd kernel_workspace/kernel_platform/common
+          
+          # 安装自定义clang
+          mkdir cust_clang; cd cust_clang
+          wget -q https://github.com/cctv18/oneplus_sm8650_toolchain/releases/download/LLVM-Clang20-r547379/build-tools.zip
+          unzip build*.zip >/dev/null
+
+          wget -q https://github.com/ZyCromerZ/Clang/releases/download/19.0.0git-20240723-release/Clang-19.0.0git-20240723.tar.gz
+          tar -zxvf *.tar.gz > /dev/null
+          ls -al
+          cd  ..
+          export cust_clang="$(realpath ./cust_clang/bin)"
+          export cust_pahole="$(realpath ./cust_clang/build-tools/bin)"
+          sudo -E chmod -R +x "$cust_clang" "$cust_pahole"
+          export PATH="$cust_clang:$cust_pahole:$PATH"
+          echo $PATH
+          which clang
+          export PAHOLE="$(realpath ./cust_clang/build-tools/bin/pahole)"
+          RUSTC="$(which rustc)"
+          RUSTC="RUSTC=$RUSTC"
+          if [ "${{ github.event.inputs.ENABLE_RUST }}" == "true" ]; then
+              rustup override set "$(scripts/min-tool-version.sh rustc)"
+              rustup component add rust-src
+              cargo install --force --root "$(realpath ./cust_clang)" bindgen-cli
+              make -j$(nproc --all) O=out rustavailable
+              rm -rf out || true
+          fi
+          
+          if [ -f "./android/gki/aarch64/afdo/kernel.afdo" ]; then
+              FDO_FILE="$(realpath ./android/gki/aarch64/afdo/kernel.afdo)"
+              EXTRA_FLAGS="CLANG_AUTOFDO_PROFILE=$FDO_FILE"
+              echo $EXTRA_FLAGS
+              echo "这里显示fdo文件: $(ls $FDO_FILE)"
+              make -j$(nproc --all) O=out LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE="aarch64-linux-gnu-" CC="ccache clang" LD=ld.lld HOSTLD=ld.lld $RUSTC $EXTRA_FLAGS KCFLAGS+="-Wno-error" gki_defconfig all 2>&1 | tee  ../../../build.txt
+          else
+              make -j$(nproc --all) O=out LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE="aarch64-linux-gnu-" CC="ccache clang" LD=ld.lld HOSTLD=ld.lld $RUSTC KCFLAGS+="-Wno-error" gki_defconfig all 2>&1 | tee  ../../../build.txt
+          fi
+          for i in $(find  . -type f -name ".config"); do
+             cp $i  ../../../config.txt
+          done
+          git log | head -n 200 > ../../../commit.txt
+          for i in $(find  . -name overwrite_configs.c); do
+              cp -af "$i"  ../../../overwrite_configs.c
+          done
+          # 显示 ccache 统计信息
+          ccache -s
+          echo "✅ 内核编译完成"
+
+      - name: "📦 Package Kernel | 打包内核"
+        run: |
+          echo "📦 准备AnyKernel3打包环境..."
+          git clone https://github.com/reigadegr/AnyKernel3 --depth=1
+          rm -rf ./AnyKernel3/.git
+          cp *build.txt ./AnyKernel3 || echo "复制log失败"
+          cp config.txt ./AnyKernel3 || echo "复制config失败"
+          cp commit.txt ./AnyKernel3 || echo "复制commit失败"
+          cp overwrite_configs.c  ./AnyKernel3 || echo "复制 overwrite_configs.c失败"
+          mkdir -p kernel_workspace/kernel_platform/out/Final-Image-Find/
+          dir1=""
+          dir2=""
+          image_path=$(find "./kernel_workspace/kernel_platform/common/out/" -name "Image" | head -n 1)
+          if [ -n "$image_path" ]; then
+            dir1=$(dirname "$image_path")/
+            echo "✅ 成功找到 Image 文件"
+          fi
+          if [ -n "$image_path" ] && [ -f "$image_path" ]; then
+            echo "Image file finally located at: $image_path"
+            cp "$image_path" ./AnyKernel3/Image
+            cp "$image_path" kernel_workspace/kernel_platform/out/Final-Image-Find/Image
+          fi
+          
+      # ====================== 上传阶段 ======================
+      - name: "🧠 Set Artifact Name | 设置产物名称"
+        id: set_name
+        run: |
+          echo "ARTIFACT_NAME=oneplus_13_non-KSU_${{ env.KSUVER }}" >> $GITHUB_OUTPUT
+         
+      - name: "📤 Upload AnyKernel3 | 上传 AnyKernel3"
+        uses: actions/upload-artifact@v4
+        with:
+         name: ${{ steps.set_name.outputs.ARTIFACT_NAME }}
+         path: ./AnyKernel3/*
+
+      - name: 📊 Post-build disk check (构建后空间检查)
+        run: df -h
