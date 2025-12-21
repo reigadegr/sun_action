@@ -578,7 +578,7 @@ jobs:
           rustup component add rust-src
           cargo install --force --root "$(realpath ./cust_clang)" bindgen-cli
           
-          RUSTC="$(realpath rustc)"
+          RUSTC="$(which rustc)"
           RUSTC="RUSTC=$RUSTC"
           if [ -f "./android/gki/aarch64/afdo/kernel.afdo" ]; then
               FDO_FILE="$(realpath ./android/gki/aarch64/afdo/kernel.afdo)"
