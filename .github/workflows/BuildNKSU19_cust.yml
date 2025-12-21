@@ -625,8 +625,8 @@ jobs:
           RUSTC="$(which rustc)"
           RUSTC="RUSTC=$RUSTC"
           
-          if [ -f "./android/gki/aarch64/afdo/kernel.afdo" ]; then
-              FDO_FILE="$(realpath ./android/gki/aarch64/afdo/kernel.afdo)"
+          if [ -f "./gki/aarch64/afdo/kernel.afdo" ]; then
+              FDO_FILE="$(realpath ./gki/aarch64/afdo/kernel.afdo)"
               EXTRA_FLAGS="CLANG_AUTOFDO_PROFILE=$FDO_FILE"
               echo $EXTRA_FLAGS
               echo "这里显示fdo文件: $(ls $FDO_FILE)"
