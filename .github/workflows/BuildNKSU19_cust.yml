@@ -178,7 +178,7 @@ jobs:
           # repo init -u https://github.com/Xiaomichael/kernel_manifest.git -b refs/heads/oneplus/${{ github.event.inputs.CPU }} -m oneplus_13.xml --depth=1
 
           git clone --depth 1 https://github.com/"${{ github.event.inputs.REPO }}" -b "${{ github.event.inputs.BRANCH }}" common2 &
-          repo init -u https://android.googlesource.com/kernel/manifest -b common-android15-6.12-lts --depth=1
+          repo init -u https://android.googlesource.com/kernel/manifest -b common-android16-6.12-lts --depth=1
           
           sed -i '/external\//d' .repo/manifests/default.xml
           sed -i '/kleaf\//d' .repo/manifests/default.xml
@@ -214,7 +214,7 @@ jobs:
         run: |
           cd kernel_workspace/kernel_platform
           SUFFIX="${{ github.event.inputs.SUFFIX }}"
-          KANDROID_VERSION="android15"
+          KANDROID_VERSION="android16"
           
           work_space=$(pwd)
           for path in common; do
