@@ -99,9 +99,9 @@ jobs:
       - name: "⚙️ Setup Cache Env | 设置缓存环境"
         run: |
           echo "🔧 正在设置机型隔离缓存目录..."
-          echo "CCACHE_DIR=$HOME/.ccache_oneplus_13_nonksu19" >> $GITHUB_ENV
-          mkdir -p "$HOME/.ccache_oneplus_13_nonksu19"
-          echo "✅ 缓存目录已设置: $HOME/.ccache_oneplus_13_nonksu19" 
+          echo "CCACHE_DIR=$HOME/.ccache_oneplus_15_nonksu19" >> $GITHUB_ENV
+          mkdir -p "$HOME/.ccache_oneplus_15_nonksu19"
+          echo "✅ 缓存目录已设置: $HOME/.ccache_oneplus_15_nonksu19" 
 
       - name: "🔐 Configure Git | 配置Git账户"
         run: |
