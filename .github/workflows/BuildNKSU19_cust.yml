@@ -52,19 +52,19 @@ on:
         type: string
         description: "存储库"
         required: true
-        default: "https://github.com/OnePlusOSS/android_kernel_common_oneplus_sm8850"
+        default: "https://android.googlesource.com/kernel/common"
 
       BRANCH:
         type: string
         description: "使用的分支"
         required: true
-        default: "oneplus/sm8850_b_16.0.0_oneplus_15"
+        default: "android16-6.12-lts"
 
       BLACK_LIST:
         type: choice
         description: "如何去屏蔽一加内核模块？"
         required: true
-        default: "fengchi_enable.patch"
+        default: "non"
         options:
           - "fengchi_enable.patch"
           - "non"
@@ -616,7 +616,7 @@ jobs:
           if [ "${{ github.event.inputs.ENABLE_RUST }}" == "true" ]; then
               # rustup override set "$(scripts/min-tool-version.sh rustc)"
               rustup override set "1.82.0"
-              rustup component add rust-src
+              rustup component add rust-src rustfmt
               cargo install --force --root "$(realpath ./cust_clang)" bindgen-cli
               make -j$(nproc --all) O=out rustavailable
               rm -rf out || true
@@ -630,9 +630,13 @@ jobs:
               EXTRA_FLAGS="CLANG_AUTOFDO_PROFILE=$FDO_FILE"
               echo $EXTRA_FLAGS
               echo "这里显示fdo文件: $(ls $FDO_FILE)"
-              make -j$(nproc --all) O=out LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE="aarch64-linux-gnu-" CC="ccache clang" LD=ld.lld HOSTLD=ld.lld $RUSTC $EXTRA_FLAGS KCFLAGS+="-Wno-error" gki_defconfig all 2>&1 | tee  ../../../build.txt
-          else
-              make -j$(nproc --all) O=out LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE="aarch64-linux-gnu-" CC="ccache clang" LD=ld.lld HOSTLD=ld.lld $RUSTC KCFLAGS+="-Wno-error" gki_defconfig all 2>&1 | tee  ../../../build.txt
+              make -j$(nproc --all) O=out LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE="aarch64-linux-gnu-" CC="ccache clang" LD=ld.lld HOSTLD=ld.lld $RUSTC $EXTRA_FLAGS KCFLAGS+="-Wno-error" gki_defconfig 2>&1 | tee  ../../../build.txt
+              scripts/config --file out/.config \
+                -d ARM64_PI \
+                -d LTO_CLANG_FULL \
+                -d LTO_CLANG_THIN \
+                -e LTO_NONE
+              make -j$(nproc --all) O=out LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE="aarch64-linux-gnu-" CC="ccache clang" LD=ld.lld HOSTLD=ld.lld $RUSTC $EXTRA_FLAGS KCFLAGS+="-Wno-error" Image.gz modules 2>&1 | tee  ../../../build.txt
           fi
           for i in $(find  . -type f -name ".config"); do
              cp $i  ../../../config.txt
