@@ -1,8 +1,8 @@
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index a1f9ba300bd8..55eb1dc71bbc 100644
+index a1f9ba300bd8..69097a843dac 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
-@@ -2874,6 +2874,92 @@ static int early_mod_check(struct load_info *info, int flags)
+@@ -2874,6 +2874,91 @@ static int early_mod_check(struct load_info *info, int flags)
  	return err;
  }
  
@@ -20,7 +20,6 @@ index a1f9ba300bd8..55eb1dc71bbc 100644
 +    "gpucc_kera",
 +    "hid_uclogic_test",
 +    "hidp",
-+    "horae_shell_temp",
 +    "hung_task_enh",
 +    "iio_test_format",
 +    "input_test",
@@ -95,7 +94,7 @@ index a1f9ba300bd8..55eb1dc71bbc 100644
  /*
   * Allocate and load the module: note that size of section 0 is always
   * zero, and we rely on this for optional sections.
-@@ -2884,6 +2970,7 @@ static int load_module(struct load_info *info, const char __user *uargs,
+@@ -2884,6 +2969,7 @@ static int load_module(struct load_info *info, const char __user *uargs,
  	struct module *mod;
  	bool module_allocated = false;
  	long err = 0;
@@ -103,7 +102,7 @@ index a1f9ba300bd8..55eb1dc71bbc 100644
  	char *after_dashes;
  
  	/*
-@@ -2915,6 +3002,13 @@ static int load_module(struct load_info *info, const char __user *uargs,
+@@ -2915,6 +3001,13 @@ static int load_module(struct load_info *info, const char __user *uargs,
  	if (err)
  		goto free_copy;
  
