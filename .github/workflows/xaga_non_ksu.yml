@@ -480,9 +480,7 @@ jobs:
           export CC="$(realpath ./cust_clang/bin/clang)" LTO="thin"
           export CC="ccache $CC" LTO="thin"
           export PAHOLE="$(realpath ./cust_clang/build-tools/bin/pahole)"
-          MAKE_ARGS="LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
-            LD=ld.lld HOSTLD=ld.lld KCFLAGS+=-Wno-error"
-          make -j$(nproc --all) O=out $MAKE_ARGS gki_defconfig all 2>&1 | tee  ../../../build.txt
+          make -j$(nproc --all) O=out LLVM=1 LLVM_IAS=1 ARCH=arm64 CROSS_COMPILE="aarch64-linux-gnu-" CC="ccache clang" LD=ld.lld HOSTLD=ld.lld KCFLAGS+="-Wno-error" gki_defconfig all 2>&1 | tee  ../../../build.txt
           for i in $(find  . -type f -name ".config"); do
              cp $i  ../../../config.txt
           done
