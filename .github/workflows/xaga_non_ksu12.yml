@@ -468,7 +468,7 @@ jobs:
           export PATH="/usr/lib/ccache:$PATH"
           # 安装依赖工具
           # sudo apt install -y lld
-          cd kernel_workspace/kernel_platform/common
+          cd kernel_workspace/kernel_platform
           
           LTO=thin BUILD_CONFIG=build.config.gki.aarch64 build/build.sh | tee build_log.txt
           for i in $(find  . -type f -name ".config"); do
