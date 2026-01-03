@@ -1,4 +1,4 @@
-name: xaga_nonksu_21
+name: xaga_nonksu_12
 on:
   workflow_dispatch:
     inputs:
