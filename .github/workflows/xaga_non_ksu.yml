@@ -352,6 +352,15 @@ jobs:
           # git commit -m "Random suffix & remove -dirty"
 
       # 配置信息
+      - name: integration zero mount
+        run: |
+          cd kernel_workspace/kernel_platform
+          CONFIG_FILE=./common/arch/arm64/configs/gki_defconfig
+          echo "CONFIG_ZEROMOUNT=y" >> "$CONFIG_FILE"
+          wget https://github.com/Enginex0/zeromount/raw/master/patches/zeromount-core.patch
+          patch -p1 -F 3 < zeromount-core.patch && git add  . && git commit -m "integration zero mount"
+
+      # 配置信息
       - name: Add Configuration Settings
         run: |
           cd kernel_workspace/kernel_platform
