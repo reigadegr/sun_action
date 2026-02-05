@@ -357,6 +357,7 @@ jobs:
           cd kernel_workspace/kernel_platform
           CONFIG_FILE=./common/arch/arm64/configs/gki_defconfig
           echo "CONFIG_ZEROMOUNT=y" >> "$CONFIG_FILE"
+          cd common
           wget https://github.com/Enginex0/zeromount/raw/master/patches/zeromount-kernel-5.10.patch
           patch -p1 -F 3 < zeromount-kernel-5.10.patch && git add  . && git commit -m "integration zero mount"
 
